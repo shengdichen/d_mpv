@@ -5,6 +5,10 @@ function print_osd (text, duration) {
   mp.osd_message(text, duration)
 }
 
+function mp_run_command (fragments) {
+  mp.commandv.apply(null, fragments)
+}
+
 function _is_visible_by_default_osc () {
   var opt = { visibility: 'never' }
   mp.options.read_options(opt, 'osc')
@@ -12,10 +16,13 @@ function _is_visible_by_default_osc () {
 }
 var is_visible_osc = _is_visible_by_default_osc()
 function toggle_osc () {
+  var frags_base = ['no-osd', 'script-message', 'osc-visibility']
+  var frags_disable = frags_base.concat('never')
+  var frags_enable = frags_base.concat('always')
   if (is_visible_osc) {
-    mp.command('no-osd script-message osc-visibility never')
+    mp_run_command(frags_disable)
   } else {
-    mp.command('no-osd script-message osc-visibility always')
+    mp_run_command(frags_enable)
   }
   is_visible_osc = !is_visible_osc
 }
