@@ -1,13 +1,17 @@
-function print_osd (text, duration) {
-  if (!duration) {
-    duration = 0.7
+function MpvUtil () {
+  this.print_osd = function (text, duration) {
+    if (!duration) {
+      duration = 0.7
+    }
+    mp.osd_message(text, duration)
   }
-  mp.osd_message(text, duration)
-}
 
-function mp_run_command (fragments) {
-  mp.commandv.apply(null, fragments)
+  this.run = function (fragments) {
+    mp.commandv.apply(null, fragments)
+  }
 }
+var mpv_util = new MpvUtil()
+module.exports.mpv_util = mpv_util
 
 function Osc () {
   function _is_visible_by_default () {
@@ -22,11 +26,11 @@ function Osc () {
   this._frags_enable = frags_base.concat('always')
 
   this.disable = function () {
-    mp_run_command(this._frags_disable)
+    mpv_util.run(this._frags_disable)
   }
 
   this.enable = function () {
-    mp_run_command(this._frags_enable)
+    mpv_util.run(this._frags_enable)
   }
 
   this.toggle = function () {
@@ -38,6 +42,4 @@ function Osc () {
     this._is_visible = !this._is_visible
   }
 }
-
-module.exports.print_osd = print_osd
 module.exports.osc = new Osc()
