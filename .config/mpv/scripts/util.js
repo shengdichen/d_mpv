@@ -45,6 +45,10 @@ function MpvUtil () {
       this.run(['cycle-values', item].concat(values))
     }
   }
+
+  this.print_prop = function (prop, type, def) {
+    this.print_osd(this.get_prop(prop, type, def))
+  }
 }
 var mpv_util = new MpvUtil()
 module.exports.mpv_util = mpv_util
@@ -110,6 +114,8 @@ function Audio () {
     mp.add_key_binding(')', this.volume(+7))
 
     mp.add_key_binding('m', this.mute)
+
+    mp.add_key_binding('SHARP', function () { mpv_util.cycle('audio') })
   }
 }
 module.exports.audio = new Audio()
@@ -125,3 +131,29 @@ function Video () {
   }
 }
 module.exports.video = new Video()
+
+function Playback () {
+  this.navigate_playlist = function (positive_dir) {
+    return function () {
+      if (positive_dir) {
+        mpv_util.run(['playlist-next'])
+      } else {
+        mpv_util.run(['playlist-prev'])
+      }
+    }
+  }
+
+  this.loop_files = function () {
+    mpv_util.cycle('loop-file', ['inf', 'no'])
+    mpv_util.print_prop('loop-file')
+  }
+
+  this.bind = function () {
+    mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
+    mp.add_key_binding('>', this.navigate_playlist(positive_dir = true))
+
+    // mp.add_key_binding('l', function () { mpv_util.run(['ab-loop']) })
+    mp.add_key_binding('L', this.loop_files)
+  }
+}
+module.exports.playback = new Playback()
