@@ -87,9 +87,15 @@ function Audio () {
       var vol_next = vol_prev + incr
       mpv_util.set_prop('volume', vol_next, type = 'num')
       mpv_util.print_osd(
-        'volume> ' + vol_next + ' [' + vol_prev + misc_util.format_integer(incr) + ']'
+        'volume> ' + vol_next + ' [' + vol_prev + _format_volume_incr(incr) + ']'
       )
     }
+  }
+
+  function _format_volume_incr (incr) {
+    if (incr === 1) { return '++' }
+    if (incr === -1) { return '--' }
+    return misc_util.format_integer(incr)
   }
 
   this.mute = function () {
