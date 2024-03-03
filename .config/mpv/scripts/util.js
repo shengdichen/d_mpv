@@ -193,6 +193,18 @@ function Playback () {
     mp.add_key_binding('[', this.adjust_speed(-0.1))
     mp.add_key_binding(']', this.adjust_speed(+0.1))
     mp.add_key_binding('BS', this.adjust_speed())
+
+    mp.add_key_binding('I', function () {
+      // REF:
+      // https://github.com/Argon-/mpv-stats/blob/master/stats.lua
+      // https://github.com/mpv-player/mpv/blob/master/player/lua/stats.lua
+      mpv_util.run(['script-binding', 'stats/display-stats-toggle'])
+    })
+    mp.add_key_binding('`', function () {
+      // REF:
+      // https://github.com/mpv-player/mpv/blob/master/player/lua/console.lua
+      mpv_util.run(['script-binding', 'console/enable'])
+    })
   }
 }
 module.exports.playback = new Playback()
