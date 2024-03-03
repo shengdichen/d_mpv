@@ -2,6 +2,12 @@ function MiscUtil () {
   this.format_integer = function (num) {
     return (num < 0 ? '' : '+') + num
   }
+  this.format_float = function (num, n_digits_after_decimal) {
+    if (!n_digits_after_decimal) {
+      n_digits_after_decimal = 2
+    }
+    return num.toFixed(n_digits_after_decimal)
+  }
 }
 var misc_util = new MiscUtil()
 module.exports.misc_util = misc_util
@@ -143,6 +149,28 @@ function Playback () {
     }
   }
 
+  this.navigate_file = function (incr, mode) {
+    return function () {
+      if (mode === 'chapter') {
+        mpv_util.run(['add', 'chapter', incr])
+      } else {
+        mpv_util.run(['seek', incr, 'relative+exact'])
+      }
+    }
+  }
+
+  this.adjust_speed = function (incr) {
+    return function () {
+      if (!incr) {
+        mpv_util.run(['set', 'speed', 1.0])
+        mpv_util.print_osd('speed> 1.0')
+      } else {
+        mpv_util.run(['add', 'speed', incr])
+        mpv_util.print_osd('speed> ' + misc_util.format_float(mpv_util.get_prop('speed', type = 'num')))
+      }
+    }
+  }
+
   this.loop_files = function () {
     mpv_util.cycle('loop-file', ['inf', 'no'])
     mpv_util.print_prop('loop-file')
@@ -154,6 +182,17 @@ function Playback () {
 
     // mp.add_key_binding('l', function () { mpv_util.run(['ab-loop']) })
     mp.add_key_binding('L', this.loop_files)
+
+    mp.add_key_binding('LEFT', this.navigate_file(-3))
+    mp.add_key_binding('RIGHT', this.navigate_file(+3))
+    mp.add_key_binding('UP', this.navigate_file(-7))
+    mp.add_key_binding('DOWN', this.navigate_file(+7))
+    mp.add_key_binding('PGUP', this.navigate_file(-1, mode = 'chapter'))
+    mp.add_key_binding('PGDWN', this.navigate_file(+1, mode = 'chapter'))
+
+    mp.add_key_binding('[', this.adjust_speed(-0.1))
+    mp.add_key_binding(']', this.adjust_speed(+0.1))
+    mp.add_key_binding('BS', this.adjust_speed())
   }
 }
 module.exports.playback = new Playback()
