@@ -138,6 +138,52 @@ function Video () {
 }
 module.exports.video = new Video()
 
+function Subtitle () {
+  function _delay (target) {
+    if (target === 'primary') {
+      target = 'sub-delay'
+    } else if (target === 'secondary') {
+      target = 'secondary-sub-delay'
+    }
+    return misc_util.format_float(mpv_util.get_prop(target, type = 'num'))
+  }
+  function _retime_primary (incr) {
+    mpv_util.run(['add', 'sub-delay', incr])
+    mpv_util.print_osd(
+      'subtitle/delay-primary> ' + _delay('primary')
+    )
+  }
+  function _retime_secondary (incr) {
+    mpv_util.run(['add', 'secondary-sub-delay', incr])
+    mpv_util.print_osd(
+      'subtitle/delay-secondary> ' + _delay('secondary')
+    )
+  }
+  this.retime = function (incr, target) {
+    return function () {
+      if (target === 'primary') {
+        _retime_primary(incr)
+      } else if (target === 'secondary') {
+        _retime_secondary(incr)
+      } else if (target === 'both') {
+        _retime_primary(incr)
+        _retime_secondary(incr)
+        mpv_util.print_osd(
+          'subtitle/delay> (primary, secondary): ' + _delay('primary') + ', ' + _delay('secondary')
+        )
+      }
+    }
+  }
+
+  this.bind = function () {
+    mp.add_key_binding('z', this.retime(+0.1, target = 'primary'))
+    mp.add_key_binding('x', this.retime(-0.1, target = 'primary'))
+    mp.add_key_binding('Z', this.retime(+0.1, target = 'secondary'))
+    mp.add_key_binding('X', this.retime(-0.1, target = 'secondary'))
+  }
+}
+module.exports.subtitle = new Subtitle()
+
 function Playback () {
   this.navigate_playlist = function (positive_dir) {
     return function () {

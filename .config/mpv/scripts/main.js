@@ -6,6 +6,7 @@ function Main () {
 
     util.video.bind()
     util.audio.bind()
+    util.subtitle.bind()
     util.playback.bind()
   }
 }
