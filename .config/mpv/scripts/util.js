@@ -247,6 +247,19 @@ function Playback () {
     }
   }
 
+  this.list_playlist = function () {
+    return function () {
+      var files = mpv_util.get_prop('playlist')
+      var n_files = files.length
+      var strings = []
+      for (var i = 0; i < n_files; i++) {
+        var f = files[i]
+        strings.push(f.id + '/' + n_files + ') ' + f.filename)
+      }
+      mpv_util.print_osd(strings.join('\n'))
+    }
+  }
+
   this.navigate_file = function (incr, mode) {
     return function () {
       if (mode === 'chapter') {
@@ -275,6 +288,7 @@ function Playback () {
   }
 
   this.bind = function () {
+    mp.add_key_binding('F8', this.list_playlist())
     mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
     mp.add_key_binding('>', this.navigate_playlist(positive_dir = true))
 
