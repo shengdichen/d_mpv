@@ -175,11 +175,35 @@ function Subtitle () {
     }
   }
 
+  this.resize = function (incr) {
+    return function () {
+      mpv_util.run(['add', 'sub-scale', incr])
+      mpv_util.print_osd(
+        'subtitle/scale> ' + misc_util.format_float(mpv_util.get_prop('sub-scale', type = 'num'))
+      )
+    }
+  }
+
+  this.reposition = function (incr) {
+    return function () {
+      mpv_util.run(['add', 'sub-pos', incr])
+      mpv_util.print_osd(
+        'subtitle/pos> ' + mpv_util.get_prop('sub-pos', type = 'num')
+      )
+    }
+  }
+
   this.bind = function () {
     mp.add_key_binding('z', this.retime(+0.1, target = 'primary'))
     mp.add_key_binding('x', this.retime(-0.1, target = 'primary'))
     mp.add_key_binding('Z', this.retime(+0.1, target = 'secondary'))
     mp.add_key_binding('X', this.retime(-0.1, target = 'secondary'))
+
+    mp.add_key_binding('Shift+f', this.resize(-0.1))
+    mp.add_key_binding('Shift+g', this.resize(+0.1))
+
+    mp.add_key_binding('r', this.reposition(-1))
+    mp.add_key_binding('t', this.reposition(+1))
   }
 }
 module.exports.subtitle = new Subtitle()
