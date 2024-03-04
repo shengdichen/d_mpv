@@ -260,6 +260,112 @@ function Playback () {
     }
   }
 
+  this.list_track = function () {
+    return function () {
+      var tracks = mpv_util.get_prop('track-list')
+      var auds = []
+      var vids = []
+      var subs = []
+      for (var i = 0; i < tracks.length; i++) {
+        var t = tracks[i]
+        if (t.type === 'audio') {
+          auds.push(t)
+        } else if (t.type === 'video') {
+          vids.push(t)
+        } else if (t.type === 'sub') {
+          subs.push(t)
+        }
+      }
+
+      var strings = []
+      strings.push(_format_tracks_video(vids))
+      strings.push(_format_tracks_audio(auds))
+      strings.push(_format_tracks_sub(subs))
+      var separator = '\n' + Array(37).join('-') + '\n'
+      mpv_util.print_osd(strings.join(separator))
+    }
+  }
+
+  function _format_tracks_video (tracks) {
+    var strings = []
+    strings.push('vid')
+    if (!tracks.length) { return _format_tracks_empty(strings) }
+
+    var n_tracks = tracks.length
+    for (var i = 0; i < n_tracks; i++) {
+      var t = tracks[i]
+      var str = _format_track_selected(t)
+      str = str.concat(_format_track_id(t, n_tracks))
+      str = str.concat(t.codec)
+      var fps = t['demux-fps']
+      if (fps) {
+        if (fps === 1) {
+          str = str.concat('[static]')
+        } else {
+          if (fps % 1 !== 0) {
+            fps = misc_util.format_float(fps, n_digits_after_decimal = 3)
+          }
+          str = str.concat('@' + fps + 'fps')
+        }
+      }
+      str = str.concat(' ' + t['demux-w'] + 'x' + t['demux-h'])
+      strings.push(str)
+    }
+    return strings.join('\n')
+  }
+
+  function _format_tracks_audio (tracks) {
+    var strings = []
+    strings.push('aud')
+    if (!tracks.length) { return _format_tracks_empty(strings) }
+
+    var n_tracks = tracks.length
+    for (var i = 0; i < n_tracks; i++) {
+      var t = tracks[i]
+      var str = _format_track_selected(t)
+      str = str.concat(_format_track_id(t, n_tracks))
+      str = str.concat(t.codec + '[x' + t['demux-channel-count'] + ']')
+      if (t.lang) { str = str.concat(' ' + t.lang) }
+      strings.push(str)
+    }
+    return strings.join('\n')
+  }
+
+  function _format_tracks_sub (tracks) {
+    var strings = []
+    strings.push('sub')
+    if (!tracks.length) { return _format_tracks_empty(strings) }
+
+    var n_tracks = tracks.length
+    for (var i = 0; i < n_tracks; i++) {
+      var t = tracks[i]
+      var str = _format_track_selected(t)
+      str = str.concat(_format_track_id(t, n_tracks))
+      str = str.concat(t.lang)
+      strings.push(str)
+    }
+    return strings.join('\n')
+  }
+
+  function _format_tracks_empty (strings) {
+    strings.push('  ?')
+    return strings.join('\n')
+  }
+
+  function _format_track_selected (track) {
+    return track.selected ? '  > ' : '    '
+  }
+
+  function _format_track_id (track, n_tracks) {
+    var str = ''
+    if (track['src-id']) {
+      str = str.concat('[' + track['src-id'] + ']')
+    }
+    str = str.concat(track.id)
+    str = str.concat('/' + n_tracks + ') ')
+    return str
+  }
+
   this.navigate_file = function (incr, mode) {
     return function () {
       if (mode === 'chapter') {
@@ -289,6 +395,8 @@ function Playback () {
 
   this.bind = function () {
     mp.add_key_binding('F8', this.list_playlist())
+    mp.add_key_binding('k', this.list_track())
+    mp.add_key_binding('K', function () { mpv_util.print_prop('track-list', type = 'raw') })
     mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
     mp.add_key_binding('>', this.navigate_playlist(positive_dir = true))
 
