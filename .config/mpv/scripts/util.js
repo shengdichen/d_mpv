@@ -31,7 +31,10 @@ function MpvUtil () {
     if (type === 'num') {
       return mp.get_property_number(prop, def)
     }
-    return mp.get_property(prop)
+    if (type === 'raw') {
+      return mp.get_property(prop, def)
+    }
+    return mp.get_property_native(prop, def)
   }
 
   this.set_prop = function (prop, val, type) {
@@ -193,6 +196,28 @@ function Subtitle () {
     }
   }
 
+  function _print_prop () {
+    var prop = mpv_util.get_prop('current-tracks/sub')
+    var msg = 'subtitle> '
+    if (!prop) {
+      msg = msg.concat('?')
+    } else {
+      msg = msg.concat(prop.id)
+      if (prop.lang) { msg = msg.concat(') ' + prop.lang) }
+    }
+    mpv_util.print_osd(msg)
+  }
+  this.navigate = function (positive_dir) {
+    return function () {
+      if (positive_dir) {
+        mpv_util.run(['cycle', 'sub', 'up'])
+      } else {
+        mpv_util.run(['cycle', 'sub', 'down'])
+      }
+      _print_prop()
+    }
+  }
+
   this.bind = function () {
     mp.add_key_binding('z', this.retime(+0.1, target = 'primary'))
     mp.add_key_binding('x', this.retime(-0.1, target = 'primary'))
@@ -204,6 +229,9 @@ function Subtitle () {
 
     mp.add_key_binding('r', this.reposition(-1))
     mp.add_key_binding('t', this.reposition(+1))
+
+    mp.add_key_binding('j', this.navigate(true))
+    mp.add_key_binding('Shift+j', this.navigate(false))
   }
 }
 module.exports.subtitle = new Subtitle()
