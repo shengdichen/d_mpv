@@ -449,6 +449,7 @@ function Playback () {
       } else {
         mpv_util.run(['playlist-prev'])
       }
+      report_file.report_playlist()
     }
   }
 
