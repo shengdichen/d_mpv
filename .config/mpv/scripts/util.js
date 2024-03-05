@@ -1,7 +1,24 @@
 function MiscUtil () {
+  var _this = this
+
   this.format_integer = function (num) {
     return (num < 0 ? '' : '+') + num
   }
+
+  this.pad_integer_to = function (num, reference) {
+    return _this.pad_integer(num, _this.len_integer(reference))
+  }
+
+  this.pad_integer = function (num, len) {
+    num = num.toString()
+    while (num.length < len) { num = '0' + num }
+    return num
+  }
+
+  this.len_integer = function (num) {
+    return num.toString().length
+  }
+
   this.format_float = function (num, n_digits_after_decimal) {
     if (!n_digits_after_decimal) {
       n_digits_after_decimal = 2
@@ -222,7 +239,7 @@ function ReportFile () {
       for (var i = 0; i < n_files; i++) {
         var f = files[i]
         var str = _format_track_selected(f.playing)
-        str = str.concat(f.id + '/' + n_files + ') ' + f.filename)
+        str = str.concat(misc_util.pad_integer_to(f.id, n_files) + '/' + n_files + ') ' + f.filename)
         strings.push(str)
       }
       mpv_util.print_osd(strings.join('\n'))
