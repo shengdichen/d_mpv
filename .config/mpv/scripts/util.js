@@ -79,6 +79,14 @@ function ReportFile () {
     }
   }
 
+  this.report_category_video = function () {
+    mpv_util.print_osd(_format_category_video(_categorize_one('video')))
+  }
+
+  this.report_category_audio = function () {
+    mpv_util.print_osd(_format_category_audio(_categorize_one('audio')))
+  }
+
   this.report_category_sub = function () {
     mpv_util.print_osd(_format_category_sub(_categorize_one('sub')))
   }
@@ -246,6 +254,11 @@ function Audio () {
     mpv_util.print_osd('mute> ' + (mpv_util.get_prop('mute', type = 'bool') ? 'T' : 'F'))
   }
 
+  this.navigate = function () {
+    mpv_util.cycle('audio')
+    report_file.report_category_audio()
+  }
+
   this.bind = function () {
     mp.add_key_binding('9', this.volume(-1))
     mp.add_key_binding('(', this.volume(-7))
@@ -254,19 +267,25 @@ function Audio () {
 
     mp.add_key_binding('m', this.mute)
 
-    mp.add_key_binding('SHARP', function () { mpv_util.cycle('audio') })
+    mp.add_key_binding('SHARP', this.navigate)
   }
 }
 module.exports.audio = new Audio()
 
 function Video () {
+  this.navigate = function () {
+    mpv_util.cycle('video')
+    report_file.report_category_video()
+  }
+
   this.bind = function () {
     mp.add_key_binding('SPACE', function () { mpv_util.cycle('pause') })
     mp.add_key_binding('f', function () { mpv_util.cycle('fullscreen') })
-    mp.add_key_binding('_', function () { mpv_util.cycle('video') })
     mp.add_key_binding('Ctrl+r', function () {
       mpv_util.cycle('video-rotate', [90, 180, 270, 0])
     })
+
+    mp.add_key_binding('_', this.navigate)
   }
 }
 module.exports.video = new Video()
