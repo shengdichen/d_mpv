@@ -171,7 +171,18 @@ function ReportFile () {
     var n_tracks = tracks.length
     for (var i = 0; i < n_tracks; i++) {
       var t = tracks[i]
-      var str = _format_track_selected(t)
+      var str = ''
+      if (t.selected) {
+        // REF:
+        //  https://mpv.io/manual/master/#command-interface-track-list/n/main-selection
+        if (t['main-selection']) {
+          str = str.concat(' >> ') // secondary subtitle
+        } else {
+          str = str.concat('  > ') // primary subtitle
+        }
+      } else {
+        str = str.concat('    ')
+      }
       str = str.concat(_format_track_id(t, n_tracks))
       if (t.lang) { str = str.concat(t.lang) }
       strings.push(str)
