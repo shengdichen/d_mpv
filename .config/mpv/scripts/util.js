@@ -79,6 +79,10 @@ function ReportFile () {
     }
   }
 
+  this.report_category_sub = function () {
+    mpv_util.print_osd(_format_category_sub(_categorize_one('sub')))
+  }
+
   function _categorize () {
     var tracks = mpv_util.get_prop('track-list')
     var vids = []
@@ -95,6 +99,15 @@ function ReportFile () {
       }
     }
     return [vids, auds, subs]
+  }
+
+  function _categorize_one (type) {
+    var tracks = mpv_util.get_prop('track-list')
+    var category = []
+    for (var i = 0; i < tracks.length; i++) {
+      if (tracks[i].type === type) { category.push(tracks[i]) }
+    }
+    return category
   }
 
   function _format_category_video (tracks) {
@@ -152,7 +165,7 @@ function ReportFile () {
       var t = tracks[i]
       var str = _format_track_selected(t)
       str = str.concat(_format_track_id(t, n_tracks))
-      str = str.concat(t.lang)
+      if (t.lang) { str = str.concat(t.lang) }
       strings.push(str)
     }
     return strings.join('\n')
@@ -313,17 +326,6 @@ function Subtitle () {
     }
   }
 
-  function _print_prop () {
-    var prop = mpv_util.get_prop('current-tracks/sub')
-    var msg = 'subtitle> '
-    if (!prop) {
-      msg = msg.concat('?')
-    } else {
-      msg = msg.concat(prop.id)
-      if (prop.lang) { msg = msg.concat(') ' + prop.lang) }
-    }
-    mpv_util.print_osd(msg)
-  }
   this.navigate = function (positive_dir) {
     return function () {
       if (positive_dir) {
@@ -331,7 +333,7 @@ function Subtitle () {
       } else {
         mpv_util.run(['cycle', 'sub', 'down'])
       }
-      _print_prop()
+      report_file.report_category_sub()
     }
   }
 
