@@ -126,7 +126,7 @@ function ReportFile () {
     var n_tracks = tracks.length
     for (var i = 0; i < n_tracks; i++) {
       var t = tracks[i]
-      var str = _format_track_selected(t)
+      var str = _format_track_selected(t.selected)
       str = str.concat(_format_track_id(t, n_tracks))
       str = str.concat(t.codec)
       var fps = t['demux-fps']
@@ -156,7 +156,7 @@ function ReportFile () {
     var n_tracks = tracks.length
     for (var i = 0; i < n_tracks; i++) {
       var t = tracks[i]
-      var str = _format_track_selected(t)
+      var str = _format_track_selected(t.selected)
       str = str.concat(_format_track_id(t, n_tracks))
       str = str.concat(t.codec + '[x' + t['demux-channel-count'] + ']')
       if (t.lang) { str = str.concat(' ' + t.lang) }
@@ -192,13 +192,32 @@ function ReportFile () {
     return strings.join('\n')
   }
 
+  this.report_chapter = function () {
+    var strings = []
+    strings.push('chapter')
+    var chapters = mpv_util.get_prop('chapter-list')
+    var n_chapters = chapters.length
+    if (!n_chapters) {
+      mpv_util.print_osd(_format_tracks_empty(strings))
+    } else {
+      for (var i = 0; i < n_chapters; i++) {
+        var c = chapters[i]
+        var str = _format_track_selected(mpv_util.get_prop('chapter') === i)
+        str = str.concat((i + 1) + '/' + n_chapters + ')')
+        if (c.title) { str = str.concat(" '" + c.title + "'") }
+        strings.push(str)
+      }
+      mpv_util.print_osd(strings.join('\n'))
+    }
+  }
+
   function _format_tracks_empty (strings) {
     strings.push('  ?')
     return strings.join('\n')
   }
 
-  function _format_track_selected (track) {
-    return track.selected ? '  > ' : '    '
+  function _format_track_selected (test) {
+    return test ? '  > ' : '    '
   }
 
   function _format_track_id (track, n_tracks) {
@@ -415,6 +434,7 @@ function Playback () {
     return function () {
       if (mode === 'chapter') {
         mpv_util.run(['add', 'chapter', incr])
+        report_file.report_chapter()
       } else {
         mpv_util.run(['seek', incr, 'relative+exact'])
       }
