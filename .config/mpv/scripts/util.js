@@ -140,7 +140,9 @@ function ReportFile () {
           str = str.concat('@' + fps + 'fps')
         }
       }
-      str = str.concat(' ' + t['demux-w'] + 'x' + t['demux-h'])
+      if (t['demux-w'] && t['demux-h']) {
+        str = str.concat(' ' + t['demux-w'] + 'x' + t['demux-h'])
+      }
       strings.push(str)
     }
     return strings.join('\n')
