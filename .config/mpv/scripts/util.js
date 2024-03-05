@@ -211,6 +211,24 @@ function ReportFile () {
     }
   }
 
+  this.report_playlist = function () {
+    var strings = []
+    strings.push('playlist')
+    var files = mpv_util.get_prop('playlist')
+    var n_files = files.length
+    if (!n_files) {
+      mpv_util.print_osd(_format_tracks_empty(strings))
+    } else {
+      for (var i = 0; i < n_files; i++) {
+        var f = files[i]
+        var str = _format_track_selected(f.playing)
+        str = str.concat(f.id + '/' + n_files + ') ' + f.filename)
+        strings.push(str)
+      }
+      mpv_util.print_osd(strings.join('\n'))
+    }
+  }
+
   function _format_tracks_empty (strings) {
     strings.push('  ?')
     return strings.join('\n')
@@ -417,19 +435,6 @@ function Playback () {
     }
   }
 
-  this.list_playlist = function () {
-    return function () {
-      var files = mpv_util.get_prop('playlist')
-      var n_files = files.length
-      var strings = []
-      for (var i = 0; i < n_files; i++) {
-        var f = files[i]
-        strings.push(f.id + '/' + n_files + ') ' + f.filename)
-      }
-      mpv_util.print_osd(strings.join('\n'))
-    }
-  }
-
   this.navigate_file = function (incr, mode) {
     return function () {
       if (mode === 'chapter') {
@@ -459,7 +464,8 @@ function Playback () {
   }
 
   this.bind = function () {
-    mp.add_key_binding('F8', this.list_playlist())
+    mp.add_key_binding('F8', report_file.report_playlist)
+    mp.add_key_binding('F9', function () { mpv_util.print_prop('playlist', type = 'raw') })
     mp.add_key_binding('k', report_file.report_categories())
     mp.add_key_binding('K', function () { mpv_util.print_prop('track-list', type = 'raw') })
     mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
