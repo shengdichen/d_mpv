@@ -1,14 +1,9 @@
-var util = require('./util')
+var conf = require('../conf/main').conf
 
 function Main () {
-  this.rebind = function () {
-    mp.add_forced_key_binding('o', function () { util.osc.toggle() })
-
-    util.video.bind()
-    util.audio.bind()
-    util.subtitle.bind()
-    util.playback.bind()
+  this.conf = function () {
+      conf.bind()
   }
 }
 var main = new Main()
-main.rebind()
+main.conf()
