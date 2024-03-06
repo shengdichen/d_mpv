@@ -11,7 +11,7 @@ var video = new function () {
 
   function _position (dimension) {
     return util_misc.prepend_sign(
-      util_misc.format_float(
+      util_misc.truncate_after_decimal(
         util_mpv.get_prop('video-pan-' + dimension, type = 'num')
       )
     )
@@ -26,7 +26,7 @@ var video = new function () {
 
   function _size () {
     return util_misc.prepend_sign(
-      util_misc.format_float(
+      util_misc.truncate_after_decimal(
         util_mpv.get_prop('video-zoom', type = 'num')
       )
     )
@@ -122,7 +122,7 @@ var subtitle = new function () {
     } else if (target === 'secondary') {
       target = 'secondary-sub-delay'
     }
-    return util_misc.format_float(util_mpv.get_prop(target, type = 'num'))
+    return util_misc.truncate_after_decimal(util_mpv.get_prop(target, type = 'num'))
   }
   function _retime_primary (incr) {
     util_mpv.run(['add', 'sub-delay', incr])
@@ -156,7 +156,7 @@ var subtitle = new function () {
     return function () {
       util_mpv.run(['add', 'sub-scale', incr])
       util_mpv.print_osd(
-        'subtitle/scale> ' + util_misc.format_float(util_mpv.get_prop('sub-scale', type = 'num'))
+        'subtitle/scale> ' + util_misc.truncate_after_decimal(util_mpv.get_prop('sub-scale', type = 'num'))
       )
     }
   }
@@ -228,7 +228,7 @@ var playback = new function () {
         util_mpv.print_osd('speed> 1.0')
       } else {
         util_mpv.run(['add', 'speed', incr])
-        util_mpv.print_osd('speed> ' + util_misc.format_float(util_mpv.get_prop('speed', type = 'num')))
+        util_mpv.print_osd('speed> ' + util_misc.truncate_after_decimal(util_mpv.get_prop('speed', type = 'num')))
       }
     }
   }
@@ -241,7 +241,7 @@ var playback = new function () {
   function _loop_ab_bound (mode) {
     var bound = util_mpv.get_prop('ab-loop-' + mode)
     if (bound === 'no') { return undefined }
-    return util_misc.format_float(bound, n_digits_after_decimal = 3)
+    return util_misc.truncate_after_decimal(bound, 3)
   }
 
   this.loop_ab = function () {

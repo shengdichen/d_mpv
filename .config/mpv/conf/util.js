@@ -31,11 +31,9 @@ var util_misc = new function () {
     return num.toString().length
   }
 
-  this.format_float = function (num, n_digits_after_decimal) {
-    if (!n_digits_after_decimal) {
-      n_digits_after_decimal = 2
-    }
-    return num.toFixed(n_digits_after_decimal)
+  this.truncate_after_decimal = function (num, digits) {
+    if (!digits) { digits = 2 }
+    return num.toFixed(digits)
   }
 }()
 
@@ -160,7 +158,7 @@ var report_file = new function () {
           str = str.concat('[static]')
         } else {
           if (util_misc.is_float(fps)) {
-            fps = util_misc.format_float(fps, n_digits_after_decimal = 3)
+            fps = util_misc.truncate_after_decimal(fps, 3)
           }
           str = str.concat('@' + fps + 'fps')
         }
