@@ -1,7 +1,7 @@
-var util = require('./util')
+var util = require('../conf/util')
 
 function Main () {
-  this.bind = function () {
+  this.conf = function () {
     util.video.bind()
     util.audio.bind()
     util.subtitle.bind()
@@ -10,4 +10,4 @@ function Main () {
   }
 }
 var main = new Main()
-main.bind()
+main.conf()
