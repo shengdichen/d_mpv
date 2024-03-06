@@ -9,6 +9,18 @@ var util_misc = new function () {
     return _this.pad_integer(num, _this.len_integer(reference))
   }
 
+  this.is_num = function (num) {
+    return Number(num) === num
+  }
+
+  this.is_int = function (num) {
+    return _this.is_num(num) && num % 1 === 0
+  }
+
+  this.is_float = function (num) {
+    return _this.is_num(num) && num % 1 !== 0
+  }
+
   this.pad_integer = function (num, len) {
     num = num.toString()
     while (num.length < len) { num = '0' + num }
@@ -147,7 +159,7 @@ var report_file = new function () {
         if (fps === 1) {
           str = str.concat('[static]')
         } else {
-          if (fps % 1 !== 0) {
+          if (util_misc.is_float(fps)) {
             fps = util_misc.format_float(fps, n_digits_after_decimal = 3)
           }
           str = str.concat('@' + fps + 'fps')
