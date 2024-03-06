@@ -1,14 +1,13 @@
 var util = require('./util')
 
 function Main () {
-  this.rebind = function () {
-    mp.add_forced_key_binding('o', function () { util.osc.toggle() })
-
+  this.bind = function () {
     util.video.bind()
     util.audio.bind()
     util.subtitle.bind()
     util.playback.bind()
+    util.osc.bind()
   }
 }
 var main = new Main()
-main.rebind()
+main.bind()

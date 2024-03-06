@@ -277,6 +277,8 @@ function ReportFile () {
 var report_file = new ReportFile()
 
 function Osc () {
+  var _this = this
+
   function _is_visible_by_default () {
     var opt = { visibility: 'never' }
     mp.options.read_options(opt, 'osc')
@@ -289,20 +291,20 @@ function Osc () {
   this._frags_enable = frags_base.concat('always')
 
   this.disable = function () {
-    mpv_util.run(this._frags_disable)
+    mpv_util.run(_this._frags_disable)
   }
 
   this.enable = function () {
-    mpv_util.run(this._frags_enable)
+    mpv_util.run(_this._frags_enable)
   }
 
   this.toggle = function () {
-    if (this._is_visible) {
-      this.disable()
-    } else {
-      this.enable()
-    }
-    this._is_visible = !this._is_visible
+    if (_this._is_visible) { _this.disable() } else { _this.enable() }
+    _this._is_visible = !_this._is_visible
+  }
+
+  this.bind = function () {
+    mp.add_forced_key_binding('o', _this.toggle)
   }
 }
 module.exports.osc = new Osc()
