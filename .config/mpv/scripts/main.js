@@ -1,12 +1,12 @@
-var util = require('../conf/util')
+var component = require('../conf/component')
 
 function Main () {
   this.conf = function () {
-    util.video.bind()
-    util.audio.bind()
-    util.subtitle.bind()
-    util.playback.bind()
-    util.osc.bind()
+    component.video.bind()
+    component.audio.bind()
+    component.subtitle.bind()
+    component.playback.bind()
+    component.osc.bind()
   }
 }
 var main = new Main()
