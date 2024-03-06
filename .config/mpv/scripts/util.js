@@ -269,7 +269,7 @@ function ReportFile () {
   function _format_id_global (track, n_tracks_global) {
     var str = ''
     if (track['src-id']) {
-      str = str.concat('[' + misc_util.pad_integer_to(track['src-id'], n_tracks_global) + ']')
+      str = str.concat('[' + misc_util.pad_integer_to(track['src-id'], n_tracks_global) + '] ')
     }
     return str
   }
