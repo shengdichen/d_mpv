@@ -238,6 +238,31 @@ var playback = new function () {
     util_mpv.print_prop('loop-file')
   }
 
+  function _loop_ab_bound (mode) {
+    var bound = util_mpv.get_prop('ab-loop-' + mode)
+    if (bound === 'no') { return undefined }
+    return util_misc.format_float(bound, n_digits_after_decimal = 3)
+  }
+
+  this.loop_ab = function () {
+    util_mpv.run(['ab-loop'])
+
+    var msg
+    var bound_a = _loop_ab_bound('a')
+    var bound_b = _loop_ab_bound('b')
+
+    if (bound_a) {
+      if (bound_b) {
+        msg = bound_a + ' <--> ' + bound_b
+      } else {
+        msg = bound_a + ' ->?'
+      }
+    } else {
+      msg = '?'
+    }
+    util_mpv.print_osd('loop-ab> ' + msg)
+  }
+
   this.bind = function () {
     mp.add_key_binding('F8', report_file.report_playlist)
     mp.add_key_binding('F9', function () { util_mpv.print_prop('playlist', type = 'raw') })
@@ -246,7 +271,7 @@ var playback = new function () {
     mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
     mp.add_key_binding('>', this.navigate_playlist(positive_dir = true))
 
-    // mp.add_key_binding('l', function () { mpv_util.run(['ab-loop']) })
+    mp.add_key_binding('l', this.loop_ab)
     mp.add_key_binding('L', this.loop_files)
 
     mp.add_key_binding('LEFT', this.navigate_file(-3))
