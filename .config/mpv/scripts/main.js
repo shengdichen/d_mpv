@@ -1,12 +1,8 @@
-var component = require('../conf/component')
+var conf = require('../conf/main').conf
 
 function Main () {
   this.conf = function () {
-    component.video.bind()
-    component.audio.bind()
-    component.subtitle.bind()
-    component.playback.bind()
-    component.osc.bind()
+      conf.bind()
   }
 }
 var main = new Main()
