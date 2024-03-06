@@ -39,9 +39,7 @@ var util_misc = new function () {
 
 var util_mpv = new function () {
   this.print_osd = function (text, duration) {
-    if (!duration) {
-      duration = 0.7
-    }
+    if (!duration) { duration = 0.7 }
     mp.osd_message(text, duration)
   }
 
@@ -85,7 +83,7 @@ var util_mpv = new function () {
   }
 }()
 
-var report_file = new function () {
+var report = new function () {
   this.report_categories = function () {
     var categories = _categorize()
     var vids = categories[0]
@@ -271,14 +269,13 @@ var report_file = new function () {
   }
 
   function _format_id_global (track, n_tracks_global) {
-    var str = ''
     if (track['src-id']) {
-      str = str.concat('[' + util_misc.pad_integer_to(track['src-id'], n_tracks_global) + '] ')
+      return '[' + util_misc.pad_integer_to(track['src-id'], n_tracks_global) + '] '
     }
-    return str
+    return ''
   }
 }()
 
 module.exports.util_misc = util_misc
 module.exports.util_mpv = util_mpv
-module.exports.report_file = report_file
+module.exports.report = report

@@ -1,12 +1,12 @@
 var util = require('./util')
 var util_misc = util.util_misc
 var util_mpv = util.util_mpv
-var report_file = util.report_file
+var report = util.report
 
 var video = new function () {
   this.navigate = function () {
     util_mpv.cycle('video')
-    report_file.report_category_video()
+    report.report_category_video()
   }
 
   function _position (dimension) {
@@ -100,7 +100,7 @@ var audio = new function () {
 
   this.navigate = function () {
     util_mpv.cycle('audio')
-    report_file.report_category_audio()
+    report.report_category_audio()
   }
 
   this.bind = function () {
@@ -177,7 +177,7 @@ var subtitle = new function () {
       } else {
         util_mpv.run(['cycle', 'sub', 'down'])
       }
-      report_file.report_category_sub()
+      report.report_category_sub()
     }
   }
 
@@ -206,7 +206,7 @@ var playback = new function () {
       } else {
         util_mpv.run(['playlist-prev'])
       }
-      report_file.report_playlist()
+      report.report_playlist()
     }
   }
 
@@ -214,7 +214,7 @@ var playback = new function () {
     return function () {
       if (mode === 'chapter') {
         util_mpv.run(['add', 'chapter', incr])
-        report_file.report_chapter()
+        report.report_chapter()
       } else {
         util_mpv.run(['seek', incr, 'relative+exact'])
       }
@@ -264,9 +264,9 @@ var playback = new function () {
   }
 
   this.bind = function () {
-    mp.add_key_binding('F8', report_file.report_playlist)
+    mp.add_key_binding('F8', report.report_playlist)
     mp.add_key_binding('F9', function () { util_mpv.print_prop('playlist', type = 'raw') })
-    mp.add_key_binding('k', report_file.report_categories)
+    mp.add_key_binding('k', report.report_categories)
     mp.add_key_binding('K', function () { util_mpv.print_prop('track-list', type = 'raw') })
     mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
     mp.add_key_binding('>', this.navigate_playlist(positive_dir = true))
