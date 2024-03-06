@@ -384,6 +384,20 @@ function Video () {
     }
   }
 
+  this.deinterlace = function (incr) {
+    return function () {
+      mpv_util.cycle('deinterlace')
+      mpv_util.print_osd(
+        'video/deinterlace> ' + mpv_util.get_prop('deinterlace'))
+    }
+  }
+
+  this.hwdec = function (incr) {
+    mpv_util.cycle('hwdec', ['auto', 'no'])
+    mpv_util.print_osd(
+      'video/hwdec> ' + mpv_util.get_prop('hwdec-current') + ' [' + mpv_util.get_prop('hwdec') + ']')
+  }
+
   this.bind = function () {
     mp.add_key_binding('SPACE', function () { mpv_util.cycle('pause') })
     mp.add_key_binding('f', function () { mpv_util.cycle('fullscreen') })
@@ -400,6 +414,9 @@ function Video () {
 
     mp.add_key_binding('Alt+-', this.resize(-0.1))
     mp.add_key_binding('Alt++', this.resize(+0.1))
+
+    mp.add_key_binding('d', this.deinterlace(-0.1))
+    mp.add_key_binding('Ctrl+h', this.hwdec)
   }
 }
 module.exports.video = new Video()
