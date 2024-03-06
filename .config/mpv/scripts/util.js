@@ -1,7 +1,7 @@
-function MiscUtil () {
+function UtilMisc () {
   var _this = this
 
-  this.format_integer = function (num) {
+  this.prepend_sign = function (num) {
     return (num < 0 ? '' : '+') + num
   }
 
@@ -26,10 +26,9 @@ function MiscUtil () {
     return num.toFixed(n_digits_after_decimal)
   }
 }
-var misc_util = new MiscUtil()
-module.exports.misc_util = misc_util
+var misc_util = new UtilMisc()
 
-function MpvUtil () {
+function UtilMpv () {
   this.print_osd = function (text, duration) {
     if (!duration) {
       duration = 0.7
@@ -76,25 +75,22 @@ function MpvUtil () {
     this.print_osd(this.get_prop(prop, type, def))
   }
 }
-var mpv_util = new MpvUtil()
-module.exports.mpv_util = mpv_util
+var mpv_util = new UtilMpv()
 
 function ReportFile () {
   this.report_categories = function () {
-    return function () {
-      var categories = _categorize()
-      var vids = categories[0]
-      var auds = categories[1]
-      var subs = categories[2]
-      var n_tracks_global = categories[3]
+    var categories = _categorize()
+    var vids = categories[0]
+    var auds = categories[1]
+    var subs = categories[2]
+    var n_tracks_global = categories[3]
 
-      var strings = []
-      strings.push(_format_category_video(vids, n_tracks_global))
-      strings.push(_format_category_audio(auds, n_tracks_global))
-      strings.push(_format_category_sub(subs, n_tracks_global))
-      var separator = '\n' + Array(37).join('-') + '\n'
-      mpv_util.print_osd(strings.join(separator))
-    }
+    var strings = []
+    strings.push(_format_category_video(vids, n_tracks_global))
+    strings.push(_format_category_audio(auds, n_tracks_global))
+    strings.push(_format_category_sub(subs, n_tracks_global))
+    var separator = '\n' + Array(37).join('-') + '\n'
+    mpv_util.print_osd(strings.join(separator))
   }
 
   this.report_category_video = function () {
@@ -324,7 +320,7 @@ function Audio () {
   function _format_volume_incr (incr) {
     if (incr === 1) { return '++' }
     if (incr === -1) { return '--' }
-    return misc_util.format_integer(incr)
+    return misc_util.prepend_sign(incr)
   }
 
   this.mute = function () {
@@ -357,7 +353,7 @@ function Video () {
   }
 
   function _position (dimension) {
-    return misc_util.format_integer(
+    return misc_util.prepend_sign(
       misc_util.format_float(
         mpv_util.get_prop('video-pan-' + dimension, type = 'num')
       )
@@ -372,7 +368,7 @@ function Video () {
   }
 
   function _size () {
-    return misc_util.format_integer(
+    return misc_util.prepend_sign(
       misc_util.format_float(
         mpv_util.get_prop('video-zoom', type = 'num')
       )
@@ -550,7 +546,7 @@ function Playback () {
   this.bind = function () {
     mp.add_key_binding('F8', report_file.report_playlist)
     mp.add_key_binding('F9', function () { mpv_util.print_prop('playlist', type = 'raw') })
-    mp.add_key_binding('k', report_file.report_categories())
+    mp.add_key_binding('k', report_file.report_categories)
     mp.add_key_binding('K', function () { mpv_util.print_prop('track-list', type = 'raw') })
     mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
     mp.add_key_binding('>', this.navigate_playlist(positive_dir = true))
