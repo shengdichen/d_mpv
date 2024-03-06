@@ -54,24 +54,24 @@ var video = new function () {
   }
 
   this.bind = function () {
-    mp.add_key_binding('SPACE', function () { util_mpv.cycle('pause') })
-    mp.add_key_binding('f', function () { util_mpv.cycle('fullscreen') })
-    mp.add_key_binding('Ctrl+r', function () {
+    util_mpv.bind('SPACE', function () { util_mpv.cycle('pause') })
+    util_mpv.bind('f', function () { util_mpv.cycle('fullscreen') })
+    util_mpv.bind('Ctrl+r', function () {
       util_mpv.cycle('video-rotate', [90, 180, 270, 0])
     })
 
-    mp.add_key_binding('_', this.navigate)
+    util_mpv.bind('_', this.navigate)
 
-    mp.add_key_binding('Alt+LEFT', this.reposition(-0.1, 'x'))
-    mp.add_key_binding('Alt+RIGHT', this.reposition(+0.1, 'x'))
-    mp.add_key_binding('Alt+UP', this.reposition(-0.1, 'y'))
-    mp.add_key_binding('Alt+DOWN', this.reposition(+0.1, 'y'))
+    util_mpv.bind('Alt+LEFT', this.reposition(-0.1, 'x'))
+    util_mpv.bind('Alt+RIGHT', this.reposition(+0.1, 'x'))
+    util_mpv.bind('Alt+UP', this.reposition(-0.1, 'y'))
+    util_mpv.bind('Alt+DOWN', this.reposition(+0.1, 'y'))
 
-    mp.add_key_binding('Alt+-', this.resize(-0.1))
-    mp.add_key_binding('Alt++', this.resize(+0.1))
+    util_mpv.bind('Alt+-', this.resize(-0.1))
+    util_mpv.bind('Alt++', this.resize(+0.1))
 
-    mp.add_key_binding('d', this.deinterlace(-0.1))
-    mp.add_key_binding('Ctrl+h', this.hwdec)
+    util_mpv.bind('d', this.deinterlace(-0.1))
+    util_mpv.bind('Ctrl+h', this.hwdec)
   }
 }()
 
@@ -104,14 +104,14 @@ var audio = new function () {
   }
 
   this.bind = function () {
-    mp.add_key_binding('9', this.volume(-1))
-    mp.add_key_binding('(', this.volume(-7))
-    mp.add_key_binding('0', this.volume(+1))
-    mp.add_key_binding(')', this.volume(+7))
+    util_mpv.bind('9', this.volume(-1))
+    util_mpv.bind('(', this.volume(-7))
+    util_mpv.bind('0', this.volume(+1))
+    util_mpv.bind(')', this.volume(+7))
 
-    mp.add_key_binding('m', this.mute)
+    util_mpv.bind('m', this.mute)
 
-    mp.add_key_binding('SHARP', this.navigate)
+    util_mpv.bind('SHARP', this.navigate)
   }
 }()
 
@@ -182,19 +182,19 @@ var subtitle = new function () {
   }
 
   this.bind = function () {
-    mp.add_key_binding('z', this.retime(+0.1, target = 'primary'))
-    mp.add_key_binding('x', this.retime(-0.1, target = 'primary'))
-    mp.add_key_binding('Z', this.retime(+0.1, target = 'secondary'))
-    mp.add_key_binding('X', this.retime(-0.1, target = 'secondary'))
+    util_mpv.bind('z', this.retime(+0.1, target = 'primary'))
+    util_mpv.bind('x', this.retime(-0.1, target = 'primary'))
+    util_mpv.bind('Z', this.retime(+0.1, target = 'secondary'))
+    util_mpv.bind('X', this.retime(-0.1, target = 'secondary'))
 
-    mp.add_key_binding('Shift+f', this.resize(-0.1))
-    mp.add_key_binding('Shift+g', this.resize(+0.1))
+    util_mpv.bind('Shift+f', this.resize(-0.1))
+    util_mpv.bind('Shift+g', this.resize(+0.1))
 
-    mp.add_key_binding('r', this.reposition(-1))
-    mp.add_key_binding('t', this.reposition(+1))
+    util_mpv.bind('r', this.reposition(-1))
+    util_mpv.bind('t', this.reposition(+1))
 
-    mp.add_key_binding('j', this.navigate(true))
-    mp.add_key_binding('Shift+j', this.navigate(false))
+    util_mpv.bind('j', this.navigate(true))
+    util_mpv.bind('Shift+j', this.navigate(false))
   }
 }()
 
@@ -264,34 +264,35 @@ var playback = new function () {
   }
 
   this.bind = function () {
-    mp.add_key_binding('F8', report.report_playlist)
-    mp.add_key_binding('F9', function () { util_mpv.print_prop('playlist', type = 'raw') })
-    mp.add_key_binding('k', report.report_categories)
-    mp.add_key_binding('K', function () { util_mpv.print_prop('track-list', type = 'raw') })
-    mp.add_key_binding('<', this.navigate_playlist(positive_dir = false))
-    mp.add_key_binding('>', this.navigate_playlist(positive_dir = true))
+    util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
+    util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
+    util_mpv.bind('F8', report.report_playlist)
+    util_mpv.bind('F9', function () { util_mpv.print_prop('playlist', type = 'raw') })
 
-    mp.add_key_binding('l', this.loop_ab)
-    mp.add_key_binding('L', this.loop_files)
+    util_mpv.bind('k', report.report_categories)
+    util_mpv.bind('K', function () { util_mpv.print_prop('track-list', type = 'raw') })
 
-    mp.add_key_binding('LEFT', this.navigate_file(-3))
-    mp.add_key_binding('RIGHT', this.navigate_file(+3))
-    mp.add_key_binding('UP', this.navigate_file(-7))
-    mp.add_key_binding('DOWN', this.navigate_file(+7))
-    mp.add_key_binding('PGUP', this.navigate_file(-1, mode = 'chapter'))
-    mp.add_key_binding('PGDWN', this.navigate_file(+1, mode = 'chapter'))
+    util_mpv.bind('l', this.loop_ab)
+    util_mpv.bind('L', this.loop_files)
 
-    mp.add_key_binding('[', this.adjust_speed(-0.1))
-    mp.add_key_binding(']', this.adjust_speed(+0.1))
-    mp.add_key_binding('BS', this.adjust_speed())
+    util_mpv.bind('LEFT', this.navigate_file(-3))
+    util_mpv.bind('RIGHT', this.navigate_file(+3))
+    util_mpv.bind('UP', this.navigate_file(-7))
+    util_mpv.bind('DOWN', this.navigate_file(+7))
+    util_mpv.bind('PGUP', this.navigate_file(-1, mode = 'chapter'))
+    util_mpv.bind('PGDWN', this.navigate_file(+1, mode = 'chapter'))
 
-    mp.add_key_binding('I', function () {
+    util_mpv.bind('[', this.adjust_speed(-0.1))
+    util_mpv.bind(']', this.adjust_speed(+0.1))
+    util_mpv.bind('BS', this.adjust_speed())
+
+    util_mpv.bind('I', function () {
       // REF:
       // https://github.com/Argon-/mpv-stats/blob/master/stats.lua
       // https://github.com/mpv-player/mpv/blob/master/player/lua/stats.lua
       util_mpv.run(['script-binding', 'stats/display-stats-toggle'])
     })
-    mp.add_key_binding('`', function () {
+    util_mpv.bind('`', function () {
       // REF:
       // https://github.com/mpv-player/mpv/blob/master/player/lua/console.lua
       util_mpv.run(['script-binding', 'console/enable'])

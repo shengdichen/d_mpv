@@ -38,6 +38,16 @@ var util_misc = new function () {
 }()
 
 var util_mpv = new function () {
+  this.bind = function (key, fn, repeatable, force) {
+    var flags = {}
+    flags.repeatable = typeof repeatable !== 'undefined' ? repeatable : true
+    if (force) {
+      mp.add_forced_key_binding(key, fn, flags)
+    } else {
+      mp.add_key_binding(key, fn, flags)
+    }
+  }
+
   this.print_osd = function (text, duration) {
     if (!duration) { duration = 0.7 }
     mp.osd_message(text, duration)
