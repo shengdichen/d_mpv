@@ -181,6 +181,16 @@ var subtitle = new function () {
     }
   }
 
+  this.toggle = function (target) {
+    return function () {
+      var opt = target === 'primary' ? 'sub-visibility' : 'secondary-sub-visibility'
+      util_mpv.cycle(opt)
+      util_mpv.print_osd(
+        'subtitle/visibility-' + target + '> ' + (util_mpv.get_prop(opt) ? 'T' : 'F')
+      )
+    }
+  }
+
   this.bind = function () {
     util_mpv.bind('z', this.retime(+0.1, target = 'primary'))
     util_mpv.bind('x', this.retime(-0.1, target = 'primary'))
@@ -195,6 +205,9 @@ var subtitle = new function () {
 
     util_mpv.bind('j', this.navigate(true))
     util_mpv.bind('Shift+j', this.navigate(false))
+
+    util_mpv.bind('v', this.toggle('primary'))
+    util_mpv.bind('Alt+v', this.toggle('secondary'))
   }
 }()
 
