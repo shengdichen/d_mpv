@@ -369,6 +369,21 @@ function Video () {
     }
   }
 
+  function _size () {
+    return misc_util.format_integer(
+      misc_util.format_float(
+        mpv_util.get_prop('video-zoom', type = 'num')
+      )
+    )
+  }
+  this.resize = function (incr) {
+    return function () {
+      mpv_util.run(['add', 'video-zoom', incr])
+      mpv_util.print_osd(
+        'video/size> ' + _size())
+    }
+  }
+
   this.bind = function () {
     mp.add_key_binding('SPACE', function () { mpv_util.cycle('pause') })
     mp.add_key_binding('f', function () { mpv_util.cycle('fullscreen') })
@@ -382,6 +397,9 @@ function Video () {
     mp.add_key_binding('Alt+RIGHT', this.reposition(+0.1, 'x'))
     mp.add_key_binding('Alt+UP', this.reposition(-0.1, 'y'))
     mp.add_key_binding('Alt+DOWN', this.reposition(+0.1, 'y'))
+
+    mp.add_key_binding('Alt+-', this.resize(-0.1))
+    mp.add_key_binding('Alt++', this.resize(+0.1))
   }
 }
 module.exports.video = new Video()
