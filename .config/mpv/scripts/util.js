@@ -354,6 +354,21 @@ function Video () {
     report_file.report_category_video()
   }
 
+  function _position (dimension) {
+    return misc_util.format_integer(
+      misc_util.format_float(
+        mpv_util.get_prop('video-pan-' + dimension, type = 'num')
+      )
+    )
+  }
+  this.reposition = function (incr, dimension) {
+    return function () {
+      mpv_util.run(['add', 'video-pan-' + dimension, incr])
+      mpv_util.print_osd(
+        'video/pos> (' + _position('x') + ', ' + _position('y') + ')')
+    }
+  }
+
   this.bind = function () {
     mp.add_key_binding('SPACE', function () { mpv_util.cycle('pause') })
     mp.add_key_binding('f', function () { mpv_util.cycle('fullscreen') })
@@ -362,6 +377,11 @@ function Video () {
     })
 
     mp.add_key_binding('_', this.navigate)
+
+    mp.add_key_binding('Alt+LEFT', this.reposition(-0.1, 'x'))
+    mp.add_key_binding('Alt+RIGHT', this.reposition(+0.1, 'x'))
+    mp.add_key_binding('Alt+UP', this.reposition(-0.1, 'y'))
+    mp.add_key_binding('Alt+DOWN', this.reposition(+0.1, 'y'))
   }
 }
 module.exports.video = new Video()
