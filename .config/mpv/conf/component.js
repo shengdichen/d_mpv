@@ -310,20 +310,20 @@ var osc = new function () {
   }
   this._is_visible = _is_visible_by_default()
 
-  var frags_base = ['script-message', 'osc-visibility']
+  var cmd_base = ['script-message', 'osc-visibility']
   // REF:
   //    https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
   // NOTE:
-  //    1. pass the extra arg |false| to disable osd-output (prepending 'no-osd' has no use)
-  this._frags_disable = frags_base.concat('never', false)
-  this._frags_enable = frags_base.concat('always', false)
+  //    pass second arg |false| to disable osd-output (prepending 'no-osd' has no use)
+  this._cmd_disable = cmd_base.concat('never', false)
+  this._cmd_enable = cmd_base.concat('always', false)
 
   this.disable = function () {
-    util_mpv.run(_this._frags_disable)
+    util_mpv.run(_this._cmd_disable)
   }
 
   this.enable = function () {
-    util_mpv.run(_this._frags_enable)
+    util_mpv.run(_this._cmd_enable)
   }
 
   this.toggle = function () {
