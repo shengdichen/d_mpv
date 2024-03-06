@@ -86,11 +86,12 @@ function ReportFile () {
       var vids = categories[0]
       var auds = categories[1]
       var subs = categories[2]
+      var n_tracks_global = categories[3]
 
       var strings = []
-      strings.push(_format_category_video(vids))
-      strings.push(_format_category_audio(auds))
-      strings.push(_format_category_sub(subs))
+      strings.push(_format_category_video(vids, n_tracks_global))
+      strings.push(_format_category_audio(auds, n_tracks_global))
+      strings.push(_format_category_sub(subs, n_tracks_global))
       var separator = '\n' + Array(37).join('-') + '\n'
       mpv_util.print_osd(strings.join(separator))
     }
@@ -123,7 +124,7 @@ function ReportFile () {
         subs.push(t)
       }
     }
-    return [vids, auds, subs]
+    return [vids, auds, subs, tracks.length]
   }
 
   function _categorize_one (type) {
@@ -135,7 +136,7 @@ function ReportFile () {
     return category
   }
 
-  function _format_category_video (tracks) {
+  function _format_category_video (tracks, n_tracks_global) {
     var strings = []
     strings.push('vid')
     if (!tracks.length) { return _format_tracks_empty(strings) }
@@ -144,7 +145,8 @@ function ReportFile () {
     for (var i = 0; i < n_tracks; i++) {
       var t = tracks[i]
       var str = _format_track_selected(t.selected)
-      str = str.concat(_format_track_id(t, n_tracks))
+      if (n_tracks_global) { str = str.concat(_format_id_global(t, n_tracks_global)) }
+      str = str.concat(_format_id_in_category(t, n_tracks))
       str = str.concat(t.codec)
       var fps = t['demux-fps']
       if (fps) {
@@ -165,7 +167,7 @@ function ReportFile () {
     return strings.join('\n')
   }
 
-  function _format_category_audio (tracks) {
+  function _format_category_audio (tracks, n_tracks_global) {
     var strings = []
     strings.push('aud')
     if (!tracks.length) { return _format_tracks_empty(strings) }
@@ -174,7 +176,8 @@ function ReportFile () {
     for (var i = 0; i < n_tracks; i++) {
       var t = tracks[i]
       var str = _format_track_selected(t.selected)
-      str = str.concat(_format_track_id(t, n_tracks))
+      if (n_tracks_global) { str = str.concat(_format_id_global(t, n_tracks_global)) }
+      str = str.concat(_format_id_in_category(t, n_tracks))
       str = str.concat(t.codec + '[x' + t['demux-channel-count'] + ']')
       if (t.lang) { str = str.concat(' ' + t.lang) }
       strings.push(str)
@@ -182,7 +185,7 @@ function ReportFile () {
     return strings.join('\n')
   }
 
-  function _format_category_sub (tracks) {
+  function _format_category_sub (tracks, n_tracks_global) {
     var strings = []
     strings.push('sub')
     if (!tracks.length) { return _format_tracks_empty(strings) }
@@ -202,7 +205,8 @@ function ReportFile () {
       } else {
         str = str.concat('    ')
       }
-      str = str.concat(_format_track_id(t, n_tracks))
+      if (n_tracks_global) { str = str.concat(_format_id_global(t, n_tracks_global)) }
+      str = str.concat(_format_id_in_category(t, n_tracks))
       if (t.lang) { str = str.concat(t.lang) }
       strings.push(str)
     }
@@ -255,13 +259,18 @@ function ReportFile () {
     return test ? '  > ' : '    '
   }
 
-  function _format_track_id (track, n_tracks) {
+  function _format_id_in_category (track, n_tracks) {
+    var str = ''
+    str = str.concat(misc_util.pad_integer_to(track.id, n_tracks))
+    str = str.concat('/' + n_tracks + ') ')
+    return str
+  }
+
+  function _format_id_global (track, n_tracks_global) {
     var str = ''
     if (track['src-id']) {
-      str = str.concat('[' + track['src-id'] + ']')
+      str = str.concat('[' + misc_util.pad_integer_to(track['src-id'], n_tracks_global) + ']')
     }
-    str = str.concat(track.id)
-    str = str.concat('/' + n_tracks + ') ')
     return str
   }
 }
