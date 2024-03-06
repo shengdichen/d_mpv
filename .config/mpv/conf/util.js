@@ -53,8 +53,18 @@ var util_mpv = new function () {
     mp.osd_message(text, duration)
   }
 
-  this.run = function (fragments) {
+  this.run = function (fragments, mode) {
     mp.commandv.apply(null, fragments)
+  }
+
+  this.run_script_bind = function (script, bind) {
+    // REF:
+    //  https://mpv.io/manual/master/#command-interface-script-binding
+    this.run(['script-binding', script + '/' + bind])
+  }
+
+  this.run_script_fn = function (fn, args) {
+    this.run(['script-message', fn].concat(args))
   }
 
   this.get_prop = function (prop, type, def) {

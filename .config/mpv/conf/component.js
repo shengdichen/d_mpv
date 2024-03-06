@@ -290,12 +290,12 @@ var playback = new function () {
       // REF:
       // https://github.com/Argon-/mpv-stats/blob/master/stats.lua
       // https://github.com/mpv-player/mpv/blob/master/player/lua/stats.lua
-      util_mpv.run(['script-binding', 'stats/display-stats-toggle'])
+      util_mpv.run_script_bind('stats', 'display-stats-toggle')
     })
     util_mpv.bind('`', function () {
       // REF:
       // https://github.com/mpv-player/mpv/blob/master/player/lua/console.lua
-      util_mpv.run(['script-binding', 'console/enable'])
+      util_mpv.run_script_bind('console', 'enable')
     })
   }
 }()
@@ -310,21 +310,13 @@ var osc = new function () {
   }
   this._is_visible = _is_visible_by_default()
 
-  var cmd_base = ['script-message', 'osc-visibility']
   // REF:
   //    https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
+  var fn = 'osc-visibility'
   // NOTE:
   //    pass second arg |false| to disable osd-output (prepending 'no-osd' has no use)
-  this._cmd_disable = cmd_base.concat('never', false)
-  this._cmd_enable = cmd_base.concat('always', false)
-
-  this.disable = function () {
-    util_mpv.run(_this._cmd_disable)
-  }
-
-  this.enable = function () {
-    util_mpv.run(_this._cmd_enable)
-  }
+  this.disable = function () { util_mpv.run_script_fn(fn, ['never', false]) }
+  this.enable = function () { util_mpv.run_script_fn(fn, ['always', false]) }
 
   this.toggle = function () {
     if (_this._is_visible) { _this.disable() } else { _this.enable() }
