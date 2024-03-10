@@ -87,7 +87,10 @@ var util_mpv = new function () {
     if (type === 'num') {
       return mp.set_property_number(prop, val)
     }
-    return mp.set_property(prop)
+    if (type === 'raw') {
+      return mp.set_property(prop, def)
+    }
+    return mp.set_property_native(prop, val)
   }
 
   this.cycle = function (item, values) {
