@@ -276,6 +276,10 @@ var playback = new function () {
     util_mpv.print_osd('loop-ab> ' + msg)
   }
 
+  this.screenshot = function () {
+    util_mpv.run(['screenshot'])
+  }
+
   this.bind = function () {
     util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
     util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
@@ -294,6 +298,8 @@ var playback = new function () {
     util_mpv.bind('DOWN', this.navigate_file(+7))
     util_mpv.bind('PGUP', this.navigate_file(-1, mode = 'chapter'))
     util_mpv.bind('PGDWN', this.navigate_file(+1, mode = 'chapter'))
+
+    util_mpv.bind('Ctrl+s', this.screenshot)
 
     util_mpv.bind('[', this.adjust_speed(-0.1))
     util_mpv.bind(']', this.adjust_speed(+0.1))
