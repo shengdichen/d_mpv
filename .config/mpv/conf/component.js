@@ -183,11 +183,20 @@ var subtitle = new function () {
 
   this.toggle = function (target) {
     return function () {
-      var opt = target === 'primary' ? 'sub-visibility' : 'secondary-sub-visibility'
-      util_mpv.cycle(opt)
-      util_mpv.print_osd(
-        'subtitle/visibility-' + target + '> ' + (util_mpv.get_prop(opt) ? 'T' : 'F')
-      )
+      if (target === 'both') {
+        util_mpv.cycle('sub-visibility')
+        var visible_primary = util_mpv.get_prop('sub-visibility')
+        util_mpv.set_prop('secondary-sub-visibility', !visible_primary)
+        util_mpv.print_osd(
+          'subtitle/visibility>' + visible_primary ? 'primary' : 'secondary'
+        )
+      } else {
+        var opt = target === 'primary' ? 'sub-visibility' : 'secondary-sub-visibility'
+        util_mpv.cycle(opt)
+        util_mpv.print_osd(
+          'subtitle/visibility-' + target + '> ' + (util_mpv.get_prop(opt) ? 'T' : 'F')
+        )
+      }
     }
   }
 
@@ -207,7 +216,8 @@ var subtitle = new function () {
     util_mpv.bind('Shift+j', this.navigate(false))
 
     util_mpv.bind('v', this.toggle('primary'))
-    util_mpv.bind('Alt+v', this.toggle('secondary'))
+    util_mpv.bind('Shift+v', this.toggle('secondary'))
+    util_mpv.bind('Alt+v', this.toggle('both'))
   }
 }()
 
