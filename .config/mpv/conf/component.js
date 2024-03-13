@@ -48,7 +48,7 @@ var video = new function () {
   }
 
   this.hwdec = function (incr) {
-    util_mpv.cycle('hwdec', ['auto', 'no'])
+    util_mpv.cycle('hwdec', ['auto', 'nvdec', 'nvdec-copy', 'no'])
     util_mpv.print_osd(
       'video/hwdec> ' + util_mpv.get_prop('hwdec-current') + ' [' + util_mpv.get_prop('hwdec') + ']')
   }
