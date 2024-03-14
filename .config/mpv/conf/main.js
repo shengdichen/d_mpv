@@ -5,7 +5,10 @@ module.exports.conf = new function () {
     component.video.bind()
     component.audio.bind()
     component.subtitle.bind()
+
+    component.playback.savepos()
     component.playback.bind()
+
     component.osc.bind()
   }
 }()

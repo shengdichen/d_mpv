@@ -290,6 +290,25 @@ var playback = new function () {
     util_mpv.run(['screenshot'])
   }
 
+  this.savepos = function () {
+    util_mpv.set_prop('write-filename-in-watch-later-config', true)
+    util_mpv.set_prop('ignore-path-in-watch-later-config', true)
+
+    util_mpv.set_prop('watch-later-options',
+      [util_mpv.get_prop('watch-later-options', type = 'raw'), 'secondary-sub-delay'].join(',')
+    )
+
+    util_mpv.bind('Ctrl+s',
+      function () {
+        util_mpv.cycle('save-position-on-quit')
+        util_mpv.print_osd('savepos> ' + (util_mpv.get_prop('save-position-on-quit') ? 'T' : 'F'))
+      }
+    )
+    util_mpv.bind('Ctrl+q',
+      function () { util_mpv.run(['quit-watch-later']) }
+    )
+  }
+
   this.bind = function () {
     util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
     util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
@@ -309,7 +328,7 @@ var playback = new function () {
     util_mpv.bind('PGUP', this.navigate_file(-1, mode = 'chapter'))
     util_mpv.bind('PGDWN', this.navigate_file(+1, mode = 'chapter'))
 
-    util_mpv.bind('Ctrl+s', this.screenshot)
+    util_mpv.bind('Shift+s', this.screenshot)
 
     util_mpv.bind('[', this.adjust_speed(-0.1))
     util_mpv.bind(']', this.adjust_speed(+0.1))
