@@ -7,6 +7,7 @@ module.exports.conf = new function () {
     component.subtitle.bind()
 
     component.playback.savepos()
+    component.playback.title()
     component.playback.bind()
 
     component.osc.bind()

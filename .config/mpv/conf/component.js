@@ -309,6 +309,19 @@ var playback = new function () {
     )
   }
 
+  this.title = function () {
+    var title = ''
+
+    var server = util_mpv.get_prop('input-ipc-server')
+    if (server) {
+      // show only filename of socket
+      title = title.concat('[' + server.split('/').slice(-1).toString() + '] ')
+    }
+
+    title = title.concat('${path}')
+    util_mpv.set_prop('title', title)
+  }
+
   this.bind = function () {
     util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
     util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
