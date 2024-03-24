@@ -385,7 +385,7 @@ var osc = new function () {
   }
 
   this.bind = function () {
-    mp.add_forced_key_binding('o', _this.toggle)
+    mp.add_forced_key_binding('i', _this.toggle)
   }
 }()
 
