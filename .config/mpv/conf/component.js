@@ -238,9 +238,15 @@ var playback = new function () {
       if (mode === 'chapter') {
         util_mpv.run(['add', 'chapter', incr])
         report.report_chapter()
+      } else if (mode === 'frame') {
+        if (incr > 0) { util_mpv.run(['frame-step']) } else { util_mpv.run(['frame-back-step']) }
       } else {
         util_mpv.run(['seek', incr, 'relative+exact'])
       }
+
+      var current = util_mpv.get_prop('playback-time', type = 'raw')
+      var duration = util_mpv.get_prop('duration', type = 'raw')
+      util_mpv.print_osd('time> ' + current + '/' + duration)
     }
   }
 
@@ -333,6 +339,9 @@ var playback = new function () {
 
     util_mpv.bind('l', this.loop_ab)
     util_mpv.bind('L', this.loop_files)
+
+    util_mpv.bind(',', this.navigate_file(-1, mode = 'frame'))
+    util_mpv.bind('.', this.navigate_file(+1, mode = 'frame'))
 
     util_mpv.bind('LEFT', this.navigate_file(-3))
     util_mpv.bind('RIGHT', this.navigate_file(+3))
