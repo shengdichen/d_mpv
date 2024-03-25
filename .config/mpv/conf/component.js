@@ -325,11 +325,11 @@ var playback = new function () {
   this.bind = function () {
     util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
     util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
-    util_mpv.bind('F8', report.report_playlist)
-    util_mpv.bind('F9', function () { util_mpv.print_prop('playlist', type = 'raw') })
+    util_mpv.bind('k', report.report_playlist)
+    util_mpv.bind('Shift+k', function () { util_mpv.print_prop('playlist', type = 'raw') })
 
-    util_mpv.bind('k', report.report_categories)
-    util_mpv.bind('K', function () { util_mpv.print_prop('track-list', type = 'raw') })
+    util_mpv.bind('j', report.report_categories)
+    util_mpv.bind('Shift+j', function () { util_mpv.print_prop('track-list', type = 'raw') })
 
     util_mpv.bind('l', this.loop_ab)
     util_mpv.bind('L', this.loop_files)
