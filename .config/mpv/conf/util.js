@@ -74,8 +74,11 @@ var util_mpv = new function () {
     if (type === 'num') {
       return mp.get_property_number(prop, def)
     }
-    if (type === 'raw') {
+    if (type === 'string') {
       return mp.get_property(prop, def)
+    }
+    if (type === 'raw') {
+      return mp.get_property_osd(prop, def)
     }
     return mp.get_property_native(prop, def)
   }

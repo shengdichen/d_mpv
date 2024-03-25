@@ -295,7 +295,7 @@ var playback = new function () {
     util_mpv.set_prop('ignore-path-in-watch-later-config', true)
 
     util_mpv.set_prop('watch-later-options',
-      [util_mpv.get_prop('watch-later-options', type = 'raw'), 'secondary-sub-delay'].join(',')
+      [util_mpv.get_prop('watch-later-options', type = 'string'), 'secondary-sub-delay'].join(',')
     )
 
     util_mpv.bind('Ctrl+s',
@@ -326,10 +326,10 @@ var playback = new function () {
     util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
     util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
     util_mpv.bind('k', report.report_playlist)
-    util_mpv.bind('Shift+k', function () { util_mpv.print_prop('playlist', type = 'raw') })
+    util_mpv.bind('Shift+k', function () { util_mpv.print_prop('playlist', type = 'string') })
 
     util_mpv.bind('j', report.report_categories)
-    util_mpv.bind('Shift+j', function () { util_mpv.print_prop('track-list', type = 'raw') })
+    util_mpv.bind('Shift+j', function () { util_mpv.print_prop('track-list', type = 'string') })
 
     util_mpv.bind('l', this.loop_ab)
     util_mpv.bind('L', this.loop_files)
