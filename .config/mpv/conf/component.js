@@ -206,14 +206,14 @@ var subtitle = new function () {
     util_mpv.bind('Z', this.retime(+0.1, target = 'secondary'))
     util_mpv.bind('X', this.retime(-0.1, target = 'secondary'))
 
-    util_mpv.bind('Shift+f', this.resize(-0.1))
-    util_mpv.bind('Shift+g', this.resize(+0.1))
+    util_mpv.bind('Shift+g', this.resize(-0.1))
+    util_mpv.bind('g', this.resize(+0.1))
 
-    util_mpv.bind('r', this.reposition(-1))
+    util_mpv.bind('Shift+t', this.reposition(-1))
     util_mpv.bind('t', this.reposition(+1))
 
-    util_mpv.bind('j', this.navigate(true))
-    util_mpv.bind('Shift+j', this.navigate(false))
+    util_mpv.bind('b', this.navigate(true))
+    util_mpv.bind('Shift+b', this.navigate(false))
 
     util_mpv.bind('v', this.toggle('primary'))
     util_mpv.bind('Shift+v', this.toggle('secondary'))
