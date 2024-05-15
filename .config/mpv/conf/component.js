@@ -48,7 +48,7 @@ var video = new function () {
   }
 
   this.hwdec = function (incr) {
-    util_mpv.cycle('hwdec', ['auto', 'no'])
+    util_mpv.cycle('hwdec', ['auto', 'nvdec', 'nvdec-copy', 'no'])
     util_mpv.print_osd(
       'video/hwdec> ' + util_mpv.get_prop('hwdec-current') + ' [' + util_mpv.get_prop('hwdec') + ']')
   }
@@ -181,20 +181,43 @@ var subtitle = new function () {
     }
   }
 
+  this.toggle = function (target) {
+    return function () {
+      if (target === 'both') {
+        util_mpv.cycle('sub-visibility')
+        var visible_primary = util_mpv.get_prop('sub-visibility')
+        util_mpv.set_prop('secondary-sub-visibility', !visible_primary)
+        util_mpv.print_osd(
+          'subtitle/visibility>' + visible_primary ? 'primary' : 'secondary'
+        )
+      } else {
+        var opt = target === 'primary' ? 'sub-visibility' : 'secondary-sub-visibility'
+        util_mpv.cycle(opt)
+        util_mpv.print_osd(
+          'subtitle/visibility-' + target + '> ' + (util_mpv.get_prop(opt) ? 'T' : 'F')
+        )
+      }
+    }
+  }
+
   this.bind = function () {
     util_mpv.bind('z', this.retime(+0.1, target = 'primary'))
     util_mpv.bind('x', this.retime(-0.1, target = 'primary'))
     util_mpv.bind('Z', this.retime(+0.1, target = 'secondary'))
     util_mpv.bind('X', this.retime(-0.1, target = 'secondary'))
 
-    util_mpv.bind('Shift+f', this.resize(-0.1))
-    util_mpv.bind('Shift+g', this.resize(+0.1))
+    util_mpv.bind('Shift+g', this.resize(-0.1))
+    util_mpv.bind('g', this.resize(+0.1))
 
-    util_mpv.bind('r', this.reposition(-1))
+    util_mpv.bind('Shift+t', this.reposition(-1))
     util_mpv.bind('t', this.reposition(+1))
 
-    util_mpv.bind('j', this.navigate(true))
-    util_mpv.bind('Shift+j', this.navigate(false))
+    util_mpv.bind('b', this.navigate(true))
+    util_mpv.bind('Shift+b', this.navigate(false))
+
+    util_mpv.bind('v', this.toggle('primary'))
+    util_mpv.bind('Shift+v', this.toggle('secondary'))
+    util_mpv.bind('Alt+v', this.toggle('both'))
   }
 }()
 
@@ -215,9 +238,15 @@ var playback = new function () {
       if (mode === 'chapter') {
         util_mpv.run(['add', 'chapter', incr])
         report.report_chapter()
+      } else if (mode === 'frame') {
+        if (incr > 0) { util_mpv.run(['frame-step']) } else { util_mpv.run(['frame-back-step']) }
       } else {
         util_mpv.run(['seek', incr, 'relative+exact'])
       }
+
+      var current = util_mpv.get_prop('playback-time', type = 'raw')
+      var duration = util_mpv.get_prop('duration', type = 'raw')
+      util_mpv.print_osd('time> ' + current + '/' + duration)
     }
   }
 
@@ -263,17 +292,56 @@ var playback = new function () {
     util_mpv.print_osd('loop-ab> ' + msg)
   }
 
+  this.screenshot = function () {
+    util_mpv.run(['screenshot'])
+  }
+
+  this.savepos = function () {
+    util_mpv.set_prop('write-filename-in-watch-later-config', true)
+    util_mpv.set_prop('ignore-path-in-watch-later-config', true)
+
+    util_mpv.set_prop('watch-later-options',
+      [util_mpv.get_prop('watch-later-options', type = 'string'), 'secondary-sub-delay'].join(',')
+    )
+
+    util_mpv.bind('Ctrl+s',
+      function () {
+        util_mpv.cycle('save-position-on-quit')
+        util_mpv.print_osd('savepos> ' + (util_mpv.get_prop('save-position-on-quit') ? 'T' : 'F'))
+      }
+    )
+    util_mpv.bind('Ctrl+q',
+      function () { util_mpv.run(['quit-watch-later']) }
+    )
+  }
+
+  this.title = function () {
+    var title = ''
+
+    var server = util_mpv.get_prop('input-ipc-server')
+    if (server) {
+      // show only filename of socket
+      title = title.concat('[' + server.split('/').slice(-1).toString() + '] ')
+    }
+
+    title = title.concat('${path}')
+    util_mpv.set_prop('title', title)
+  }
+
   this.bind = function () {
     util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
     util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
-    util_mpv.bind('F8', report.report_playlist)
-    util_mpv.bind('F9', function () { util_mpv.print_prop('playlist', type = 'raw') })
+    util_mpv.bind('k', report.report_playlist)
+    util_mpv.bind('Shift+k', function () { util_mpv.print_prop('playlist', type = 'string') })
 
-    util_mpv.bind('k', report.report_categories)
-    util_mpv.bind('K', function () { util_mpv.print_prop('track-list', type = 'raw') })
+    util_mpv.bind('j', report.report_categories)
+    util_mpv.bind('Shift+j', function () { util_mpv.print_prop('track-list', type = 'string') })
 
     util_mpv.bind('l', this.loop_ab)
     util_mpv.bind('L', this.loop_files)
+
+    util_mpv.bind(',', this.navigate_file(-1, mode = 'frame'))
+    util_mpv.bind('.', this.navigate_file(+1, mode = 'frame'))
 
     util_mpv.bind('LEFT', this.navigate_file(-3))
     util_mpv.bind('RIGHT', this.navigate_file(+3))
@@ -281,6 +349,8 @@ var playback = new function () {
     util_mpv.bind('DOWN', this.navigate_file(+7))
     util_mpv.bind('PGUP', this.navigate_file(-1, mode = 'chapter'))
     util_mpv.bind('PGDWN', this.navigate_file(+1, mode = 'chapter'))
+
+    util_mpv.bind('Shift+s', this.screenshot)
 
     util_mpv.bind('[', this.adjust_speed(-0.1))
     util_mpv.bind(']', this.adjust_speed(+0.1))
@@ -324,7 +394,7 @@ var osc = new function () {
   }
 
   this.bind = function () {
-    mp.add_forced_key_binding('o', _this.toggle)
+    mp.add_forced_key_binding('i', _this.toggle)
   }
 }()
 
