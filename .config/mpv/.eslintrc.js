@@ -1,7 +1,13 @@
 module.exports = {
+  env: {
+    node: true,
+  },
+  extends: ["eslint:recommended", "prettier"],
   parserOptions: {
-    // REF:
-    //  https://mpv.io/manual/master/#language-features-ecmascript-5
-    ecmaVersion: 5
-  }
-}
+    ecmaVersion: 5,
+    sourceType: "script",
+  },
+  rules: {
+    "no-undef": "off",
+  },
+};
