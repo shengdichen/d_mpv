@@ -53,9 +53,7 @@ var util_mpv = new (function () {
   };
 
   this.print_osd = function (text, duration) {
-    if (!duration) {
-      duration = 0.7;
-    }
+    duration = duration ? duration : 0.7;
     mp.osd_message(text, duration);
   };
 
