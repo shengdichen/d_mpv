@@ -1,9 +1,9 @@
-var conf = require('../conf/main').conf
+var conf = require("../conf/main").conf;
 
 function Main() {
   this.conf = function () {
-    conf.bind()
-  }
+    conf.bind();
+  };
 }
-var main = new Main()
-main.conf()
+var main = new Main();
+main.conf();
