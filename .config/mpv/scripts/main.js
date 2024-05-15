@@ -1,8 +1,8 @@
 var conf = require('../conf/main').conf
 
-function Main () {
+function Main() {
   this.conf = function () {
-      conf.bind()
+    conf.bind()
   }
 }
 var main = new Main()

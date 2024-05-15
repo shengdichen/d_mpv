@@ -1,6 +1,6 @@
 var component = require('./component')
 
-module.exports.conf = new function () {
+module.exports.conf = new (function () {
   this.bind = function () {
     component.video.bind()
     component.audio.bind()
@@ -12,4 +12,4 @@ module.exports.conf = new function () {
 
     component.osc.bind()
   }
-}()
+})()

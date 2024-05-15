@@ -3,16 +3,16 @@ var util_misc = util.util_misc
 var util_mpv = util.util_mpv
 var report = util.report
 
-var video = new function () {
+var video = new (function () {
   this.navigate = function () {
     util_mpv.cycle('video')
     report.report_category_video()
   }
 
-  function _position (dimension) {
+  function _position(dimension) {
     return util_misc.prepend_sign(
       util_misc.truncate_after_decimal(
-        util_mpv.get_prop('video-pan-' + dimension, type = 'num')
+        util_mpv.get_prop('video-pan-' + dimension, (type = 'num'))
       )
     )
   }
@@ -20,22 +20,22 @@ var video = new function () {
     return function () {
       util_mpv.run(['add', 'video-pan-' + dimension, incr])
       util_mpv.print_osd(
-        'video/pos> (' + _position('x') + ', ' + _position('y') + ')')
+        'video/pos> (' + _position('x') + ', ' + _position('y') + ')'
+      )
     }
   }
 
-  function _size () {
+  function _size() {
     return util_misc.prepend_sign(
       util_misc.truncate_after_decimal(
-        util_mpv.get_prop('video-zoom', type = 'num')
+        util_mpv.get_prop('video-zoom', (type = 'num'))
       )
     )
   }
   this.resize = function (incr) {
     return function () {
       util_mpv.run(['add', 'video-zoom', incr])
-      util_mpv.print_osd(
-        'video/size> ' + _size())
+      util_mpv.print_osd('video/size> ' + _size())
     }
   }
 
@@ -43,19 +43,29 @@ var video = new function () {
     return function () {
       util_mpv.cycle('deinterlace')
       util_mpv.print_osd(
-        'video/deinterlace> ' + util_mpv.get_prop('deinterlace'))
+        'video/deinterlace> ' + util_mpv.get_prop('deinterlace')
+      )
     }
   }
 
   this.hwdec = function (incr) {
     util_mpv.cycle('hwdec', ['auto', 'nvdec', 'nvdec-copy', 'no'])
     util_mpv.print_osd(
-      'video/hwdec> ' + util_mpv.get_prop('hwdec-current') + ' [' + util_mpv.get_prop('hwdec') + ']')
+      'video/hwdec> ' +
+        util_mpv.get_prop('hwdec-current') +
+        ' [' +
+        util_mpv.get_prop('hwdec') +
+        ']'
+    )
   }
 
   this.bind = function () {
-    util_mpv.bind('SPACE', function () { util_mpv.cycle('pause') })
-    util_mpv.bind('f', function () { util_mpv.cycle('fullscreen') })
+    util_mpv.bind('SPACE', function () {
+      util_mpv.cycle('pause')
+    })
+    util_mpv.bind('f', function () {
+      util_mpv.cycle('fullscreen')
+    })
     util_mpv.bind('Ctrl+r', function () {
       util_mpv.cycle('video-rotate', [90, 180, 270, 0])
     })
@@ -73,29 +83,40 @@ var video = new function () {
     util_mpv.bind('d', this.deinterlace(-0.1))
     util_mpv.bind('Ctrl+h', this.hwdec)
   }
-}()
+})()
 
-var audio = new function () {
+var audio = new (function () {
   this.volume = function (incr) {
     return function () {
-      var vol_prev = util_mpv.get_prop('volume', type = 'num')
+      var vol_prev = util_mpv.get_prop('volume', (type = 'num'))
       var vol_next = vol_prev + incr
-      util_mpv.set_prop('volume', vol_next, type = 'num')
+      util_mpv.set_prop('volume', vol_next, (type = 'num'))
       util_mpv.print_osd(
-        'volume> ' + vol_next + ' [' + vol_prev + _format_volume_incr(incr) + ']'
+        'volume> ' +
+          vol_next +
+          ' [' +
+          vol_prev +
+          _format_volume_incr(incr) +
+          ']'
       )
     }
   }
 
-  function _format_volume_incr (incr) {
-    if (incr === 1) { return '++' }
-    if (incr === -1) { return '--' }
+  function _format_volume_incr(incr) {
+    if (incr === 1) {
+      return '++'
+    }
+    if (incr === -1) {
+      return '--'
+    }
     return util_misc.prepend_sign(incr)
   }
 
   this.mute = function () {
     util_mpv.cycle('mute')
-    util_mpv.print_osd('mute> ' + (util_mpv.get_prop('mute', type = 'bool') ? 'T' : 'F'))
+    util_mpv.print_osd(
+      'mute> ' + (util_mpv.get_prop('mute', (type = 'bool')) ? 'T' : 'F')
+    )
   }
 
   this.navigate = function () {
@@ -113,28 +134,26 @@ var audio = new function () {
 
     util_mpv.bind('SHARP', this.navigate)
   }
-}()
+})()
 
-var subtitle = new function () {
-  function _delay (target) {
+var subtitle = new (function () {
+  function _delay(target) {
     if (target === 'primary') {
       target = 'sub-delay'
     } else if (target === 'secondary') {
       target = 'secondary-sub-delay'
     }
-    return util_misc.truncate_after_decimal(util_mpv.get_prop(target, type = 'num'))
+    return util_misc.truncate_after_decimal(
+      util_mpv.get_prop(target, (type = 'num'))
+    )
   }
-  function _retime_primary (incr) {
+  function _retime_primary(incr) {
     util_mpv.run(['add', 'sub-delay', incr])
-    util_mpv.print_osd(
-      'subtitle/delay-primary> ' + _delay('primary')
-    )
+    util_mpv.print_osd('subtitle/delay-primary> ' + _delay('primary'))
   }
-  function _retime_secondary (incr) {
+  function _retime_secondary(incr) {
     util_mpv.run(['add', 'secondary-sub-delay', incr])
-    util_mpv.print_osd(
-      'subtitle/delay-secondary> ' + _delay('secondary')
-    )
+    util_mpv.print_osd('subtitle/delay-secondary> ' + _delay('secondary'))
   }
   this.retime = function (incr, target) {
     return function () {
@@ -146,7 +165,10 @@ var subtitle = new function () {
         _retime_primary(incr)
         _retime_secondary(incr)
         util_mpv.print_osd(
-          'subtitle/delay> (primary, secondary): ' + _delay('primary') + ', ' + _delay('secondary')
+          'subtitle/delay> (primary, secondary): ' +
+            _delay('primary') +
+            ', ' +
+            _delay('secondary')
         )
       }
     }
@@ -156,7 +178,10 @@ var subtitle = new function () {
     return function () {
       util_mpv.run(['add', 'sub-scale', incr])
       util_mpv.print_osd(
-        'subtitle/scale> ' + util_misc.truncate_after_decimal(util_mpv.get_prop('sub-scale', type = 'num'))
+        'subtitle/scale> ' +
+          util_misc.truncate_after_decimal(
+            util_mpv.get_prop('sub-scale', (type = 'num'))
+          )
       )
     }
   }
@@ -165,7 +190,7 @@ var subtitle = new function () {
     return function () {
       util_mpv.run(['add', 'sub-pos', incr])
       util_mpv.print_osd(
-        'subtitle/pos> ' + util_mpv.get_prop('sub-pos', type = 'num')
+        'subtitle/pos> ' + util_mpv.get_prop('sub-pos', (type = 'num'))
       )
     }
   }
@@ -191,20 +216,24 @@ var subtitle = new function () {
           'subtitle/visibility>' + visible_primary ? 'primary' : 'secondary'
         )
       } else {
-        var opt = target === 'primary' ? 'sub-visibility' : 'secondary-sub-visibility'
+        var opt =
+          target === 'primary' ? 'sub-visibility' : 'secondary-sub-visibility'
         util_mpv.cycle(opt)
         util_mpv.print_osd(
-          'subtitle/visibility-' + target + '> ' + (util_mpv.get_prop(opt) ? 'T' : 'F')
+          'subtitle/visibility-' +
+            target +
+            '> ' +
+            (util_mpv.get_prop(opt) ? 'T' : 'F')
         )
       }
     }
   }
 
   this.bind = function () {
-    util_mpv.bind('z', this.retime(+0.1, target = 'primary'))
-    util_mpv.bind('x', this.retime(-0.1, target = 'primary'))
-    util_mpv.bind('Z', this.retime(+0.1, target = 'secondary'))
-    util_mpv.bind('X', this.retime(-0.1, target = 'secondary'))
+    util_mpv.bind('z', this.retime(+0.1, (target = 'primary')))
+    util_mpv.bind('x', this.retime(-0.1, (target = 'primary')))
+    util_mpv.bind('Z', this.retime(+0.1, (target = 'secondary')))
+    util_mpv.bind('X', this.retime(-0.1, (target = 'secondary')))
 
     util_mpv.bind('Shift+g', this.resize(-0.1))
     util_mpv.bind('g', this.resize(+0.1))
@@ -219,9 +248,9 @@ var subtitle = new function () {
     util_mpv.bind('Shift+v', this.toggle('secondary'))
     util_mpv.bind('Alt+v', this.toggle('both'))
   }
-}()
+})()
 
-var playback = new function () {
+var playback = new (function () {
   this.navigate_playlist = function (positive_dir) {
     return function () {
       if (positive_dir) {
@@ -239,13 +268,17 @@ var playback = new function () {
         util_mpv.run(['add', 'chapter', incr])
         report.report_chapter()
       } else if (mode === 'frame') {
-        if (incr > 0) { util_mpv.run(['frame-step']) } else { util_mpv.run(['frame-back-step']) }
+        if (incr > 0) {
+          util_mpv.run(['frame-step'])
+        } else {
+          util_mpv.run(['frame-back-step'])
+        }
       } else {
         util_mpv.run(['seek', incr, 'relative+exact'])
       }
 
-      var current = util_mpv.get_prop('playback-time', type = 'raw')
-      var duration = util_mpv.get_prop('duration', type = 'raw')
+      var current = util_mpv.get_prop('playback-time', (type = 'raw'))
+      var duration = util_mpv.get_prop('duration', (type = 'raw'))
       util_mpv.print_osd('time> ' + current + '/' + duration)
     }
   }
@@ -257,7 +290,12 @@ var playback = new function () {
         util_mpv.print_osd('speed> 1.0')
       } else {
         util_mpv.run(['add', 'speed', incr])
-        util_mpv.print_osd('speed> ' + util_misc.truncate_after_decimal(util_mpv.get_prop('speed', type = 'num')))
+        util_mpv.print_osd(
+          'speed> ' +
+            util_misc.truncate_after_decimal(
+              util_mpv.get_prop('speed', (type = 'num'))
+            )
+        )
       }
     }
   }
@@ -267,9 +305,11 @@ var playback = new function () {
     util_mpv.print_prop('loop-file')
   }
 
-  function _loop_ab_bound (mode) {
+  function _loop_ab_bound(mode) {
     var bound = util_mpv.get_prop('ab-loop-' + mode)
-    if (bound === 'no') { return undefined }
+    if (bound === 'no') {
+      return undefined
+    }
     return util_misc.truncate_after_decimal(bound, 3)
   }
 
@@ -300,19 +340,23 @@ var playback = new function () {
     util_mpv.set_prop('write-filename-in-watch-later-config', true)
     util_mpv.set_prop('ignore-path-in-watch-later-config', true)
 
-    util_mpv.set_prop('watch-later-options',
-      [util_mpv.get_prop('watch-later-options', type = 'string'), 'secondary-sub-delay'].join(',')
+    util_mpv.set_prop(
+      'watch-later-options',
+      [
+        util_mpv.get_prop('watch-later-options', (type = 'string')),
+        'secondary-sub-delay'
+      ].join(',')
     )
 
-    util_mpv.bind('Ctrl+s',
-      function () {
-        util_mpv.cycle('save-position-on-quit')
-        util_mpv.print_osd('savepos> ' + (util_mpv.get_prop('save-position-on-quit') ? 'T' : 'F'))
-      }
-    )
-    util_mpv.bind('Ctrl+q',
-      function () { util_mpv.run(['quit-watch-later']) }
-    )
+    util_mpv.bind('Ctrl+s', function () {
+      util_mpv.cycle('save-position-on-quit')
+      util_mpv.print_osd(
+        'savepos> ' + (util_mpv.get_prop('save-position-on-quit') ? 'T' : 'F')
+      )
+    })
+    util_mpv.bind('Ctrl+q', function () {
+      util_mpv.run(['quit-watch-later'])
+    })
   }
 
   this.title = function () {
@@ -329,26 +373,30 @@ var playback = new function () {
   }
 
   this.bind = function () {
-    util_mpv.bind('<', this.navigate_playlist(positive_dir = false))
-    util_mpv.bind('>', this.navigate_playlist(positive_dir = true))
+    util_mpv.bind('<', this.navigate_playlist((positive_dir = false)))
+    util_mpv.bind('>', this.navigate_playlist((positive_dir = true)))
     util_mpv.bind('k', report.report_playlist)
-    util_mpv.bind('Shift+k', function () { util_mpv.print_prop('playlist', type = 'string') })
+    util_mpv.bind('Shift+k', function () {
+      util_mpv.print_prop('playlist', (type = 'string'))
+    })
 
     util_mpv.bind('j', report.report_categories)
-    util_mpv.bind('Shift+j', function () { util_mpv.print_prop('track-list', type = 'string') })
+    util_mpv.bind('Shift+j', function () {
+      util_mpv.print_prop('track-list', (type = 'string'))
+    })
 
     util_mpv.bind('l', this.loop_ab)
     util_mpv.bind('L', this.loop_files)
 
-    util_mpv.bind(',', this.navigate_file(-1, mode = 'frame'))
-    util_mpv.bind('.', this.navigate_file(+1, mode = 'frame'))
+    util_mpv.bind(',', this.navigate_file(-1, (mode = 'frame')))
+    util_mpv.bind('.', this.navigate_file(+1, (mode = 'frame')))
 
     util_mpv.bind('LEFT', this.navigate_file(-3))
     util_mpv.bind('RIGHT', this.navigate_file(+3))
     util_mpv.bind('UP', this.navigate_file(-7))
     util_mpv.bind('DOWN', this.navigate_file(+7))
-    util_mpv.bind('PGUP', this.navigate_file(-1, mode = 'chapter'))
-    util_mpv.bind('PGDWN', this.navigate_file(+1, mode = 'chapter'))
+    util_mpv.bind('PGUP', this.navigate_file(-1, (mode = 'chapter')))
+    util_mpv.bind('PGDWN', this.navigate_file(+1, (mode = 'chapter')))
 
     util_mpv.bind('Shift+s', this.screenshot)
 
@@ -368,12 +416,12 @@ var playback = new function () {
       util_mpv.run_script_bind('console', 'enable')
     })
   }
-}()
+})()
 
-var osc = new function () {
+var osc = new (function () {
   var _this = this
 
-  function _is_visible_by_default () {
+  function _is_visible_by_default() {
     var opt = { visibility: 'never' }
     mp.options.read_options(opt, 'osc')
     return opt.visibility !== 'never'
@@ -385,18 +433,26 @@ var osc = new function () {
   var fn = 'osc-visibility'
   // NOTE:
   //    pass second arg |false| to disable osd-output (prepending 'no-osd' has no use)
-  this.disable = function () { util_mpv.run_script_fn(fn, ['never', false]) }
-  this.enable = function () { util_mpv.run_script_fn(fn, ['always', false]) }
+  this.disable = function () {
+    util_mpv.run_script_fn(fn, ['never', false])
+  }
+  this.enable = function () {
+    util_mpv.run_script_fn(fn, ['always', false])
+  }
 
   this.toggle = function () {
-    if (_this._is_visible) { _this.disable() } else { _this.enable() }
+    if (_this._is_visible) {
+      _this.disable()
+    } else {
+      _this.enable()
+    }
     _this._is_visible = !_this._is_visible
   }
 
   this.bind = function () {
     mp.add_forced_key_binding('i', _this.toggle)
   }
-}()
+})()
 
 module.exports.video = video
 module.exports.audio = audio
