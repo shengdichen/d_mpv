@@ -39,7 +39,7 @@ var video = new (function () {
     }
   }
 
-  this.deinterlace = function (incr) {
+  this.deinterlace = function () {
     return function () {
       util_mpv.cycle('deinterlace')
       util_mpv.print_osd(
@@ -48,7 +48,7 @@ var video = new (function () {
     }
   }
 
-  this.hwdec = function (incr) {
+  this.hwdec = function () {
     util_mpv.cycle('hwdec', ['auto', 'nvdec', 'nvdec-copy', 'no'])
     util_mpv.print_osd(
       'video/hwdec> ' +

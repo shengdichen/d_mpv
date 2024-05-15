@@ -59,7 +59,7 @@ var util_mpv = new (function () {
     mp.osd_message(text, duration)
   }
 
-  this.run = function (fragments, mode) {
+  this.run = function (fragments) {
     mp.commandv.apply(null, fragments)
   }
 
