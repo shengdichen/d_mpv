@@ -59,6 +59,7 @@ var video = new (function () {
     );
   };
 
+  this.config = function () {};
   this.bind = function () {
     util_mpv.bind("SPACE", function () {
       util_mpv.cycle("pause");
@@ -124,6 +125,7 @@ var audio = new (function () {
     report.report_category_audio();
   };
 
+  this.config = function () {};
   this.bind = function () {
     util_mpv.bind("9", this.volume(-1));
     util_mpv.bind("(", this.volume(-7));
