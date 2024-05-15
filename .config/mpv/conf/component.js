@@ -376,7 +376,7 @@ var osc = new function () {
   function _is_visible_by_default () {
     var opt = { visibility: 'never' }
     mp.options.read_options(opt, 'osc')
-    return opt.visibility != 'never'
+    return opt.visibility !== 'never'
   }
   this._is_visible = _is_visible_by_default()
 
