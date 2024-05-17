@@ -223,5 +223,5 @@ function _format_id_global(track, n_tracks_global) {
 }
 
 module.exports = {
-  report: MODULE,
+  export: MODULE,
 };

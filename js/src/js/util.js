@@ -40,5 +40,5 @@ MODULE.truncate_after_decimal = function (num, digits) {
 };
 
 module.exports = {
-  util: MODULE,
+  export: MODULE,
 };

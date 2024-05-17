@@ -1,7 +1,7 @@
-var util_mpv = require("./lib/util").util;
-var report = require("./lib/report").report;
+var util_mpv = require("./lib/util").export;
+var report = require("./lib/report").export;
 
-var lib_video = require("./lib/video").video;
+var lib_video = require("./lib/video").export;
 var video = {
   config: function () {},
 
@@ -31,7 +31,7 @@ var video = {
   },
 };
 
-var lib_audio = require("./lib/audio").audio;
+var lib_audio = require("./lib/audio").export;
 var audio = {
   config: function () {},
 
@@ -47,7 +47,7 @@ var audio = {
   },
 };
 
-var lib_subtitle = require("./lib/subtitle").subtitle;
+var lib_subtitle = require("./lib/subtitle").export;
 var subtitle = {
   bind: function () {
     util_mpv.bind("z", lib_subtitle.retime(+0.1, "primary"));
@@ -70,7 +70,7 @@ var subtitle = {
   },
 };
 
-var lib_playback = require("./lib/playback").playback;
+var lib_playback = require("./lib/playback").export;
 var playback = {
   config: function () {
     lib_playback.title();
@@ -124,7 +124,7 @@ var playback = {
 };
 
 var misc = function () {
-  util_mpv.raw.add_forced_key_binding("i", require("./lib/osc").osc.toggle);
+  util_mpv.raw.add_forced_key_binding("i", require("./lib/osc").export.toggle);
 };
 
 module.exports = {

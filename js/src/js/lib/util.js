@@ -124,5 +124,5 @@ MODULE.get_prop_config = function (prop, def) {
 };
 
 module.exports = {
-  util: MODULE,
+  export: MODULE,
 };

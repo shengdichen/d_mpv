@@ -1,4 +1,4 @@
-var util = require("./util").util;
+var util = require("./util").export;
 
 var MODULE = {};
 
@@ -32,5 +32,5 @@ MODULE.toggle = function () {
 };
 
 module.exports = {
-  osc: MODULE,
+  export: MODULE,
 };

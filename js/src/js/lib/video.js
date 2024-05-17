@@ -1,6 +1,6 @@
-var util_misc = require("../util").util;
-var report = require("./report").report;
-var util = require("./util").util;
+var util_misc = require("../util").export;
+var report = require("./report").export;
+var util = require("./util").export;
 
 var MODULE = {};
 
@@ -56,5 +56,5 @@ MODULE.hwdec = function () {
 };
 
 module.exports = {
-  video: MODULE,
+  export: MODULE,
 };
