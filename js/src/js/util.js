@@ -1,119 +1,117 @@
-var util_misc = new (function () {
-  var _this = this;
-
-  this.prepend_sign = function (num) {
+var util_misc = {
+  prepend_sign: function (num) {
     return (num < 0 ? "" : "+") + num;
-  };
+  },
 
-  this.pad_integer_to = function (num, reference) {
-    return _this.pad_integer(num, _this.len_integer(reference));
-  };
+  pad_integer_to: function (num, reference) {
+    return this.pad_integer(num, this.len_integer(reference));
+  },
 
-  this.is_num = function (num) {
+  is_num: function (num) {
     return Number(num) === num;
-  };
+  },
 
-  this.is_int = function (num) {
-    return _this.is_num(num) && num % 1 === 0;
-  };
+  is_int: function (num) {
+    return this.is_num(num) && num % 1 === 0;
+  },
 
-  this.is_float = function (num) {
-    return _this.is_num(num) && num % 1 !== 0;
-  };
+  is_float: function (num) {
+    return this.is_num(num) && num % 1 !== 0;
+  },
 
-  this.pad_integer = function (num, len) {
+  pad_integer: function (num, len) {
     num = num.toString();
     while (num.length < len) {
       num = "0" + num;
     }
     return num;
-  };
+  },
 
-  this.len_integer = function (num) {
+  len_integer: function (num) {
     return num.toString().length;
-  };
+  },
 
-  this.truncate_after_decimal = function (num, digits) {
+  truncate_after_decimal: function (num, digits) {
     if (!digits) {
       digits = 2;
     }
     return num.toFixed(digits);
-  };
-})();
+  },
+};
 
-var util_mpv = new (function () {
-  this.raw = mp; // wrapper for eslint
+var util_mpv = {
+  raw: mp, // wrapper for eslint
 
-  this.bind = function (key, fn, repeatable, force) {
+  bind: function (key, fn, repeatable, force) {
     var flags = {};
     flags.repeatable = typeof repeatable !== "undefined" ? repeatable : true;
     if (force) {
-      mp.add_forced_key_binding(key, fn, flags);
+      this.raw.add_forced_key_binding(key, fn, flags);
     } else {
-      mp.add_key_binding(key, fn, flags);
+      this.raw.add_key_binding(key, fn, flags);
     }
-  };
+  },
 
-  this.print_osd = function (text, duration) {
+  print_osd: function (text, duration) {
     duration = duration ? duration : 0.7;
-    mp.osd_message(text, duration);
-  };
+    this.raw.osd_message(text, duration);
+  },
 
-  this.run = function (fragments) {
-    mp.commandv.apply(null, fragments);
-  };
+  run: function (fragments) {
+    this.raw.commandv.apply(null, fragments);
+  },
 
-  this.run_script_bind = function (script, bind) {
+  run_script_bind: function (script, bind) {
     // REF:
     //  https://mpv.io/manual/master/#command-interface-script-binding
     this.run(["script-binding", script + "/" + bind]);
-  };
+  },
 
-  this.run_script_fn = function (fn, args) {
+  run_script_fn: function (fn, args) {
     this.run(["script-message", fn].concat(args));
-  };
+  },
 
-  this.get_prop = function (prop, type, def) {
+  get_prop: function (prop, type, def) {
     if (type === "bool") {
-      return mp.get_property_bool(prop, def);
+      return this.raw.get_property_bool(prop, def);
     }
     if (type === "num") {
-      return mp.get_property_number(prop, def);
+      return this.raw.get_property_number(prop, def);
     }
     if (type === "string") {
-      return mp.get_property(prop, def);
+      return this.raw.get_property(prop, def);
     }
     if (type === "raw") {
-      return mp.get_property_osd(prop, def);
+      return this.raw.get_property_osd(prop, def);
     }
-    return mp.get_property_native(prop, def);
-  };
+    return this.raw.get_property_native(prop, def);
+  },
 
-  this.set_prop = function (prop, val, type) {
+  set_prop: function (prop, val, type) {
     if (type === "bool") {
-      return mp.set_property_bool(prop, val);
+      return this.raw.set_property_bool(prop, val);
     }
     if (type === "num") {
-      return mp.set_property_number(prop, val);
+      return this.raw.set_property_number(prop, val);
     }
     if (type === "raw") {
-      return mp.set_property(prop, def);
+      return this.raw.set_property(prop, def);
     }
-    return mp.set_property_native(prop, val);
-  };
+    return this.raw.set_property_native(prop, val);
+  },
 
-  this.cycle = function (item, values) {
+  cycle: function (item, values) {
     if (!values) {
       this.run(["cycle", item]);
     } else {
       this.run(["cycle-values", item].concat(values));
     }
-  };
+  },
 
-  this.print_prop = function (prop, type, def) {
+  print_prop: function (prop, type, def) {
     this.print_osd(this.get_prop(prop, type, def));
-  };
-})();
+  },
+};
 
 var report = new (function () {
   this.report_categories = function () {
