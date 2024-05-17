@@ -40,7 +40,7 @@ var util_misc = {
 };
 
 var util_mpv = {
-  raw: mp, // wrapper for eslint
+  raw: mp, // eslint-disable-line no-undef
 
   bind: function (key, fn, repeatable, force) {
     var flags = {};
