@@ -425,7 +425,7 @@ var osc = new (function () {
 
   function _is_visible_by_default() {
     var opt = { visibility: "never" };
-    mp.options.read_options(opt, "osc");
+    util_mpv.raw.options.read_options(opt, "osc");
     return opt.visibility !== "never";
   }
   this._is_visible = _is_visible_by_default();
@@ -452,7 +452,7 @@ var osc = new (function () {
   };
 
   this.bind = function () {
-    mp.add_forced_key_binding("i", _this.toggle);
+    util_mpv.raw.add_forced_key_binding("i", _this.toggle);
   };
 })();
 

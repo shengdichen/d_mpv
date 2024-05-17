@@ -42,6 +42,8 @@ var util_misc = new (function () {
 })();
 
 var util_mpv = new (function () {
+  this.raw = mp; // wrapper for eslint
+
   this.bind = function (key, fn, repeatable, force) {
     var flags = {};
     flags.repeatable = typeof repeatable !== "undefined" ? repeatable : true;

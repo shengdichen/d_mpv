@@ -16,8 +16,12 @@ export default [
       ecmaVersion: 5,
       sourceType: "commonjs",
     },
+  },
+  {
+    name: "js5/mpv",
+    files: ["src/js/util.js"],
     rules: {
-      "no-undef": "off",
+      "no-undef": "off", // cater for undefined |mp|
     },
   },
 ];
