@@ -1,6 +1,5 @@
-var util = require("./util");
-var util_mpv = util.util_mpv;
-var report = util.report;
+var util_mpv = require("./lib/util").util;
+var report = require("./lib/report").report;
 
 var lib_video = require("./lib/video").video;
 var video = {
