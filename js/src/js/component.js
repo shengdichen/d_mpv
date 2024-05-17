@@ -20,10 +20,10 @@ var video = {
 
     util_mpv.bind("_", lib_video.navigate);
 
-    util_mpv.bind("Alt+LEFT", lib_video.reposition(-0.1, "x"));
-    util_mpv.bind("Alt+RIGHT", lib_video.reposition(+0.1, "x"));
-    util_mpv.bind("Alt+UP", lib_video.reposition(-0.1, "y"));
-    util_mpv.bind("Alt+DOWN", lib_video.reposition(+0.1, "y"));
+    util_mpv.bind("Alt+LEFT", lib_video.reposition(+0.1, "x"));
+    util_mpv.bind("Alt+RIGHT", lib_video.reposition(-0.1, "x"));
+    util_mpv.bind("Alt+UP", lib_video.reposition(+0.1, "y"));
+    util_mpv.bind("Alt+DOWN", lib_video.reposition(-0.1, "y"));
 
     util_mpv.bind("Alt+-", lib_video.resize(-0.1));
     util_mpv.bind("Alt++", lib_video.resize(+0.1));
