@@ -49,119 +49,28 @@ var audio = {
   },
 };
 
-var subtitle = new (function () {
-  function _delay(target) {
-    if (target === "primary") {
-      target = "sub-delay";
-    } else if (target === "secondary") {
-      target = "secondary-sub-delay";
-    }
-    return util_misc.truncate_after_decimal(
-      util_mpv.get_prop(target, (type = "num"))
-    );
-  }
-  function _retime_primary(incr) {
-    util_mpv.run(["add", "sub-delay", incr]);
-    util_mpv.print_osd("subtitle/delay-primary> " + _delay("primary"));
-  }
-  function _retime_secondary(incr) {
-    util_mpv.run(["add", "secondary-sub-delay", incr]);
-    util_mpv.print_osd("subtitle/delay-secondary> " + _delay("secondary"));
-  }
-  this.retime = function (incr, target) {
-    return function () {
-      if (target === "primary") {
-        _retime_primary(incr);
-      } else if (target === "secondary") {
-        _retime_secondary(incr);
-      } else if (target === "both") {
-        _retime_primary(incr);
-        _retime_secondary(incr);
-        util_mpv.print_osd(
-          "subtitle/delay> (primary, secondary): " +
-            _delay("primary") +
-            ", " +
-            _delay("secondary")
-        );
-      }
-    };
-  };
+var lib_subtitle = require("./lib/subtitle").subtitle;
+var subtitle = {
+  bind: function () {
+    util_mpv.bind("z", lib_subtitle.retime(+0.1, "primary"));
+    util_mpv.bind("x", lib_subtitle.retime(-0.1, "primary"));
+    util_mpv.bind("Z", lib_subtitle.retime(+0.1, "secondary"));
+    util_mpv.bind("X", lib_subtitle.retime(-0.1, "secondary"));
 
-  this.resize = function (incr) {
-    return function () {
-      util_mpv.run(["add", "sub-scale", incr]);
-      util_mpv.print_osd(
-        "subtitle/scale> " +
-          util_misc.truncate_after_decimal(
-            util_mpv.get_prop("sub-scale", (type = "num"))
-          )
-      );
-    };
-  };
+    util_mpv.bind("Shift+g", lib_subtitle.resize(-0.1));
+    util_mpv.bind("g", lib_subtitle.resize(+0.1));
 
-  this.reposition = function (incr) {
-    return function () {
-      util_mpv.run(["add", "sub-pos", incr]);
-      util_mpv.print_osd(
-        "subtitle/pos> " + util_mpv.get_prop("sub-pos", (type = "num"))
-      );
-    };
-  };
+    util_mpv.bind("Shift+t", lib_subtitle.reposition(-1));
+    util_mpv.bind("t", lib_subtitle.reposition(+1));
 
-  this.navigate = function (positive_dir) {
-    return function () {
-      if (positive_dir) {
-        util_mpv.run(["cycle", "sub", "up"]);
-      } else {
-        util_mpv.run(["cycle", "sub", "down"]);
-      }
-      report.report_category_sub();
-    };
-  };
+    util_mpv.bind("b", lib_subtitle.navigate(true));
+    util_mpv.bind("Shift+b", lib_subtitle.navigate(false));
 
-  this.toggle = function (target) {
-    return function () {
-      if (target === "both") {
-        util_mpv.cycle("sub-visibility");
-        var visible_primary = util_mpv.get_prop("sub-visibility");
-        util_mpv.set_prop("secondary-sub-visibility", !visible_primary);
-        util_mpv.print_osd(
-          "subtitle/visibility>" + visible_primary ? "primary" : "secondary"
-        );
-      } else {
-        var opt =
-          target === "primary" ? "sub-visibility" : "secondary-sub-visibility";
-        util_mpv.cycle(opt);
-        util_mpv.print_osd(
-          "subtitle/visibility-" +
-            target +
-            "> " +
-            (util_mpv.get_prop(opt) ? "T" : "F")
-        );
-      }
-    };
-  };
-
-  this.bind = function () {
-    util_mpv.bind("z", this.retime(+0.1, (target = "primary")));
-    util_mpv.bind("x", this.retime(-0.1, (target = "primary")));
-    util_mpv.bind("Z", this.retime(+0.1, (target = "secondary")));
-    util_mpv.bind("X", this.retime(-0.1, (target = "secondary")));
-
-    util_mpv.bind("Shift+g", this.resize(-0.1));
-    util_mpv.bind("g", this.resize(+0.1));
-
-    util_mpv.bind("Shift+t", this.reposition(-1));
-    util_mpv.bind("t", this.reposition(+1));
-
-    util_mpv.bind("b", this.navigate(true));
-    util_mpv.bind("Shift+b", this.navigate(false));
-
-    util_mpv.bind("v", this.toggle("primary"));
-    util_mpv.bind("Shift+v", this.toggle("secondary"));
-    util_mpv.bind("Alt+v", this.toggle("both"));
-  };
-})();
+    util_mpv.bind("v", lib_subtitle.toggle("primary"));
+    util_mpv.bind("Shift+v", lib_subtitle.toggle("secondary"));
+    util_mpv.bind("Alt+v", lib_subtitle.toggle("both"));
+  },
+};
 
 var playback = new (function () {
   this.navigate_playlist = function (positive_dir) {
