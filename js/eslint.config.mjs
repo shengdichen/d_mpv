@@ -14,7 +14,7 @@ export default [
     files: ["**/*.js"],
     languageOptions: {
       ecmaVersion: 5,
-      sourceType: "script",
+      sourceType: "commonjs",
     },
     rules: {
       "no-undef": "off",
