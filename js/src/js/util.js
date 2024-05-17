@@ -334,6 +334,8 @@ var report = new (function () {
   }
 })();
 
-module.exports.util_misc = util_misc;
-module.exports.util_mpv = util_mpv;
-module.exports.report = report;
+module.exports = {
+  util_misc: util_misc,
+  util_mpv: util_mpv,
+  report: report,
+};

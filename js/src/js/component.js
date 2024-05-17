@@ -456,8 +456,10 @@ var osc = new (function () {
   };
 })();
 
-module.exports.video = video;
-module.exports.audio = audio;
-module.exports.subtitle = subtitle;
-module.exports.playback = playback;
-module.exports.osc = osc;
+module.exports = {
+  video: video,
+  audio: audio,
+  subtitle: subtitle,
+  playback: playback,
+  osc: osc,
+};
