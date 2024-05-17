@@ -14,7 +14,7 @@ conf.bind = function () {
   component.playback.title();
   component.playback.bind();
 
-  component.osc.bind();
+  component.misc();
 };
 
 module.exports = {

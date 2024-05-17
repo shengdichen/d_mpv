@@ -3,64 +3,11 @@ var util_misc = util.util_misc;
 var util_mpv = util.util_mpv;
 var report = util.report;
 
-var video = new (function () {
-  this.navigate = function () {
-    util_mpv.cycle("video");
-    report.report_category_video();
-  };
+var lib_video = require("./lib/video").video;
+var video = {
+  config: function () {},
 
-  function _position(dimension) {
-    return util_misc.prepend_sign(
-      util_misc.truncate_after_decimal(
-        util_mpv.get_prop("video-pan-" + dimension, (type = "num"))
-      )
-    );
-  }
-  this.reposition = function (incr, dimension) {
-    return function () {
-      util_mpv.run(["add", "video-pan-" + dimension, incr]);
-      util_mpv.print_osd(
-        "video/pos> (" + _position("x") + ", " + _position("y") + ")"
-      );
-    };
-  };
-
-  function _size() {
-    return util_misc.prepend_sign(
-      util_misc.truncate_after_decimal(
-        util_mpv.get_prop("video-zoom", (type = "num"))
-      )
-    );
-  }
-  this.resize = function (incr) {
-    return function () {
-      util_mpv.run(["add", "video-zoom", incr]);
-      util_mpv.print_osd("video/size> " + _size());
-    };
-  };
-
-  this.deinterlace = function () {
-    return function () {
-      util_mpv.cycle("deinterlace");
-      util_mpv.print_osd(
-        "video/deinterlace> " + util_mpv.get_prop("deinterlace")
-      );
-    };
-  };
-
-  this.hwdec = function () {
-    util_mpv.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
-    util_mpv.print_osd(
-      "video/hwdec> " +
-        util_mpv.get_prop("hwdec-current") +
-        " [" +
-        util_mpv.get_prop("hwdec") +
-        "]"
-    );
-  };
-
-  this.config = function () {};
-  this.bind = function () {
+  bind: function () {
     util_mpv.bind("SPACE", function () {
       util_mpv.cycle("pause");
     });
@@ -71,20 +18,20 @@ var video = new (function () {
       util_mpv.cycle("video-rotate", [90, 180, 270, 0]);
     });
 
-    util_mpv.bind("_", this.navigate);
+    util_mpv.bind("_", lib_video.navigate);
 
-    util_mpv.bind("Alt+LEFT", this.reposition(-0.1, "x"));
-    util_mpv.bind("Alt+RIGHT", this.reposition(+0.1, "x"));
-    util_mpv.bind("Alt+UP", this.reposition(-0.1, "y"));
-    util_mpv.bind("Alt+DOWN", this.reposition(+0.1, "y"));
+    util_mpv.bind("Alt+LEFT", lib_video.reposition(-0.1, "x"));
+    util_mpv.bind("Alt+RIGHT", lib_video.reposition(+0.1, "x"));
+    util_mpv.bind("Alt+UP", lib_video.reposition(-0.1, "y"));
+    util_mpv.bind("Alt+DOWN", lib_video.reposition(+0.1, "y"));
 
-    util_mpv.bind("Alt+-", this.resize(-0.1));
-    util_mpv.bind("Alt++", this.resize(+0.1));
+    util_mpv.bind("Alt+-", lib_video.resize(-0.1));
+    util_mpv.bind("Alt++", lib_video.resize(+0.1));
 
-    util_mpv.bind("d", this.deinterlace(-0.1));
-    util_mpv.bind("Ctrl+h", this.hwdec);
-  };
-})();
+    util_mpv.bind("d", lib_video.deinterlace(-0.1));
+    util_mpv.bind("Ctrl+h", lib_video.hwdec);
+  },
+};
 
 var audio = new (function () {
   this.volume = function (incr) {
@@ -420,46 +367,14 @@ var playback = new (function () {
   };
 })();
 
-var osc = new (function () {
-  var _this = this;
-
-  function _is_visible_by_default() {
-    var opt = { visibility: "never" };
-    util_mpv.raw.options.read_options(opt, "osc");
-    return opt.visibility !== "never";
-  }
-  this._is_visible = _is_visible_by_default();
-
-  // REF:
-  //    https://github.com/mpv-player/mpv/blob/master/player/lua/osc.lua
-  var fn = "osc-visibility";
-  // NOTE:
-  //    pass second arg |false| to disable osd-output (prepending 'no-osd' has no use)
-  this.disable = function () {
-    util_mpv.run_script_fn(fn, ["never", false]);
-  };
-  this.enable = function () {
-    util_mpv.run_script_fn(fn, ["always", false]);
-  };
-
-  this.toggle = function () {
-    if (_this._is_visible) {
-      _this.disable();
-    } else {
-      _this.enable();
-    }
-    _this._is_visible = !_this._is_visible;
-  };
-
-  this.bind = function () {
-    util_mpv.raw.add_forced_key_binding("i", _this.toggle);
-  };
-})();
+var misc = function () {
+  util_mpv.raw.add_forced_key_binding("i", require("./lib/osc").osc.toggle);
+};
 
 module.exports = {
   video: video,
   audio: audio,
   subtitle: subtitle,
   playback: playback,
-  osc: osc,
+  misc: misc,
 };

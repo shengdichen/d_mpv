@@ -30,6 +30,12 @@ var util = {
     this.run(["script-message", fn].concat(args));
   },
 
+  /**
+   * @param {string} prop
+   * @param {string} type
+   * @param {*} def
+   * @returns {*}
+   */
   get_prop: function (prop, type, def) {
     if (type === "bool") {
       return this.raw.get_property_bool(prop, def);
