@@ -33,57 +33,21 @@ var video = {
   },
 };
 
-var audio = new (function () {
-  this.volume = function (incr) {
-    return function () {
-      var vol_prev = util_mpv.get_prop("volume", (type = "num"));
-      var vol_next = vol_prev + incr;
-      util_mpv.set_prop("volume", vol_next, (type = "num"));
-      util_mpv.print_osd(
-        "volume> " +
-          vol_next +
-          " [" +
-          vol_prev +
-          _format_volume_incr(incr) +
-          "]"
-      );
-    };
-  };
+var lib_audio = require("./lib/audio").audio;
+var audio = {
+  config: function () {},
 
-  function _format_volume_incr(incr) {
-    if (incr === 1) {
-      return "++";
-    }
-    if (incr === -1) {
-      return "--";
-    }
-    return util_misc.prepend_sign(incr);
-  }
+  bind: function () {
+    util_mpv.bind("9", lib_audio.volume(-1));
+    util_mpv.bind("(", lib_audio.volume(-7));
+    util_mpv.bind("0", lib_audio.volume(+1));
+    util_mpv.bind(")", lib_audio.volume(+7));
 
-  this.mute = function () {
-    util_mpv.cycle("mute");
-    util_mpv.print_osd(
-      "mute> " + (util_mpv.get_prop("mute", (type = "bool")) ? "T" : "F")
-    );
-  };
+    util_mpv.bind("m", lib_audio.mute);
 
-  this.navigate = function () {
-    util_mpv.cycle("audio");
-    report.report_category_audio();
-  };
-
-  this.config = function () {};
-  this.bind = function () {
-    util_mpv.bind("9", this.volume(-1));
-    util_mpv.bind("(", this.volume(-7));
-    util_mpv.bind("0", this.volume(+1));
-    util_mpv.bind(")", this.volume(+7));
-
-    util_mpv.bind("m", this.mute);
-
-    util_mpv.bind("SHARP", this.navigate);
-  };
-})();
+    util_mpv.bind("SHARP", lib_audio.navigate);
+  },
+};
 
 var subtitle = new (function () {
   function _delay(target) {
