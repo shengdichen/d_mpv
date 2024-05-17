@@ -10,8 +10,7 @@ conf.bind = function () {
 
   component.subtitle.bind();
 
-  component.playback.savepos();
-  component.playback.title();
+  component.playback.config();
   component.playback.bind();
 
   component.misc();
