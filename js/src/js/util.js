@@ -95,7 +95,7 @@ var util_mpv = {
       return this.raw.set_property_number(prop, val);
     }
     if (type === "raw") {
-      return this.raw.set_property(prop, def);
+      return this.raw.set_property(prop, type);
     }
     return this.raw.set_property_native(prop, val);
   },
