@@ -87,50 +87,7 @@ MODULE.loop_ab = function () {
   util.print_osd("loop-ab> " + msg);
 };
 
-MODULE.screenshot = function () {
-  util.run(["screenshot"]);
-};
-
-MODULE.savepos = function () {
-  util.set_prop("write-filename-in-watch-later-config", true);
-  util.set_prop("ignore-path-in-watch-later-config", true);
-
-  util.set_prop(
-    "watch-later-options",
-    [
-      util.get_prop("watch-later-options", "string"),
-      "secondary-sub-delay",
-    ].join(",")
-  );
-
-  util.bind("Ctrl+s", function () {
-    util.cycle("save-position-on-quit");
-    util.print_osd(
-      "savepos> " + (util.get_prop("save-position-on-quit") ? "T" : "F")
-    );
-  });
-  util.bind("Ctrl+q", function () {
-    util.run(["quit-watch-later"]);
-  });
-};
-
-MODULE.title = function () {
-  var title = "";
-
-  var server = util.get_prop("input-ipc-server");
-  if (server) {
-    // show only filename of socket
-    title = title.concat("[" + server.split("/").slice(-1).toString() + "] ");
-  }
-
-  title = title.concat("${path}");
-  util.set_prop("title", title);
-};
-
 MODULE.config = function () {
-  MODULE.title();
-  MODULE.savepos();
-
   util.bind("SPACE", MODULE.playpause);
 
   util.bind("<", MODULE.navigate_playlist(false));
@@ -158,23 +115,9 @@ MODULE.config = function () {
   util.bind("PGUP", MODULE.navigate_file(-1, "chapter"));
   util.bind("PGDWN", MODULE.navigate_file(+1, "chapter"));
 
-  util.bind("Shift+s", MODULE.screenshot);
-
   util.bind("[", MODULE.adjust_speed(-0.1));
   util.bind("]", MODULE.adjust_speed(+0.1));
   util.bind("BS", MODULE.adjust_speed());
-
-  util.bind("I", function () {
-    // REF:
-    // https://github.com/Argon-/mpv-stats/blob/master/stats.lua
-    // https://github.com/mpv-player/mpv/blob/master/player/lua/stats.lua
-    util.run_script_bind("stats", "display-stats-toggle");
-  });
-  util.bind("`", function () {
-    // REF:
-    // https://github.com/mpv-player/mpv/blob/master/player/lua/console.lua
-    util.run_script_bind("console", "enable");
-  });
 };
 
 module.exports = {

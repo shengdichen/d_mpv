@@ -3,7 +3,7 @@ function config() {
   require("./lib/subtitle").export.config();
   require("./lib/audio").export.config();
   require("./lib/playback").export.config();
-  require("./lib/osc").export.config();
+  require("./lib/misc").export.config();
 }
 
 module.exports = {
