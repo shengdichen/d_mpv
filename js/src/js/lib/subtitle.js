@@ -20,6 +20,11 @@ function _retime_secondary(incr) {
   util.run(["add", "secondary-sub-delay", incr]);
   util.print_osd("subtitle/delay-secondary> " + _delay("secondary"));
 }
+/**
+ * @param {number} incr
+ * @param {string} target
+ * @returns {function(): void}
+ */
 MODULE.retime = function (incr, target) {
   return function () {
     if (target === "primary") {
@@ -39,6 +44,10 @@ MODULE.retime = function (incr, target) {
   };
 };
 
+/**
+ * @param {number} incr
+ * @returns {function(): void}
+ */
 MODULE.resize = function (incr) {
   return function () {
     util.run(["add", "sub-scale", incr]);
@@ -49,13 +58,37 @@ MODULE.resize = function (incr) {
   };
 };
 
-MODULE.reposition = function (incr) {
+/**
+ * @param {number} incr
+ * @returns {function(): void}
+ */
+MODULE.move = function (incr) {
   return function () {
     util.run(["add", "sub-pos", incr]);
     util.print_osd("subtitle/pos> " + util.get_prop_number("sub-pos"));
   };
 };
 
+/**
+ * @param {number} [incr]
+ * @returns {function(): void}
+ */
+MODULE.move_down = function (incr) {
+  return MODULE.move(incr || 1);
+};
+
+/**
+ * @param {number} [incr]
+ * @returns {function(): void}
+ */
+MODULE.move_up = function (incr) {
+  return MODULE.move(-(incr || 1));
+};
+
+/**
+ * @param {boolean} positive_dir
+ * @returns {function(): void}
+ */
 MODULE.navigate = function (positive_dir) {
   return function () {
     if (positive_dir) {
@@ -67,6 +100,24 @@ MODULE.navigate = function (positive_dir) {
   };
 };
 
+/**
+ * @returns {function(): void}
+ */
+MODULE.navigate_prev = function () {
+  return MODULE.navigate(false);
+};
+
+/**
+ * @returns {function(): void}
+ */
+MODULE.navigate_next = function () {
+  return MODULE.navigate(true);
+};
+
+/**
+ * @param {string} target
+ * @returns {function(): void}
+ */
 MODULE.toggle = function (target) {
   return function () {
     if (target === "both") {
@@ -93,17 +144,17 @@ MODULE.toggle = function (target) {
 MODULE.config = function () {
   util.bind("z", MODULE.retime(+0.1, "primary"));
   util.bind("x", MODULE.retime(-0.1, "primary"));
-  util.bind("Z", MODULE.retime(+0.1, "secondary"));
-  util.bind("X", MODULE.retime(-0.1, "secondary"));
+  util.bind("Shift+z", MODULE.retime(+0.1, "secondary"));
+  util.bind("Shift+x", MODULE.retime(-0.1, "secondary"));
 
   util.bind("Shift+g", MODULE.resize(-0.1));
   util.bind("g", MODULE.resize(+0.1));
 
-  util.bind("Shift+t", MODULE.reposition(-1));
-  util.bind("t", MODULE.reposition(+1));
+  util.bind("Shift+t", MODULE.move_up());
+  util.bind("t", MODULE.move_down());
 
-  util.bind("b", MODULE.navigate(true));
-  util.bind("Shift+b", MODULE.navigate(false));
+  util.bind("Shift+b", MODULE.navigate_prev());
+  util.bind("b", MODULE.navigate_next());
 
   util.bind("v", MODULE.toggle("primary"));
   util.bind("Shift+v", MODULE.toggle("secondary"));
