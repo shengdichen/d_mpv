@@ -4,6 +4,10 @@ var util = require("./util").export;
 
 var MODULE = {};
 
+/**
+ * @param {number} incr
+ * @returns {function(): void}
+ */
 MODULE.volume = function (incr) {
   return function () {
     var vol_prev = util.get_prop("volume", "num");

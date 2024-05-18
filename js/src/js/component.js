@@ -6,9 +6,6 @@ var video = {
   config: function () {},
 
   bind: function () {
-    util_mpv.bind("SPACE", function () {
-      util_mpv.cycle("pause");
-    });
     util_mpv.bind("f", function () {
       util_mpv.cycle("fullscreen");
     });
@@ -78,6 +75,8 @@ var playback = {
   },
 
   bind: function () {
+    util_mpv.bind("SPACE", lib_playback.playpause);
+
     util_mpv.bind("<", lib_playback.navigate_playlist(false));
     util_mpv.bind(">", lib_playback.navigate_playlist(true));
     util_mpv.bind("k", report.report_playlist);

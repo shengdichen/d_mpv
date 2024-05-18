@@ -4,6 +4,10 @@ var util = require("./util").export;
 
 var MODULE = {};
 
+MODULE.playpause = function () {
+  util.cycle("pause");
+};
+
 MODULE.navigate_playlist = function (positive_dir) {
   return function () {
     if (positive_dir) {
