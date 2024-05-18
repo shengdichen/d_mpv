@@ -34,8 +34,8 @@ MODULE.navigate_file = function (incr, mode) {
       util.run(["seek", incr, "relative+exact"]);
     }
 
-    var current = util.get_prop("playback-time", "raw");
-    var duration = util.get_prop("duration", "raw");
+    var current = util.get_prop_string_formatted("playback-time");
+    var duration = util.get_prop_string_formatted("duration", "raw");
     util.print_osd("time> " + current + "/" + duration);
   };
 };
@@ -49,7 +49,7 @@ MODULE.adjust_speed = function (incr) {
       util.run(["add", "speed", incr]);
       util.print_osd(
         "speed> " +
-          util_misc.truncate_after_decimal(util.get_prop("speed", "num"))
+          util_misc.truncate_after_decimal(util.get_prop_number("speed"))
       );
     }
   };
@@ -61,7 +61,7 @@ MODULE.loop_files = function () {
 };
 
 function _loop_ab_bound(mode) {
-  var bound = util.get_prop("ab-loop-" + mode);
+  var bound = util.get_prop_autotype("ab-loop-" + mode);
   if (bound === "no") {
     return undefined;
   }

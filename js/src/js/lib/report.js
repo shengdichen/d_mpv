@@ -31,7 +31,7 @@ MODULE.report_category_sub = function () {
 };
 
 function _categorize() {
-  var tracks = util.get_prop("track-list");
+  var tracks = util.get_prop_object("track-list");
   var vids = [];
   var auds = [];
   var subs = [];
@@ -49,7 +49,7 @@ function _categorize() {
 }
 
 function _categorize_one(type) {
-  var tracks = util.get_prop("track-list");
+  var tracks = util.get_prop_object("track-list");
   var category = [];
   for (var i = 0; i < tracks.length; ++i) {
     if (tracks[i].type === type) {
@@ -155,14 +155,14 @@ function _format_category_sub(tracks, n_tracks_global) {
 MODULE.report_chapter = function () {
   var strings = [];
   strings.push("chapter");
-  var chapters = util.get_prop("chapter-list");
+  var chapters = util.get_prop_object("chapter-list");
   var n_chapters = chapters.length;
   if (!n_chapters) {
     util.print_osd(_format_tracks_empty(strings));
   } else {
     for (var i = 0; i < n_chapters; ++i) {
       var c = chapters[i];
-      var str = _format_track_selected(util.get_prop("chapter") === i);
+      var str = _format_track_selected(util.get_prop_number("chapter") === i);
       str = str.concat(i + 1 + "/" + n_chapters + ")");
       if (c.title) {
         str = str.concat(" '" + c.title + "'");
@@ -176,7 +176,7 @@ MODULE.report_chapter = function () {
 MODULE.report_playlist = function () {
   var strings = [];
   strings.push("playlist");
-  var files = util.get_prop("playlist");
+  var files = util.get_prop_object("playlist");
   var n_files = files.length;
   if (!n_files) {
     util.print_osd(_format_tracks_empty(strings));

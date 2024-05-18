@@ -18,27 +18,43 @@ MODULE.pad_integer_to = function (num, reference) {
 };
 
 /**
- * @param {*} num
+ * @param {*} target
  * @returns {boolean}
  */
-MODULE.is_num = function (num) {
-  return Number(num) === num;
+MODULE.is_num = function (target) {
+  return Number(target) === target;
 };
 
 /**
- * @param {*} num
+ * @param {*} target
  * @returns {boolean}
  */
-MODULE.is_int = function (num) {
-  return this.is_num(num) && num % 1 === 0;
+MODULE.is_int = function (target) {
+  return this.is_num(target) && target % 1 === 0;
 };
 
 /**
- * @param {*} num
+ * @param {*} target
  * @returns {boolean}
  */
-MODULE.is_float = function (num) {
-  return this.is_num(num) && num % 1 !== 0;
+MODULE.is_float = function (target) {
+  return this.is_num(target) && target % 1 !== 0;
+};
+
+/**
+ * @param {*} target
+ * @returns {boolean}
+ */
+MODULE.is_object = function (target) {
+  return typeof target === "object" && target !== null;
+};
+
+/**
+ * @param {*} target
+ * @returns {boolean}
+ */
+MODULE.is_array = function (target) {
+  return Array.isArray(target);
 };
 
 /**

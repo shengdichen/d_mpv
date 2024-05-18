@@ -12,7 +12,7 @@ MODULE.navigate = function () {
 function _position(dimension) {
   return util_misc.prepend_sign(
     util_misc.truncate_after_decimal(
-      util.get_prop("video-pan-" + dimension, "num")
+      util.get_prop_number("video-pan-" + dimension)
     )
   );
 }
@@ -27,7 +27,7 @@ MODULE.reposition = function (incr, dimension) {
 
 function _size() {
   return util_misc.prepend_sign(
-    util_misc.truncate_after_decimal(util.get_prop("video-zoom", "num"))
+    util_misc.truncate_after_decimal(util.get_prop_number("video-zoom"))
   );
 }
 MODULE.resize = function (incr) {
@@ -40,7 +40,7 @@ MODULE.resize = function (incr) {
 MODULE.deinterlace = function () {
   return function () {
     util.cycle("deinterlace");
-    util.print_osd("video/deinterlace> " + util.get_prop("deinterlace"));
+    util.print_osd("video/deinterlace> " + util.get_prop_autotype("deinterlace"));
   };
 };
 
@@ -48,9 +48,9 @@ MODULE.hwdec = function () {
   util.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
   util.print_osd(
     "video/hwdec> " +
-      util.get_prop("hwdec-current") +
+      util.get_prop_string("hwdec-current") +
       " [" +
-      util.get_prop("hwdec") +
+      util.get_prop_string("hwdec") +
       "]"
   );
 };

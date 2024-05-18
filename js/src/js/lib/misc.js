@@ -61,7 +61,7 @@ MODULE.config = function () {
   function title() {
     var title = "";
 
-    var server = util.get_prop("input-ipc-server");
+    var server = util.get_prop_string("input-ipc-server");
     if (server) {
       // show only filename of socket
       title = title.concat("[" + server.split("/").slice(-1).toString() + "] ");
@@ -77,16 +77,16 @@ MODULE.config = function () {
 
     util.set_prop(
       "watch-later-options",
-      [
-        util.get_prop("watch-later-options", "string"),
-        "secondary-sub-delay",
-      ].join(",")
+      [util.get_prop_string("watch-later-options"), "secondary-sub-delay"].join(
+        ","
+      )
     );
 
     util.bind("Ctrl+s", function () {
       util.cycle("save-position-on-quit");
       util.print_osd(
-        "savepos> " + (util.get_prop("save-position-on-quit") ? "T" : "F")
+        "savepos> " +
+          (util.get_prop_boolean("save-position-on-quit") ? "T" : "F")
       );
     });
     util.bind("Ctrl+q", function () {

@@ -87,6 +87,69 @@ MODULE.get_prop = function (prop, type, def) {
 
 /**
  * @param {string} prop
+ * @param {boolean} def
+ * @returns {boolean}
+ */
+MODULE.get_prop_boolean = function (prop, def) {
+  return MODULE.raw.get_property_bool(prop, def);
+};
+
+/**
+ * @param {string} prop
+ * @param {number} def
+ * @returns {number}
+ */
+MODULE.get_prop_number = function (prop, def) {
+  return MODULE.raw.get_property_number(prop, def);
+};
+
+/**
+ * @param {string} prop
+ * @param {string} def
+ * @returns {string}
+ */
+MODULE.get_prop_string = function (prop, def) {
+  return MODULE.raw.get_property(prop, def);
+};
+
+/**
+ * get property as string, but formatted by mpv's default
+ * @param {string} prop
+ * @param {string} def
+ * @returns {string}
+ */
+MODULE.get_prop_string_formatted = function (prop, def) {
+  return MODULE.raw.get_property_osd(prop, def);
+};
+
+/**
+ * get property as object, but converted to object with |\_prop| as key if not
+ * an object by default, i.e., boolean or number or string
+ * @param {string} prop
+ * @param {Object} def
+ * @returns {Object.<string, *>|Array.<*>}
+ */
+MODULE.get_prop_object = function (prop, def) {
+  var res = MODULE.raw.get_property_native(prop, def);
+  if (util_misc.is_object(res)) {
+    return res;
+  }
+  return { _prop: res };
+};
+
+/**
+ * get property, but (type-)converted by mpv's default (useful if type of
+ * property is not constant, e.g., can be both boolean or string)
+ * @param {string} prop
+ * @param {boolean|number|string|Object} def
+ * @returns {boolean|number|string|Object}
+ */
+MODULE.get_prop_autotype = function (prop, def) {
+  return MODULE.raw.get_property_native(prop, def);
+};
+
+/**
+ * @param {string} prop
  * @param {*} val
  * @param {string} type
  */
