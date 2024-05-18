@@ -213,6 +213,62 @@ MODULE.print_prop = function (prop, type, def) {
 
 /**
  * @param {string} prop
+ * @param {boolean} def
+ */
+MODULE.print_prop_boolean = function (prop, def) {
+  MODULE.print_osd(MODULE.get_prop_boolean(prop, def));
+};
+
+/**
+ * @param {string} prop
+ * @param {number} def
+ */
+MODULE.print_prop_number = function (prop, def) {
+  MODULE.print_osd(MODULE.get_prop_number(prop, def));
+};
+
+/**
+ * @param {string} prop
+ * @param {string} def
+ */
+MODULE.print_prop_string = function (prop, def) {
+  MODULE.print_osd(MODULE.get_prop_string(prop, def));
+};
+
+/**
+ * @param {string} prop
+ * @param {string} def
+ */
+MODULE.print_prop_string_formatted = function (prop, def) {
+  MODULE.print_osd(MODULE.get_prop_string_formatted(prop, def));
+};
+
+/**
+ * @param {string} prop
+ * @param {Object.<string, *>|Array.<*>} def
+ */
+MODULE.print_prop_object = function (prop, def) {
+  var obj = this.get_prop_object(prop, def);
+  if (util_misc.is_array(obj)) {
+    var strings = obj.map(function (item) {
+      return JSON.stringify(item);
+    });
+    MODULE.print_osd(strings.join("\n\n"));
+  } else {
+    MODULE.print_osd(JSON.stringify(obj));
+  }
+};
+
+/**
+ * @param {string} prop
+ * @param {boolean|number|string|Object} def
+ */
+MODULE.print_prop_autotype = function (prop, def) {
+  MODULE.print_osd(MODULE.get_prop_autotype(prop, def));
+};
+
+/**
+ * @param {string} prop
  * @param {Object.<string, *>} def
  * @returns {Object.<string, *>}
  */

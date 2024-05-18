@@ -57,7 +57,7 @@ MODULE.adjust_speed = function (incr) {
 
 MODULE.loop_files = function () {
   util.cycle("loop-file", ["inf", "no"]);
-  util.print_prop("loop-file");
+  util.print_prop_autotype("loop-file");
 };
 
 function _loop_ab_bound(mode) {
@@ -94,12 +94,12 @@ MODULE.config = function () {
   util.bind(">", MODULE.navigate_playlist(true));
   util.bind("k", report.report_playlist);
   util.bind("Shift+k", function () {
-    util.print_prop("playlist", "string");
+    util.print_prop_object("playlist");
   });
 
   util.bind("j", report.report_categories);
   util.bind("Shift+j", function () {
-    util.print_prop("track-list", "string");
+    util.print_prop_object("track-list");
   });
 
   util.bind("l", MODULE.loop_ab);
