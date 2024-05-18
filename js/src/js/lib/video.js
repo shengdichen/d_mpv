@@ -16,6 +16,11 @@ function _position(dimension) {
     )
   );
 }
+/**
+ * @param {number} [incr]
+ * @param {string} [dimension]
+ * @returns {function(): void}
+ */
 MODULE.reposition = function (incr, dimension) {
   return function () {
     util.run(["add", "video-pan-" + dimension, incr]);
@@ -30,6 +35,10 @@ function _size() {
     util_misc.truncate_after_decimal(util.get_prop_number("video-zoom"))
   );
 }
+/**
+ * @param {number} [incr]
+ * @returns {function(): void}
+ */
 MODULE.resize = function (incr) {
   return function () {
     util.run(["add", "video-zoom", incr]);
@@ -37,6 +46,9 @@ MODULE.resize = function (incr) {
   };
 };
 
+/**
+ * @returns {function(): void}
+ */
 MODULE.deinterlace = function () {
   return function () {
     util.cycle("deinterlace");
@@ -46,6 +58,9 @@ MODULE.deinterlace = function () {
   };
 };
 
+/**
+ * @returns {function(): void}
+ */
 MODULE.hwdec = function () {
   util.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
   util.print_osd(
