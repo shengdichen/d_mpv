@@ -185,7 +185,7 @@ MODULE.report_playlist = function () {
       var f = files[i];
       var str = _format_track_selected(f.playing);
       str = str.concat(
-        util_misc.pad_integer_to(f.id, n_files) +
+        util_misc.pad_integer_like(f.id, n_files) +
           "/" +
           n_files +
           ") " +
@@ -208,7 +208,7 @@ function _format_track_selected(test) {
 
 function _format_id_in_category(track, n_tracks) {
   var str = "";
-  str = str.concat(util_misc.pad_integer_to(track.id, n_tracks));
+  str = str.concat(util_misc.pad_integer_like(track.id, n_tracks));
   str = str.concat("/" + n_tracks + ") ");
   return str;
 }
@@ -216,7 +216,7 @@ function _format_id_in_category(track, n_tracks) {
 function _format_id_global(track, n_tracks_global) {
   if (track["src-id"]) {
     return (
-      "[" + util_misc.pad_integer_to(track["src-id"], n_tracks_global) + "] "
+      "[" + util_misc.pad_integer_like(track["src-id"], n_tracks_global) + "] "
     );
   }
   return "";

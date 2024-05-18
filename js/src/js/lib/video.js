@@ -40,7 +40,9 @@ MODULE.resize = function (incr) {
 MODULE.deinterlace = function () {
   return function () {
     util.cycle("deinterlace");
-    util.print_osd("video/deinterlace> " + util.get_prop_autotype("deinterlace"));
+    util.print_osd(
+      "video/deinterlace> " + util.get_prop_autotype("deinterlace")
+    );
   };
 };
 

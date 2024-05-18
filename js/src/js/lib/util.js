@@ -30,8 +30,7 @@ MODULE.bind = function (key, fn, opts) {
  * @param {number} [duration]
  */
 MODULE.print_osd = function (text, duration) {
-  duration = duration ? duration : 0.7;
-  this.raw.osd_message(text, duration);
+  this.raw.osd_message(text, duration || 0.7);
 };
 
 /**
@@ -52,7 +51,7 @@ MODULE.run = function (fragments) {
 MODULE.run_script_bind = function (script, bind) {
   // REF:
   //  https://mpv.io/manual/master/#command-interface-script-binding
-  this.run(["script-binding", script + "/" + bind]);
+  MODULE.run(["script-binding", script + "/" + bind]);
 };
 
 /**
@@ -60,29 +59,17 @@ MODULE.run_script_bind = function (script, bind) {
  * @param {Array.<string>} args
  */
 MODULE.run_script_fn = function (fn, args) {
-  this.run(["script-message", fn].concat(args));
+  MODULE.run(["script-message", fn].concat(args));
 };
 
 /**
  * @param {string} prop
- * @param {string} type
- * @param {*} def
- * @returns {*}
+ * @param {Object.<string, *>} def
+ * @returns {Object.<string, *>}
  */
-MODULE.get_prop = function (prop, type, def) {
-  if (type === "bool") {
-    return this.raw.get_property_bool(prop, def);
-  }
-  if (type === "num") {
-    return this.raw.get_property_number(prop, def);
-  }
-  if (type === "string") {
-    return this.raw.get_property(prop, def);
-  }
-  if (type === "raw") {
-    return this.raw.get_property_osd(prop, def);
-  }
-  return this.raw.get_property_native(prop, def);
+MODULE.get_prop_config = function (prop, def) {
+  this.raw.options.read_options(def, prop);
+  return def;
 };
 
 /**
@@ -150,24 +137,6 @@ MODULE.get_prop_autotype = function (prop, def) {
 
 /**
  * @param {string} prop
- * @param {*} val
- * @param {string} type
- */
-MODULE.set_prop = function (prop, val, type) {
-  if (type === "bool") {
-    return this.raw.set_property_bool(prop, val);
-  }
-  if (type === "num") {
-    return this.raw.set_property_number(prop, val);
-  }
-  if (type === "raw") {
-    return this.raw.set_property(prop, val);
-  }
-  return this.raw.set_property_native(prop, val);
-};
-
-/**
- * @param {string} prop
  * @param {boolean} val
  */
 MODULE.set_prop_boolean = function (prop, val) {
@@ -191,24 +160,23 @@ MODULE.set_prop_string = function (prop, val) {
 };
 
 /**
+ * @param {string} prop
+ * @param {boolean|number|string|Object} val
+ */
+MODULE.set_prop_autotype = function (prop, val) {
+  return MODULE.raw.set_property_native(prop, val);
+};
+
+/**
  * @param {string} item
  * @param {Array.<*>} [values]
  */
 MODULE.cycle = function (item, values) {
   if (!values) {
-    this.run(["cycle", item]);
+    MODULE.run(["cycle", item]);
   } else {
-    this.run(["cycle-values", item].concat(values));
+    MODULE.run(["cycle-values", item].concat(values));
   }
-};
-
-/**
- * @param {string} prop
- * @param {string} type
- * @param {*} def
- */
-MODULE.print_prop = function (prop, type, def) {
-  this.print_osd(this.get_prop(prop, type, def));
 };
 
 /**
@@ -248,7 +216,7 @@ MODULE.print_prop_string_formatted = function (prop, def) {
  * @param {Object.<string, *>|Array.<*>} def
  */
 MODULE.print_prop_object = function (prop, def) {
-  var obj = this.get_prop_object(prop, def);
+  var obj = MODULE.get_prop_object(prop, def);
   if (util_misc.is_array(obj)) {
     var strings = obj.map(function (item) {
       return JSON.stringify(item);
@@ -265,16 +233,6 @@ MODULE.print_prop_object = function (prop, def) {
  */
 MODULE.print_prop_autotype = function (prop, def) {
   MODULE.print_osd(MODULE.get_prop_autotype(prop, def));
-};
-
-/**
- * @param {string} prop
- * @param {Object.<string, *>} def
- * @returns {Object.<string, *>}
- */
-MODULE.get_prop_config = function (prop, def) {
-  this.raw.options.read_options(def, prop);
-  return def;
 };
 
 module.exports = {

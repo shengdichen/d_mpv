@@ -1,23 +1,6 @@
 var MODULE = {};
 
 /**
- * @param {number} num
- * @returns {string}
- */
-MODULE.prepend_sign = function (num) {
-  return (num < 0 ? "" : "+") + num;
-};
-
-/**
- * @param {number} num
- * @param {number} reference
- * @returns {string}
- */
-MODULE.pad_integer_to = function (num, reference) {
-  return this.pad_integer(num, this.len_integer(reference));
-};
-
-/**
  * @param {*} target
  * @returns {boolean}
  */
@@ -30,7 +13,7 @@ MODULE.is_num = function (target) {
  * @returns {boolean}
  */
 MODULE.is_int = function (target) {
-  return this.is_num(target) && target % 1 === 0;
+  return MODULE.is_num(target) && target % 1 === 0;
 };
 
 /**
@@ -38,7 +21,7 @@ MODULE.is_int = function (target) {
  * @returns {boolean}
  */
 MODULE.is_float = function (target) {
-  return this.is_num(target) && target % 1 !== 0;
+  return MODULE.is_num(target) && target % 1 !== 0;
 };
 
 /**
@@ -50,11 +33,36 @@ MODULE.is_object = function (target) {
 };
 
 /**
+ * @param {Object.<*, *>} obj
+ * @param {*} key
+ */
+MODULE.has_member = function (obj, key) {
+  return typeof obj[key] !== "undefined";
+};
+
+/**
  * @param {*} target
  * @returns {boolean}
  */
 MODULE.is_array = function (target) {
   return Array.isArray(target);
+};
+
+/**
+ * @param {number} num
+ * @returns {string}
+ */
+MODULE.prepend_sign = function (num) {
+  return (num < 0 ? "" : "+") + num;
+};
+
+/**
+ * @param {number} num
+ * @param {number} reference
+ * @returns {string}
+ */
+MODULE.pad_integer_like = function (num, reference) {
+  return MODULE.pad_integer(num, MODULE.len_integer(reference));
 };
 
 /**
@@ -80,19 +88,11 @@ MODULE.len_integer = function (num) {
 
 /**
  * @param {number} num
- * @param {number} [digits]
+ * @param {number} [n_digits]
  * @returns {string}
  */
-MODULE.truncate_after_decimal = function (num, digits) {
-  return num.toFixed(digits || 2);
-};
-
-/**
- * @param {Object.<*, *>} obj
- * @param {*} key
- */
-MODULE.has_member = function (obj, key) {
-  return typeof obj[key] !== "undefined";
+MODULE.truncate_after_decimal = function (num, n_digits) {
+  return num.toFixed(n_digits || 2);
 };
 
 module.exports = {
