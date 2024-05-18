@@ -5,16 +5,20 @@ MODULE.raw = mp; // eslint-disable-line no-undef
 /**
  * @param {string} key
  * @param {function(): void} fn
- * @param {boolean} [repeatable]
- * @param {boolean} [force]
+ * @param {Object.<string, *>} [opts]
  */
-MODULE.bind = function (key, fn, repeatable, force) {
-  var flags = {};
-  flags.repeatable = typeof repeatable !== "undefined" ? repeatable : true;
-  if (force) {
-    this.raw.add_forced_key_binding(key, fn, flags);
+MODULE.bind = function (key, fn, opts) {
+  if (!opts) {
+    this.raw.add_key_binding(key, fn, { repeatable: true });
+    return;
+  }
+
+  opts.repeatable =
+    typeof opts.repeatable !== "undefined" ? opts.repeatable : true;
+  if (opts.force) {
+    this.raw.add_forced_key_binding(key, fn, delete opts.force);
   } else {
-    this.raw.add_key_binding(key, fn, flags);
+    this.raw.add_key_binding(key, fn, opts);
   }
 };
 
@@ -91,14 +95,14 @@ MODULE.set_prop = function (prop, val, type) {
     return this.raw.set_property_number(prop, val);
   }
   if (type === "raw") {
-    return this.raw.set_property(prop, type);
+    return this.raw.set_property(prop, val);
   }
   return this.raw.set_property_native(prop, val);
 };
 
 /**
  * @param {string} item
- * @param {Array.<*>} type
+ * @param {Array.<*>} [values]
  */
 MODULE.cycle = function (item, values) {
   if (!values) {

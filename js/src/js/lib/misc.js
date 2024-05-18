@@ -22,12 +22,12 @@ MODULE.osc = {
     util.run_script_fn(osc_fn, ["always", false]);
   },
   toggle: function () {
-    osc_is_visible = !osc_is_visible;
     if (osc_is_visible) {
       MODULE.osc.disable();
     } else {
       MODULE.osc.enable();
     }
+    osc_is_visible = !osc_is_visible;
   },
 };
 
@@ -53,7 +53,7 @@ MODULE.screenshot = function () {
 };
 
 MODULE.config = function () {
-  util.raw.add_forced_key_binding("i", MODULE.osc.toggle);
+  util.bind("i", MODULE.osc.toggle);
   util.bind("I", MODULE.stats.toggle);
   util.bind("`", MODULE.console.enable);
   util.bind("Shift+s", MODULE.screenshot);

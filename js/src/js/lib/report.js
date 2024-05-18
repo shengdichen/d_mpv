@@ -35,7 +35,7 @@ function _categorize() {
   var vids = [];
   var auds = [];
   var subs = [];
-  for (var i = 0; i < tracks.length; i++) {
+  for (var i = 0; i < tracks.length; ++i) {
     var t = tracks[i];
     if (t.type === "video") {
       vids.push(t);
@@ -51,7 +51,7 @@ function _categorize() {
 function _categorize_one(type) {
   var tracks = util.get_prop("track-list");
   var category = [];
-  for (var i = 0; i < tracks.length; i++) {
+  for (var i = 0; i < tracks.length; ++i) {
     if (tracks[i].type === type) {
       category.push(tracks[i]);
     }
@@ -67,7 +67,7 @@ function _format_category_video(tracks, n_tracks_global) {
   }
 
   var n_tracks = tracks.length;
-  for (var i = 0; i < n_tracks; i++) {
+  for (var i = 0; i < n_tracks; ++i) {
     var t = tracks[i];
     var str = _format_track_selected(t.selected);
     if (n_tracks_global) {
@@ -102,7 +102,7 @@ function _format_category_audio(tracks, n_tracks_global) {
   }
 
   var n_tracks = tracks.length;
-  for (var i = 0; i < n_tracks; i++) {
+  for (var i = 0; i < n_tracks; ++i) {
     var t = tracks[i];
     var str = _format_track_selected(t.selected);
     if (n_tracks_global) {
@@ -126,7 +126,7 @@ function _format_category_sub(tracks, n_tracks_global) {
   }
 
   var n_tracks = tracks.length;
-  for (var i = 0; i < n_tracks; i++) {
+  for (var i = 0; i < n_tracks; ++i) {
     var t = tracks[i];
     var str = "";
     if (t.selected) {
@@ -160,7 +160,7 @@ MODULE.report_chapter = function () {
   if (!n_chapters) {
     util.print_osd(_format_tracks_empty(strings));
   } else {
-    for (var i = 0; i < n_chapters; i++) {
+    for (var i = 0; i < n_chapters; ++i) {
       var c = chapters[i];
       var str = _format_track_selected(util.get_prop("chapter") === i);
       str = str.concat(i + 1 + "/" + n_chapters + ")");
@@ -181,7 +181,7 @@ MODULE.report_playlist = function () {
   if (!n_files) {
     util.print_osd(_format_tracks_empty(strings));
   } else {
-    for (var i = 0; i < n_files; i++) {
+    for (var i = 0; i < n_files; ++i) {
       var f = files[i];
       var str = _format_track_selected(f.playing);
       str = str.concat(
