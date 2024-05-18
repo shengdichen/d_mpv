@@ -25,6 +25,17 @@ MODULE.is_float = function (target) {
 };
 
 /**
+ * @param {number} num_1
+ * @param {number} num_2
+ * @param {number} [precision]
+ * @returns {boolean}
+ */
+MODULE.is_close = function (num_1, num_2, precision) {
+  precision = precision !== undefined ? precision : 1e-6;
+  return Math.abs(num_1 - num_2) <= precision;
+};
+
+/**
  * @param {*} target
  * @returns {boolean}
  */
@@ -53,7 +64,13 @@ MODULE.is_array = function (target) {
  * @returns {string}
  */
 MODULE.prepend_sign = function (num) {
-  return (num < 0 ? "" : "+") + num;
+  var sign = "";
+  if (MODULE.is_close(num, 0)) {
+    sign = "=";
+  } else if (num > 0) {
+    sign = "+";
+  }
+  return sign + num;
 };
 
 /**
@@ -92,7 +109,10 @@ MODULE.len_integer = function (num) {
  * @returns {string}
  */
 MODULE.truncate_after_decimal = function (num, n_digits) {
-  return num.toFixed(n_digits || 2);
+  n_digits = n_digits || 2;
+  var scale = Math.pow(10, n_digits);
+  num = Math.round(num * scale) / scale;
+  return num.toFixed(n_digits);
 };
 
 module.exports = {
