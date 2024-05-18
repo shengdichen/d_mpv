@@ -167,6 +167,30 @@ MODULE.set_prop = function (prop, val, type) {
 };
 
 /**
+ * @param {string} prop
+ * @param {boolean} val
+ */
+MODULE.set_prop_boolean = function (prop, val) {
+  return MODULE.raw.set_property_bool(prop, val);
+};
+
+/**
+ * @param {string} prop
+ * @param {number} val
+ */
+MODULE.set_prop_number = function (prop, val) {
+  return MODULE.raw.set_property_number(prop, val);
+};
+
+/**
+ * @param {string} prop
+ * @param {string} val
+ */
+MODULE.set_prop_string = function (prop, val) {
+  return MODULE.raw.set_property(prop, val);
+};
+
+/**
  * @param {string} item
  * @param {Array.<*>} [values]
  */

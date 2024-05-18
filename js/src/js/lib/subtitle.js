@@ -75,7 +75,7 @@ MODULE.toggle = function (target) {
       util.print_osd(
         "subtitle/visibility> " + (!visible_primary ? "primary" : "secondary")
       );
-      util.set_prop("secondary-sub-visibility", !visible_primary);
+      util.set_prop_boolean("secondary-sub-visibility", !visible_primary);
     } else {
       var opt =
         target === "primary" ? "sub-visibility" : "secondary-sub-visibility";

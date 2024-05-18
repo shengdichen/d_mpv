@@ -68,14 +68,14 @@ MODULE.config = function () {
     }
 
     title = title.concat("${path}");
-    util.set_prop("title", title);
+    util.set_prop_string("title", title);
   }
 
   function savepos() {
-    util.set_prop("write-filename-in-watch-later-config", true);
-    util.set_prop("ignore-path-in-watch-later-config", true);
+    util.set_prop_boolean("write-filename-in-watch-later-config");
+    util.set_prop_boolean("ignore-path-in-watch-later-config");
 
-    util.set_prop(
+    util.set_prop_string(
       "watch-later-options",
       [util.get_prop_string("watch-later-options"), "secondary-sub-delay"].join(
         ","

@@ -12,7 +12,7 @@ MODULE.volume = function (incr) {
   return function () {
     var vol_prev = util.get_prop_number("volume");
     var vol_next = vol_prev + incr;
-    util.set_prop("volume", vol_next, "num");
+    util.set_prop_number("volume", vol_next);
     util.print_osd(
       "volume> " + vol_next + " [" + vol_prev + _format_volume_incr(incr) + "]"
     );
