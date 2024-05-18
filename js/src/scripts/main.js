@@ -1,6 +1,4 @@
-var conf = require("../js/main").conf;
-
 function main() {
-  conf.bind();
+  require("../js/config").export();
 }
 main();

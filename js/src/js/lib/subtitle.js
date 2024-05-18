@@ -90,6 +90,26 @@ MODULE.toggle = function (target) {
   };
 };
 
+MODULE.config = function () {
+  util.bind("z", MODULE.retime(+0.1, "primary"));
+  util.bind("x", MODULE.retime(-0.1, "primary"));
+  util.bind("Z", MODULE.retime(+0.1, "secondary"));
+  util.bind("X", MODULE.retime(-0.1, "secondary"));
+
+  util.bind("Shift+g", MODULE.resize(-0.1));
+  util.bind("g", MODULE.resize(+0.1));
+
+  util.bind("Shift+t", MODULE.reposition(-1));
+  util.bind("t", MODULE.reposition(+1));
+
+  util.bind("b", MODULE.navigate(true));
+  util.bind("Shift+b", MODULE.navigate(false));
+
+  util.bind("v", MODULE.toggle("primary"));
+  util.bind("Shift+v", MODULE.toggle("secondary"));
+  util.bind("Alt+v", MODULE.toggle("both"));
+};
+
 module.exports = {
   export: MODULE,
 };

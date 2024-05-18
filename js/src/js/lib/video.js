@@ -55,6 +55,28 @@ MODULE.hwdec = function () {
   );
 };
 
+MODULE.config = function () {
+  util.bind("f", function () {
+    util.cycle("fullscreen");
+  });
+  util.bind("Ctrl+r", function () {
+    util.cycle("video-rotate", [90, 180, 270, 0]);
+  });
+
+  util.bind("_", MODULE.navigate);
+
+  util.bind("Alt+LEFT", MODULE.reposition(+0.1, "x"));
+  util.bind("Alt+RIGHT", MODULE.reposition(-0.1, "x"));
+  util.bind("Alt+UP", MODULE.reposition(+0.1, "y"));
+  util.bind("Alt+DOWN", MODULE.reposition(-0.1, "y"));
+
+  util.bind("Alt+-", MODULE.resize(-0.1));
+  util.bind("Alt++", MODULE.resize(+0.1));
+
+  util.bind("d", MODULE.deinterlace(-0.1));
+  util.bind("Ctrl+h", MODULE.hwdec);
+};
+
 module.exports = {
   export: MODULE,
 };

@@ -31,6 +31,10 @@ MODULE.toggle = function () {
   }
 };
 
+MODULE.config = function () {
+  util.raw.add_forced_key_binding("i", MODULE.toggle);
+};
+
 module.exports = {
   export: MODULE,
 };
