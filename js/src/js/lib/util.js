@@ -1,3 +1,5 @@
+var util_misc = require("../util").export;
+
 var MODULE = {};
 
 MODULE.raw = mp; // eslint-disable-line no-undef
@@ -13,8 +15,9 @@ MODULE.bind = function (key, fn, opts) {
     return;
   }
 
-  opts.repeatable =
-    typeof opts.repeatable !== "undefined" ? opts.repeatable : true;
+  opts.repeatable = util_misc.has_member(opts, "repeatable")
+    ? opts.repeatable
+    : true;
   if (opts.force) {
     this.raw.add_forced_key_binding(key, fn, delete opts.force);
   } else {
