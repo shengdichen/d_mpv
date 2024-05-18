@@ -146,6 +146,8 @@ MODULE.config = function () {
   util.bind("x", MODULE.retime(-0.1, "primary"));
   util.bind("Shift+z", MODULE.retime(+0.1, "secondary"));
   util.bind("Shift+x", MODULE.retime(-0.1, "secondary"));
+  util.bind("Ctrl+Shift+z", MODULE.retime(+0.1, "both"));
+  util.bind("Ctrl+Shift+x", MODULE.retime(-0.1, "both"));
 
   util.bind("Shift+g", MODULE.resize(-0.1));
   util.bind("g", MODULE.resize(+0.1));
