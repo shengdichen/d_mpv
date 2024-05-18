@@ -11,9 +11,9 @@ MODULE.playpause = function () {
 MODULE.navigate_playlist = function (positive_dir) {
   return function () {
     if (positive_dir) {
-      util.run(["playlist-next"]);
+      util.run("playlist-next");
     } else {
-      util.run(["playlist-prev"]);
+      util.run("playlist-prev");
     }
     report.report_playlist();
   };
@@ -26,9 +26,9 @@ MODULE.navigate_file = function (incr, mode) {
       report.report_chapter();
     } else if (mode === "frame") {
       if (incr > 0) {
-        util.run(["frame-step"]);
+        util.run("frame-step");
       } else {
-        util.run(["frame-back-step"]);
+        util.run("frame-back-step");
       }
     } else {
       util.run(["seek", incr, "relative+exact"]);
@@ -69,7 +69,7 @@ function _loop_ab_bound(mode) {
 }
 
 MODULE.loop_ab = function () {
-  util.run(["ab-loop"]);
+  util.run("ab-loop");
 
   var msg;
   var bound_a = _loop_ab_bound("a");

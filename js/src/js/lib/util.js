@@ -28,10 +28,14 @@ MODULE.print_osd = function (text, duration) {
 };
 
 /**
- * @param {Array.<string>} fragments
+ * @param {Array.<string>|string} fragments
  */
 MODULE.run = function (fragments) {
-  this.raw.commandv.apply(null, fragments);
+  if (!Array.isArray(fragments)) {
+    this.raw.command(fragments);
+  } else {
+    this.raw.commandv.apply(null, fragments);
+  }
 };
 
 /**

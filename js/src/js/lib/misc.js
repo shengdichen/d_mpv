@@ -90,7 +90,7 @@ MODULE.config = function () {
       );
     });
     util.bind("Ctrl+q", function () {
-      util.run(["quit-watch-later"]);
+      util.run("quit-watch-later");
     });
   }
 
