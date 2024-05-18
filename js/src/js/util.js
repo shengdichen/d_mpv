@@ -1,339 +1,120 @@
-var util_misc = new (function () {
-  var _this = this;
+var MODULE = {};
 
-  this.prepend_sign = function (num) {
-    return (num < 0 ? "" : "+") + num;
-  };
+/**
+ * @param {*} target
+ * @returns {boolean}
+ */
+MODULE.is_num = function (target) {
+  return Number(target) === target;
+};
 
-  this.pad_integer_to = function (num, reference) {
-    return _this.pad_integer(num, _this.len_integer(reference));
-  };
+/**
+ * @param {*} target
+ * @returns {boolean}
+ */
+MODULE.is_int = function (target) {
+  return MODULE.is_num(target) && target % 1 === 0;
+};
 
-  this.is_num = function (num) {
-    return Number(num) === num;
-  };
+/**
+ * @param {*} target
+ * @returns {boolean}
+ */
+MODULE.is_float = function (target) {
+  return MODULE.is_num(target) && target % 1 !== 0;
+};
 
-  this.is_int = function (num) {
-    return _this.is_num(num) && num % 1 === 0;
-  };
+/**
+ * @param {number} num_1
+ * @param {number} num_2
+ * @param {number} [precision]
+ * @returns {boolean}
+ */
+MODULE.is_close = function (num_1, num_2, precision) {
+  precision = precision !== undefined ? precision : 1e-6;
+  return Math.abs(num_1 - num_2) <= precision;
+};
 
-  this.is_float = function (num) {
-    return _this.is_num(num) && num % 1 !== 0;
-  };
+/**
+ * @param {*} target
+ * @returns {boolean}
+ */
+MODULE.is_object = function (target) {
+  return typeof target === "object" && target !== null;
+};
 
-  this.pad_integer = function (num, len) {
-    num = num.toString();
-    while (num.length < len) {
-      num = "0" + num;
-    }
-    return num;
-  };
+/**
+ * @param {Object.<*, *>} obj
+ * @param {*} key
+ */
+MODULE.has_member = function (obj, key) {
+  return typeof obj[key] !== "undefined";
+};
 
-  this.len_integer = function (num) {
-    return num.toString().length;
-  };
+/**
+ * @param {*} target
+ * @returns {boolean}
+ */
+MODULE.is_array = function (target) {
+  return Array.isArray(target);
+};
 
-  this.truncate_after_decimal = function (num, digits) {
-    if (!digits) {
-      digits = 2;
-    }
-    return num.toFixed(digits);
-  };
-})();
-
-var util_mpv = new (function () {
-  this.bind = function (key, fn, repeatable, force) {
-    var flags = {};
-    flags.repeatable = typeof repeatable !== "undefined" ? repeatable : true;
-    if (force) {
-      mp.add_forced_key_binding(key, fn, flags);
-    } else {
-      mp.add_key_binding(key, fn, flags);
-    }
-  };
-
-  this.print_osd = function (text, duration) {
-    duration = duration ? duration : 0.7;
-    mp.osd_message(text, duration);
-  };
-
-  this.run = function (fragments) {
-    mp.commandv.apply(null, fragments);
-  };
-
-  this.run_script_bind = function (script, bind) {
-    // REF:
-    //  https://mpv.io/manual/master/#command-interface-script-binding
-    this.run(["script-binding", script + "/" + bind]);
-  };
-
-  this.run_script_fn = function (fn, args) {
-    this.run(["script-message", fn].concat(args));
-  };
-
-  this.get_prop = function (prop, type, def) {
-    if (type === "bool") {
-      return mp.get_property_bool(prop, def);
-    }
-    if (type === "num") {
-      return mp.get_property_number(prop, def);
-    }
-    if (type === "string") {
-      return mp.get_property(prop, def);
-    }
-    if (type === "raw") {
-      return mp.get_property_osd(prop, def);
-    }
-    return mp.get_property_native(prop, def);
-  };
-
-  this.set_prop = function (prop, val, type) {
-    if (type === "bool") {
-      return mp.set_property_bool(prop, val);
-    }
-    if (type === "num") {
-      return mp.set_property_number(prop, val);
-    }
-    if (type === "raw") {
-      return mp.set_property(prop, def);
-    }
-    return mp.set_property_native(prop, val);
-  };
-
-  this.cycle = function (item, values) {
-    if (!values) {
-      this.run(["cycle", item]);
-    } else {
-      this.run(["cycle-values", item].concat(values));
-    }
-  };
-
-  this.print_prop = function (prop, type, def) {
-    this.print_osd(this.get_prop(prop, type, def));
-  };
-})();
-
-var report = new (function () {
-  this.report_categories = function () {
-    var categories = _categorize();
-    var vids = categories[0];
-    var auds = categories[1];
-    var subs = categories[2];
-    var n_tracks_global = categories[3];
-
-    var strings = [];
-    strings.push(_format_category_video(vids, n_tracks_global));
-    strings.push(_format_category_audio(auds, n_tracks_global));
-    strings.push(_format_category_sub(subs, n_tracks_global));
-    var separator = "\n" + Array(37).join("-") + "\n";
-    util_mpv.print_osd(strings.join(separator));
-  };
-
-  this.report_category_video = function () {
-    util_mpv.print_osd(_format_category_video(_categorize_one("video")));
-  };
-
-  this.report_category_audio = function () {
-    util_mpv.print_osd(_format_category_audio(_categorize_one("audio")));
-  };
-
-  this.report_category_sub = function () {
-    util_mpv.print_osd(_format_category_sub(_categorize_one("sub")));
-  };
-
-  function _categorize() {
-    var tracks = util_mpv.get_prop("track-list");
-    var vids = [];
-    var auds = [];
-    var subs = [];
-    for (var i = 0; i < tracks.length; i++) {
-      var t = tracks[i];
-      if (t.type === "video") {
-        vids.push(t);
-      } else if (t.type === "audio") {
-        auds.push(t);
-      } else if (t.type === "sub") {
-        subs.push(t);
-      }
-    }
-    return [vids, auds, subs, tracks.length];
+/**
+ * @param {number} num
+ * @returns {string}
+ */
+MODULE.prepend_sign = function (num) {
+  var sign = "";
+  if (MODULE.is_close(num, 0)) {
+    sign = "=";
+  } else if (num > 0) {
+    sign = "+";
   }
+  return sign + num;
+};
 
-  function _categorize_one(type) {
-    var tracks = util_mpv.get_prop("track-list");
-    var category = [];
-    for (var i = 0; i < tracks.length; i++) {
-      if (tracks[i].type === type) {
-        category.push(tracks[i]);
-      }
-    }
-    return category;
+/**
+ * @param {number} num
+ * @param {number} reference
+ * @returns {string}
+ */
+MODULE.pad_integer_like = function (num, reference) {
+  return MODULE.pad_integer(num, MODULE.len_integer(reference));
+};
+
+/**
+ * @param {number} num
+ * @param {number} len
+ * @returns {string}
+ */
+MODULE.pad_integer = function (num, len) {
+  num = num.toString();
+  while (num.length < len) {
+    num = "0" + num;
   }
+  return num;
+};
 
-  function _format_category_video(tracks, n_tracks_global) {
-    var strings = [];
-    strings.push("vid");
-    if (!tracks.length) {
-      return _format_tracks_empty(strings);
-    }
+/**
+ * @param {number} num
+ * @returns {number}
+ */
+MODULE.len_integer = function (num) {
+  return num.toString().length;
+};
 
-    var n_tracks = tracks.length;
-    for (var i = 0; i < n_tracks; i++) {
-      var t = tracks[i];
-      var str = _format_track_selected(t.selected);
-      if (n_tracks_global) {
-        str = str.concat(_format_id_global(t, n_tracks_global));
-      }
-      str = str.concat(_format_id_in_category(t, n_tracks));
-      str = str.concat(t.codec);
-      var fps = t["demux-fps"];
-      if (fps) {
-        if (fps === 1) {
-          str = str.concat("[static]");
-        } else {
-          if (util_misc.is_float(fps)) {
-            fps = util_misc.truncate_after_decimal(fps, 3);
-          }
-          str = str.concat("@" + fps + "fps");
-        }
-      }
-      if (t["demux-w"] && t["demux-h"]) {
-        str = str.concat(" " + t["demux-w"] + "x" + t["demux-h"]);
-      }
-      strings.push(str);
-    }
-    return strings.join("\n");
-  }
+/**
+ * @param {number} num
+ * @param {number} [n_digits]
+ * @returns {string}
+ */
+MODULE.truncate_after_decimal = function (num, n_digits) {
+  n_digits = n_digits || 2;
+  var scale = Math.pow(10, n_digits);
+  num = Math.round(num * scale) / scale;
+  return num.toFixed(n_digits);
+};
 
-  function _format_category_audio(tracks, n_tracks_global) {
-    var strings = [];
-    strings.push("aud");
-    if (!tracks.length) {
-      return _format_tracks_empty(strings);
-    }
-
-    var n_tracks = tracks.length;
-    for (var i = 0; i < n_tracks; i++) {
-      var t = tracks[i];
-      var str = _format_track_selected(t.selected);
-      if (n_tracks_global) {
-        str = str.concat(_format_id_global(t, n_tracks_global));
-      }
-      str = str.concat(_format_id_in_category(t, n_tracks));
-      str = str.concat(t.codec + "[x" + t["demux-channel-count"] + "]");
-      if (t.lang) {
-        str = str.concat(" " + t.lang);
-      }
-      strings.push(str);
-    }
-    return strings.join("\n");
-  }
-
-  function _format_category_sub(tracks, n_tracks_global) {
-    var strings = [];
-    strings.push("sub");
-    if (!tracks.length) {
-      return _format_tracks_empty(strings);
-    }
-
-    var n_tracks = tracks.length;
-    for (var i = 0; i < n_tracks; i++) {
-      var t = tracks[i];
-      var str = "";
-      if (t.selected) {
-        // REF:
-        //  https://mpv.io/manual/master/#command-interface-track-list/n/main-selection
-        if (t["main-selection"]) {
-          str = str.concat(" >> "); // secondary subtitle
-        } else {
-          str = str.concat("  > "); // primary subtitle
-        }
-      } else {
-        str = str.concat("    ");
-      }
-      if (n_tracks_global) {
-        str = str.concat(_format_id_global(t, n_tracks_global));
-      }
-      str = str.concat(_format_id_in_category(t, n_tracks));
-      if (t.lang) {
-        str = str.concat(t.lang);
-      }
-      strings.push(str);
-    }
-    return strings.join("\n");
-  }
-
-  this.report_chapter = function () {
-    var strings = [];
-    strings.push("chapter");
-    var chapters = util_mpv.get_prop("chapter-list");
-    var n_chapters = chapters.length;
-    if (!n_chapters) {
-      util_mpv.print_osd(_format_tracks_empty(strings));
-    } else {
-      for (var i = 0; i < n_chapters; i++) {
-        var c = chapters[i];
-        var str = _format_track_selected(util_mpv.get_prop("chapter") === i);
-        str = str.concat(i + 1 + "/" + n_chapters + ")");
-        if (c.title) {
-          str = str.concat(" '" + c.title + "'");
-        }
-        strings.push(str);
-      }
-      util_mpv.print_osd(strings.join("\n"));
-    }
-  };
-
-  this.report_playlist = function () {
-    var strings = [];
-    strings.push("playlist");
-    var files = util_mpv.get_prop("playlist");
-    var n_files = files.length;
-    if (!n_files) {
-      util_mpv.print_osd(_format_tracks_empty(strings));
-    } else {
-      for (var i = 0; i < n_files; i++) {
-        var f = files[i];
-        var str = _format_track_selected(f.playing);
-        str = str.concat(
-          util_misc.pad_integer_to(f.id, n_files) +
-            "/" +
-            n_files +
-            ") " +
-            f.filename
-        );
-        strings.push(str);
-      }
-      util_mpv.print_osd(strings.join("\n"));
-    }
-  };
-
-  function _format_tracks_empty(strings) {
-    strings.push("  ?");
-    return strings.join("\n");
-  }
-
-  function _format_track_selected(test) {
-    return test ? "  > " : "    ";
-  }
-
-  function _format_id_in_category(track, n_tracks) {
-    var str = "";
-    str = str.concat(util_misc.pad_integer_to(track.id, n_tracks));
-    str = str.concat("/" + n_tracks + ") ");
-    return str;
-  }
-
-  function _format_id_global(track, n_tracks_global) {
-    if (track["src-id"]) {
-      return (
-        "[" + util_misc.pad_integer_to(track["src-id"], n_tracks_global) + "] "
-      );
-    }
-    return "";
-  }
-})();
-
-module.exports.util_misc = util_misc;
-module.exports.util_mpv = util_mpv;
-module.exports.report = report;
+module.exports = {
+  export: MODULE,
+};
