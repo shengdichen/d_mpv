@@ -72,14 +72,12 @@ MODULE.config = function () {
   }
 
   function savepos() {
-    util.set_prop_boolean("write-filename-in-watch-later-config");
-    util.set_prop_boolean("ignore-path-in-watch-later-config");
+    util.set_prop_boolean("write-filename-in-watch-later-config", true);
+    util.set_prop_boolean("ignore-path-in-watch-later-config", true);
 
     util.set_prop_string(
       "watch-later-options",
-      [util.get_prop_string("watch-later-options"), "secondary-sub-delay"].join(
-        ","
-      )
+      util.get_prop_string("watch-later-options") + ",secondary-sub-delay"
     );
 
     util.bind("Ctrl+s", function () {
