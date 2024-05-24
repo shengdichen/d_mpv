@@ -110,8 +110,10 @@ MODULE.config = function () {
 
   util.bind("LEFT", MODULE.navigate_file(-3));
   util.bind("RIGHT", MODULE.navigate_file(+3));
-  util.bind("UP", MODULE.navigate_file(-7));
-  util.bind("DOWN", MODULE.navigate_file(+7));
+  util.bind("Shift+LEFT", MODULE.navigate_file(-1));
+  util.bind("Shift+RIGHT", MODULE.navigate_file(+1));
+  util.bind("Ctrl+LEFT", MODULE.navigate_file(-7));
+  util.bind("Ctrl+RIGHT", MODULE.navigate_file(+7));
   util.bind("PGUP", MODULE.navigate_file(-1, "chapter"));
   util.bind("PGDWN", MODULE.navigate_file(+1, "chapter"));
 
