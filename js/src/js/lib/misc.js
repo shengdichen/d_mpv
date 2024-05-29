@@ -59,7 +59,7 @@ MODULE.config = function () {
   util.bind("Shift+s", MODULE.screenshot);
 
   function title() {
-    var title = "";
+    var title = "mpv> ";
 
     var server = util.get_prop_string("input-ipc-server");
     if (server) {
