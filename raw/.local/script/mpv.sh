@@ -1,8 +1,5 @@
 #!/usr/bin/env dash
 
-SCRIPT_PATH="$(realpath "$(dirname "${0}")")"
-cd "${SCRIPT_PATH}" || exit 3
-
 . "${HOME}/.local/lib/util.sh"
 
 __mpv() {
@@ -17,10 +14,10 @@ __mpv_record() {
 }
 
 __mpv_paste() {
-    local _path _input
+    local _target _input
     while true; do
-        _path="$(wl-paste)"
-        printf "mpv-paste> \"%s\"  [%s]\n" "$(yt-dlp --get-title "${_path}")" "${_path}"
+        _target="$(wl-paste)"
+        printf "mpv-paste> \"%s\"  [%s]\n" "$(yt-dlp --get-title "${_target}")" "${_target}"
         printf "mpv-paste> go ahead? [y]es (default), [n]o "
         read -r _input
         case "${_input}" in
@@ -31,7 +28,7 @@ __mpv_paste() {
                 ;;
             *)
                 printf "mpv-paste> launching...\n"
-                __mpv -- "${_path}"
+                __mpv -- "${_target}"
 
                 printf "\n"
                 printf "mpv-paste> break? [y]es (default), [n]o "
@@ -63,5 +60,4 @@ case "${1}" in
         shift
         __mpv_paste
         ;;
-    *) ;;
 esac
