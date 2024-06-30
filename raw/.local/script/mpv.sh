@@ -9,6 +9,13 @@ __mpv() {
     __x mpv "${@}"
 }
 
+__mpv_record() {
+    __mpv \
+        --save-position-on-quit \
+        --resume-playback \
+        "${@}"
+}
+
 __mpv_paste() {
     local _path _input
     while true; do
@@ -47,6 +54,10 @@ case "${1}" in
     "direct")
         shift
         __mpv "${@}"
+        ;;
+    "record")
+        shift
+        __mpv_record "${@}"
         ;;
     "paste")
         shift
