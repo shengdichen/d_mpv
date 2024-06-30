@@ -3,5 +3,12 @@ Type=Application
 Name=__mpv
 Icon=mpv
 
-Exec=./.local/script/mpv.sh run
+Exec=bash -c "$HOME/.local/script/mpv.sh"
+Terminal=true
+
+Actions=paste;
+
+[Desktop Action paste]
+Name=paste
+Exec=bash -c "$HOME/.local/script/mpv.sh paste"
 Terminal=true

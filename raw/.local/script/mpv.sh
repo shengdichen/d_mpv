@@ -5,6 +5,10 @@ cd "${SCRIPT_PATH}" || exit 3
 
 . "${HOME}/.local/lib/util.sh"
 
+__mpv() {
+    __x mpv "${@}"
+}
+
 __mpv_paste() {
     local _path _input
     while true; do
@@ -20,7 +24,7 @@ __mpv_paste() {
                 ;;
             *)
                 printf "mpv-paste> launching...\n"
-                __x mpv -- "${_path}"
+                __mpv -- "${_path}"
 
                 printf "\n"
                 printf "mpv-paste> break? [y]es (default), [n]o "
@@ -40,7 +44,11 @@ __mpv_paste() {
 }
 
 case "${1}" in
-    "run")
+    "direct")
+        shift
+        __mpv "${@}"
+        ;;
+    "paste")
         shift
         __mpv_paste
         ;;
