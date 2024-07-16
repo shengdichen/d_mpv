@@ -1,6 +1,7 @@
 #!/usr/bin/env dash
 
 WATCHLATER_DIR="${HOME}/.local/state/mpv/watch_later"
+SOCKET_DIR="${HOME}/.local/state/mpv"
 
 . "${HOME}/.local/lib/util.sh"
 
@@ -94,6 +95,54 @@ __mpv_paste() {
     done
 }
 
+__mpv_socket() {
+    __to_socket() {
+        printf "%s\n" "${1}" | socat - "${SOCKET_DIR}/${2}.sok"
+    }
+
+    __find_files() {
+        find "${@}" -type f -print | sort
+    }
+
+    local _socket="throw"
+    if [ "${1}" = "-s" ]; then
+        _socket="${2}"
+        shift && shift
+    fi
+    if [ "${1}" = "--" ]; then shift; fi
+
+    __mpv_socket() {
+        __find_files "${@}" | xargs -d "\n" -- \
+            nohup mpv \
+            --input-ipc-server="${SOCKET_DIR}/${_socket}.sok" \
+            --
+    }
+    if ! pgrep -u "$(whoami)" -a |
+        cut -d " " -f 2- |
+        grep -q "^mpv.*--input-ipc-server=.*/\.local/state/mpv/${_socket}\.sok"; then
+        __mpv_socket "${@}" >/dev/null 2>&1 &
+        return
+    fi
+
+    local _mode
+    _mode="$(for _mode in "replace" "append"; do
+        printf "%s\n" "${_mode}"
+    done | __fzf)"
+
+    local _counter=0
+    __find_files "${@}" |
+        while IFS="" read -r _file; do
+            _file="$(realpath "${_file}")"
+            if [ "${_mode}" = "replace" ] && [ "${_counter}" -eq 0 ]; then
+                _counter="$((_counter + 1))"
+                __to_socket "loadfile \"${_file}\" replace" "${_socket}"
+            else
+                __to_socket "loadfile \"${_file}\" append" "${_socket}"
+            fi
+        done
+    __to_socket "set pause no" "${_socket}"
+}
+
 case "${1}" in
     "direct")
         shift
@@ -106,6 +155,10 @@ case "${1}" in
     "paste")
         shift
         __mpv_paste
+        ;;
+    "socket")
+        shift
+        __mpv_socket "${@}"
         ;;
     *)
         __mpv_default "${@}"
