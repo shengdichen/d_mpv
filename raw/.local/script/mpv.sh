@@ -96,10 +96,6 @@ __mpv_paste() {
 }
 
 __mpv_socket() {
-    __to_socket() {
-        printf "%s\n" "${1}" | socat - "${SOCKET_DIR}/${2}.sok"
-    }
-
     __find_files() {
         find "${@}" -type f -print | sort
     }
@@ -107,40 +103,41 @@ __mpv_socket() {
     local _socket="throw"
     if [ "${1}" = "-s" ]; then
         _socket="${2}"
-        shift && shift
+        shift 2
     fi
     if [ "${1}" = "--" ]; then shift; fi
 
-    __mpv_socket() {
-        __find_files "${@}" | xargs -d "\n" -- \
-            nohup mpv \
-            --input-ipc-server="${SOCKET_DIR}/${_socket}.sok" \
-            --
-    }
     if ! pgrep -u "$(whoami)" -a |
         cut -d " " -f 2- |
         grep -q "^mpv.*--input-ipc-server=.*/\.local/state/mpv/${_socket}\.sok"; then
-        __mpv_socket "${@}" >/dev/null 2>&1 &
+        __mpv --input-ipc-server="${SOCKET_DIR}/${_socket}.sok" -- "${@}"
         return
     fi
 
-    local _mode
-    _mode="$(for _mode in "replace" "append"; do
-        printf "%s\n" "${_mode}"
-    done | __fzf)"
-
-    local _counter=0
-    __find_files "${@}" |
-        while IFS="" read -r _file; do
-            _file="$(realpath "${_file}")"
-            if [ "${_mode}" = "replace" ] && [ "${_counter}" -eq 0 ]; then
-                _counter="$((_counter + 1))"
-                __to_socket "loadfile \"${_file}\" replace" "${_socket}"
-            else
-                __to_socket "loadfile \"${_file}\" append" "${_socket}"
-            fi
-        done
-    __to_socket "set pause no" "${_socket}"
+    __to_socket() {
+        printf "%s\n" "${1}" | socat - "${SOCKET_DIR}/${_socket}.sok"
+    }
+    case "$(__fzf_opts "append" "replace")" in
+        "append")
+            for _f in "${@}"; do
+                _f="$(realpath "${_f}")"
+                __to_socket "loadfile \"${_f}\" append"
+            done
+            ;;
+        "replace")
+            local _is_first_file="yes"
+            for _f in "${@}"; do
+                _f="$(realpath "${_f}")"
+                if [ "${_is_first_file}" ]; then
+                    __to_socket "loadfile \"${_f}\" replace" # only replace first
+                    _is_first_file=""
+                else
+                    __to_socket "loadfile \"${_f}\" append" # append rest
+                fi
+            done
+            ;;
+    esac
+    __to_socket "set pause no" # unpause
 }
 
 case "${1}" in
