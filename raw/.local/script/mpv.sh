@@ -16,13 +16,20 @@ __mpv_record() {
         "${@}"
 }
 
+__mpv_has_record() {
+    grep \
+        --quiet \
+        --dereference-recursive --fixed-strings \
+        "${1}" "${WATCHLATER_DIR}"
+}
+
 __mpv_default() {
     if [ "${1}" = "--" ]; then shift; fi
 
     local _n_watchlaters=0 _fname="" _f_watchlater=""
     for _f in "${@}"; do
         _fname="$(basename "$(realpath "${_f}")")"
-        if grep --recursive --quiet "^# ${_fname}$" "${WATCHLATER_DIR}"; then
+        if __mpv_has_record "${_fname}"; then
             _f_watchlater="${_f}"
             _n_watchlaters=$((_n_watchlaters + 1))
         fi
