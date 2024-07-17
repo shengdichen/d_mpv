@@ -81,6 +81,10 @@ MODULE.config = function () {
     );
 
     util.bind("Ctrl+s", function () {
+      util.run("write-watch-later-config");
+      util.print_osd("savepos> written");
+    });
+    util.bind("Ctrl+Shift+s", function () {
       util.cycle("save-position-on-quit");
       util.print_osd(
         "savepos> " +
