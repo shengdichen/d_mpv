@@ -39,13 +39,24 @@ __mpv_default() {
         __mpv -- "${@}"
     elif [ "${_n_watchlaters}" -eq 1 ]; then
         printf "mpv> history found; what's the play?  [%s]\n" "${_f_watchlater}"
-        case "$(__fzf_opts "history" "blank")" in
+        case "$(__fzf_opts "history" "blank" "delete")" in
             "history")
                 printf "mpv> continuing history\n\n"
                 __mpv_record -- "${@}"
                 ;;
             "blank")
                 printf "mpv> starting new\n\n"
+                __mpv -- "${@}"
+                ;;
+            "delete")
+                _f="$(
+                    grep \
+                        --files-with-matches \
+                        --dereference-recursive --fixed-strings \
+                        "${_f_watchlater}" "${WATCHLATER_DIR}"
+                )"
+                rm "${_f}"
+                printf "mpv> starting new [also removed %s]\n\n" "${_f}"
                 __mpv -- "${@}"
                 ;;
         esac
