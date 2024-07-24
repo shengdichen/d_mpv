@@ -1,5 +1,7 @@
 #!/usr/bin/env dash
 
+GREPPER="${GREPPER}:-rg"
+
 WATCHLATER_DIR="${HOME}/.local/state/mpv/watch_later"
 SOCKET_DIR="${HOME}/.local/state/mpv"
 
@@ -17,10 +19,17 @@ __mpv_record() {
 }
 
 __mpv_has_record() {
-    grep \
-        --quiet \
-        --dereference-recursive --fixed-strings \
-        "${1}" "${WATCHLATER_DIR}"
+    if [ "${GREPPER}" = "rg" ]; then
+        rg \
+            --quiet \
+            --follow --fixed-strings \
+            "${1}" "${WATCHLATER_DIR}"
+    else
+        grep \
+            --quiet \
+            --dereference-recursive --fixed-strings \
+            "${1}" "${WATCHLATER_DIR}"
+    fi
 }
 
 __mpv_default() {
