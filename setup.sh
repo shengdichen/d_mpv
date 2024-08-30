@@ -10,6 +10,8 @@ __misc() {
     (
         cd "./js/" && npm install
     )
+
+    mkdir -p "${HOME}/.config/cmus"
 }
 
 __stow() {

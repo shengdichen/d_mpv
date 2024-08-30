@@ -1,0 +1,82 @@
+# base-setting for the entire display {{{
+set color_win_attr=default
+set color_win_bg=black
+set color_win_fg=default
+
+set color_separator=237
+
+# color of directories in Browser View-Mode
+set color_win_dir=white
+
+# currently playing track
+set color_win_cur_attr=default
+set color_win_cur=red
+# }}}
+
+# miscellanies
+set color_error=lightred
+# shown when entered invalid command
+set color_info=red
+
+
+# title bar (located at the top) {{{
+set color_win_title_attr=default
+set color_win_title_bg=black
+set color_win_title_fg=white
+# }}}
+
+
+# track-line (displays information about the current track) {{{
+set color_titleline_attr=default
+set color_titleline_bg=black
+set color_titleline_fg=white
+# }}}
+
+# status-line {{{
+set color_statusline_attr=default
+set color_statusline_bg=black
+set color_statusline_fg=white
+# }}}
+
+# command-line {{{
+set color_cmdline_attr=default
+set color_cmdline_bg=black
+set color_cmdline_fg=default
+# }}}
+
+
+
+
+# selected row {{{
+# selected row in active window
+set color_win_sel_attr=default
+set color_win_sel_bg=237
+set color_win_sel_fg=white
+
+# selected row in inactive window
+set color_win_inactive_sel_attr=default
+set color_win_inactive_sel_bg=234
+set color_win_inactive_sel_fg=247
+# }}}
+
+
+# selected row is currently being played {{{
+# selected row which is also the currently playing track in active window
+set color_win_cur_sel_attr=default
+set color_win_cur_sel_bg=237
+set color_win_cur_sel_fg=red
+
+
+# selected row which is also the currently playing track in inactive window
+set color_win_inactive_cur_sel_attr=default
+set color_win_inactive_cur_sel_bg=234
+set color_win_inactive_cur_sel_fg=red
+# }}}
+
+
+# album row shown in the |Track| window in Artist/Album View-Mode {{{
+set color_trackwin_album_attr=bold
+set color_trackwin_album_bg=black
+set color_trackwin_album_fg=default
+# }}}
+

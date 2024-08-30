@@ -1,0 +1,363 @@
+# keybindings {{{
+# --------------- {{{[bgn] browser-mode ---------------
+unbind -f browser h
+unbind -f browser backspace
+unbind -f browser l
+unbind -f browser space
+unbind -f browser i
+unbind -f browser u
+bind browser h browser-up
+bind browser backspace browser-up
+bind browser l win-activate
+bind browser space win-activate
+bind browser i toggle show_hidden
+bind browser u win-update
+
+# --------------- browser-mode [end]}}} ---------------
+
+# different View-Modes {{{
+unbind -f common 1
+unbind -f common 2
+unbind -f common 3
+unbind -f common 4
+unbind -f common 5
+unbind -f common 6
+unbind -f common 7
+bind common 1 view tree
+bind common 2 view sorted
+bind common 3 view playlist
+bind common 4 view queue
+bind common 5 view browser
+bind common 6 view filters
+bind common 7 view settings
+
+# quickly visit the previous View-Mode
+unbind -f common `
+bind common ` prev-view
+
+# }}}
+
+# --------------- {{{[bgn] playback controls ---------------
+# general playback controls
+unbind -f common z
+unbind -f common x
+unbind -f common c
+unbind -f common v
+unbind -f common b
+bind common z player-prev
+bind common x player-play
+bind common c player-pause
+bind common v player-stop
+bind common b player-next
+
+# playback order
+unbind -f common C
+unbind -f common r
+unbind -f common s
+unbind -f common f
+unbind -f common ^R
+bind common C toggle continue
+bind common r toggle repeat
+bind common s toggle shuffle
+bind common f toggle follow
+bind common ^R toggle repeat_current
+
+# volume settings
+unbind -f common -
+unbind -f common =
+unbind -f common {
+unbind -f common }
+unbind -f common [
+unbind -f common ]
+unbind -f common _
+unbind -f common +
+bind common - vol -1%
+bind common = vol +1%
+bind common { vol -1% -0
+bind common } vol -0 -1%
+bind common [ vol +1% +0
+bind common ] vol +0 +1%
+bind common _ vol -10%
+bind common + vol +10%
+
+# seek positions
+unbind -f common ,
+unbind -f common .
+unbind -f common h
+unbind -f common l
+unbind -f common left
+unbind -f common right
+bind common , seek -1m
+bind common . seek +1m
+bind common h seek -5
+bind common l seek +5
+bind common left seek -5
+bind common right seek +5
+
+# UI displays
+unbind -f common t
+bind common t toggle show_remaining_time
+
+# swith between |All|, |Artist| and |Album|
+unbind -f common m
+unbind -f common M
+unbind -f common o
+bind common m toggle aaa_mode
+bind common M toggle play_library
+bind common o toggle play_sorted
+
+# --------------- palyback controls [end]}}} ---------------
+
+# --------------- {{{[bgn] general navigations ---------------
+unbind -f common k
+unbind -f common mouse_scroll_up
+unbind -f common j
+unbind -f common mouse_scroll_down
+bind common k win-up
+bind common mouse_scroll_up win-up
+bind common j win-down
+bind common mouse_scroll_down win-down
+
+unbind -f common up
+unbind -f common ^Y
+unbind -f common down
+unbind -f common ^E
+bind common up win-scroll-up
+bind common ^Y win-scroll-up
+bind common down win-scroll-down
+bind common ^E win-scroll-down
+
+unbind -f common ^B
+unbind -f common page_up
+unbind -f common ^F
+unbind -f common page_down
+bind common ^B win-page-up
+bind common page_up win-page-up
+bind common ^F win-page-down
+bind common page_down win-page-down
+
+unbind -f common ^U
+unbind -f common K
+unbind -f common ^D
+unbind -f common J
+bind common ^U win-half-page-up
+bind common K win-half-page-up
+bind common ^D win-half-page-down
+bind common J win-half-page-down
+
+unbind -f common g
+unbind -f common home
+unbind -f common G
+unbind -f common end
+bind common g win-top
+bind common home win-top
+bind common G win-bottom
+bind common end win-bottom
+
+unbind -f common enter
+unbind -f common mlb_click_selected
+unbind -f common tab
+unbind -f common space
+unbind -f common delete
+unbind -f common D
+bind common enter win-activate
+bind common mlb_click_selected win-activate
+bind common tab win-next
+bind common space win-toggle
+bind common delete win-remove
+bind common D win-remove
+
+# shortcut to the currently playing track
+unbind -f common i
+bind common i win-sel-cur
+
+# display location of the currently selected item
+unbind -f common I
+bind common I echo {}
+
+# displace the current item
+unbind -f common P
+unbind -f common p
+bind common P win-mv-before
+bind common p win-mv-after
+
+# add to queue
+unbind -f common e
+unbind -f common E
+bind common e win-add-q
+bind common E win-add-Q
+
+# add to library
+unbind -f common a
+bind common a win-add-l
+
+# add to playlist
+unbind -f common y
+bind common y win-add-p
+
+# --------------- general navigation [end]}}} ---------------
+
+# misc {{{
+unbind -f common !
+bind common ! push shell
+
+unbind -f common /
+unbind -f common ?
+unbind -f common n
+unbind -f common N
+bind common / search-start
+bind common ? search-b-start
+bind common n search-next
+bind common N search-prev
+
+unbind -f common ^L
+unbind -f common u
+unbind -f common U
+bind common ^L refresh
+bind common u update-cache
+bind common U win-update-cache
+
+unbind -f common q
+unbind -f common ^C
+bind common q quit -i
+bind common ^C echo Type :quit<enter> to exit cmus.
+# }}}
+
+
+# filters {{{
+# emulation of searching
+unbind -f common L
+bind common L push live-filter
+
+# apply one of the filters below
+unbind -f common F
+bind common F push filter
+
+
+fset 90s=date>=1990&date<2000
+fset genre_classical=genre="Classical"
+fset stats_unplayed=play_count=0
+
+# container formats
+fset type_m4a=filename="*.m4a"
+fset type_flac=filename="*.flac"
+fset type_ape=filename="*.ape"
+fset type_wave=filename="*.wav"
+fset type_mp3=filename="*.mp3"
+fset type_ogg=filename="*.ogg"
+
+#   fset missing-tag=!stream&(artist=""|album=""|title=""|tracknumber=-1|date=-1)
+
+# }}}
+
+# }}}
+
+
+# load the default colorscheme, will load def.theme
+colorscheme def
+
+# show "non-music" files by default, including directories with leading a "dot"
+set show_hidden=true
+
+# {{{ formats
+# to view the different shorthands for meta-data, consult the manPage with:
+#   $ man cmus
+
+# the |Artist| (left pane) in Album/Artist View-Mode {{{
+# viewing per artist
+set format_treewin_artist=%a
+# the albums of each artist
+set format_treewin= -> %l
+# }}}
+
+# the |Track| (right pane) in Album/Artist View-Mode {{{
+# album information will display <space>??<space> if meta-data of year unknown
+set format_trackwin_album=%l [%{?y>=1?%y? %?%? }] %= %{albumduration}
+# track information
+set format_trackwin= %{?D>=1?%1D?X}.%{?n>=1?%02n?xx}  %t %=   %d
+# track information if track has different track_artist than album_artist
+set format_trackwin_va= %{?D>=1?%1D?X}.%{?n>=1?%02n?xx}  %t %=   %d
+
+# Note:
+#   %{?D>=1?%1D?X} will display X if %D (discnumber) is not >= 1, i.e., invalid
+# Similarly,
+#   %{?n>=1?%02n?xx} will display xx if %n (tracknumber) is invalid
+
+# }}}
+
+# name of the terminal window, invisible if terminal in fullscreen mode
+set format_title=%t
+
+
+# the track-line {{{
+set format_current=%t %=   [%{?duration?%{duration}} | %{?bitrate=0? zzz?%{?bitrate<10?000%{bitrate}?%{?bitrate<100?00%{bitrate}?%{?bitrate<1000?0%{bitrate}?%{bitrate}}}}}%{codec}]
+
+
+# status-line {{{
+# the default status-line
+#   set format_statusline=%{status} %{?show_playback_position?%{position} %{?duration?/ %{duration} }?%{?duration?%{duration} }}- %{total} %{?bpm>0?at %{bpm} BPM }%{?volume>=0?vol: %{?lvolume!=rvolume?%{lvolume},%{rvolume} ?%{volume} }}%{?stream?buf: %{buffer} }%{?show_current_bitrate & bitrate>=0? %{bitrate} kbps }%=%{?repeat_current?repeat current?%{?play_library?%{playlist_mode} from %{?play_sorted?sorted }library?playlist}} | %1{continue}%1{follow}%1{repeat}%1{shuffle}
+
+# a more stylish, less cramped-looking status line
+set format_statusline=%{?repeat_current?⟳?%{?play_library?%{?play_sorted?⇒?→}?⇶}} %= %{status}❮%{position} ∝ %{?volume>=0?»L%02{lvolume} R%02{rvolume}« ~ %{?show_current_bitrate?%{?bitrate=0?zzz ?%{?bitrate<10?000%{bitrate}?%{?bitrate<100?00%{bitrate}?%{?bitrate<1000?0%{bitrate}?%{bitrate}}}}}?XXX}kbit/ₛ}❯
+
+
+# makes more sense to display bitrate on the track-line
+set show_current_bitrate=true
+
+# display current playback position (in seconds) of the current track
+set show_playback_position=true
+
+# pad current playback position with a leading 0 to force two digits' length
+set time_show_leading_zero=true
+
+set show_remaining_time=false
+
+#       set format_playlist=%-21%a %3n. %t%= %y %d %{?X!=0?%3X ?    }
+#       set format_playlist_va=%-21%A %3n. %t (%a)%= %y %d %{?X!=0?%3X ?    }
+# make sure that the play-count always displays at least three digits
+set format_playlist= %-t%=%{?X<10?00%X ?%{?X<100?0%X ?%X }}
+set format_playlist_va= %-t%=[C] %{?X<10?00%X ?%{?X<100?0%X ?%X }}
+
+# }}}
+
+# playback ordering {{{
+# continue playing after current track finishs
+set continue=true
+
+# when the currently playing track is changed, automatically select the new one
+set follow=true
+
+# repeat after all tracks have been played
+set repeat=true
+
+# do not shuffle
+set shuffle=false
+
+# }}}
+
+# sort criteria in Library View-Mode
+set lib_sort=albumartist album discnumber tracknumber title
+
+# playback source {{{
+# define what tracks should be played in the Album/Artist View-Mode only
+# setting to |album| will disregard all other tracks except from the current
+# album itself, similarly, setting to |artist| will leave only the currently
+# playing artist in the active library for playing
+set aaa_mode=album
+
+# play tracks from the library instead of playlist
+set play_library=true
+
+# play tracks from the library in the ordering in Album/Artist View-Mode
+# instead of that in the user-defined Sorted View-Mode
+set play_sorted=false
+
+# repeat current track
+set repeat_current=true
+
+# remember playback information between launches
+set resume=true
+
+# }}}
+
+set output_plugin=pulse
