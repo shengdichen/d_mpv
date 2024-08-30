@@ -24,12 +24,12 @@ __mpv_has_record() {
             --quiet \
             --follow --fixed-strings \
             "${1}" "${WATCHLATER_DIR}"
-    else
-        grep \
-            --quiet \
-            --dereference-recursive --fixed-strings \
-            "${1}" "${WATCHLATER_DIR}"
+        return
     fi
+    grep \
+        --quiet \
+        --dereference-recursive --fixed-strings \
+        "${1}" "${WATCHLATER_DIR}"
 }
 
 __mpv_default() {
@@ -39,6 +39,7 @@ __mpv_default() {
     for _f in "${@}"; do
         _fname="$(basename "$(realpath "${_f}")")"
         if __mpv_has_record "${_fname}"; then
+            printf "mpv> history found [%s]\n" "${_f}"
             _f_watchlater="${_f}"
             _n_watchlaters=$((_n_watchlaters + 1))
         fi
@@ -46,11 +47,16 @@ __mpv_default() {
 
     if [ "${_n_watchlaters}" -eq 0 ]; then
         __mpv -- "${@}"
-    elif [ "${_n_watchlaters}" -eq 1 ]; then
-        printf "mpv> history found; what's the play?  [%s]\n" "${_f_watchlater}"
-        case "$(__fzf_opts "history" "blank" "delete")" in
+        return
+    fi
+
+    __separator
+
+    if [ "${_n_watchlaters}" -eq 1 ]; then
+        printf "mpv> what's the play?\n"
+        case "$(__fzf_opts "history (${_f_watchlater})" "blank" "delete")" in
             "history")
-                printf "mpv> continuing history\n\n"
+                printf "mpv> continuing history [%s]\n\n" "${_f_watchlater}"
                 __mpv_record -- "${@}"
                 ;;
             "blank")
@@ -69,23 +75,27 @@ __mpv_default() {
                 __mpv -- "${@}"
                 ;;
         esac
-    else
-        printf "mpv> multiple files with history found; what now?\n"
-        case "$(__fzf_opts "blank" "quit")" in
-            "blank")
-                printf "mpv> using none... "
-                read -r _
-                __mpv -- "${@}"
-                printf "\n\n"
-                ;;
-            "quit")
-                printf "mpv> quitting... "
-                read -r _
-                printf "\n\n"
-                return
-                ;;
-        esac
+        return
     fi
+
+    printf "mpv> multiple (%i) files with history found; what now?\n" "${_n_watchlaters}"
+    case "$(__fzf_opts "blank" "quit" "record (dangerous!)")" in
+        "blank")
+            printf "mpv> using none... "
+            read -r _
+            __mpv -- "${@}"
+            printf "\n\n"
+            ;;
+        "quit")
+            printf "mpv> quitting... "
+            read -r _
+            printf "\n\n"
+            return
+            ;;
+        "record")
+            __mpv_record -- "${@}"
+            ;;
+    esac
 }
 
 __mpv_paste() {
@@ -158,9 +168,9 @@ __mpv_socket() {
                 if [ "${_is_first_file}" ]; then
                     __to_socket "loadfile \"${_f}\" replace" # only replace first
                     _is_first_file=""
-                else
-                    __to_socket "loadfile \"${_f}\" append" # append rest
+                    continue
                 fi
+                __to_socket "loadfile \"${_f}\" append" # append rest
             done
             ;;
     esac
