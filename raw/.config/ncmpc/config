@@ -1,0 +1,120 @@
+# connection {{{
+host = "localhost"
+port = 6600
+
+password = "user"
+# }}}
+
+# library {{{
+welcome-screen-list = no
+
+library-page-tags = albumartist album disc
+
+# included in screen-switch'g with (shift-)tab
+screen-list = library browse
+
+# search in mode |artist+title| by default
+search-mode = 4
+
+# fill-in previous search-string
+find-show-last = yes
+find-wrap = yes
+wrap-around = no
+bell-on-wrap = no
+
+# step-size (in seconds) when seeking
+seek-time = 2.7
+# }}}
+
+# visual {{{
+scroll-offset = 2
+
+# NOTE:
+#   1. do not specify |search-format| to continue using |list-format|
+list-format = "[[[[%disc%.]%track%  ]%title%]|%file%]  //  %album%"
+
+# show length of item in separate column
+second-column = yes
+
+# do NOT (horizontally) scroll long lines
+scroll = no
+
+# status-line {{{
+status-format = "%artist% -> %title%"
+
+status-message-time = 2.7
+
+timedisplay-type = elapsed
+
+visible-bitrate = yes
+# }}}
+
+# misc {{{
+enable-mouse = no
+
+audible-bell = no
+visible-bell = no
+
+# only highlight portion(s) of current line with text
+wide-cursor = no
+hardware-cursor = no
+hide-cursor = 3.7
+
+text-editor = nvim
+
+lyrics-autosave = no
+# }}}
+# }}}
+
+# colorscheme {{{
+# NOTE:
+#   000 := black
+#   007 := grey, light
+#   008 := grey, bright
+#   015 := white
+#   013 := (light) magenta
+
+enable-colors = yes
+
+color background = 000
+
+# title-lines {{{
+# first row, LHS
+color title-bold = 007
+# foreground only for RHS, background for entire first row
+color title = 007/000
+
+# separator between title-lines & main display
+color line = 008
+# second row, RHS
+color line-flags = 007
+# }}}
+
+# main display {{{
+# non-highlighted
+color list = 015
+
+# highlighted (e.g., selected or currectly playing)
+color list-bold = 013,bold/000
+# }}}
+
+# browser {{{
+color browser-directory = 015
+color browser-playlist = 015
+# }}}
+
+# status-line {{{
+color progressbar = 000/000
+color progressbar-background = 007
+
+# play/pause indicator
+color status-state = 007/000
+color status-song  = 007/000
+# time&bit-rate
+color status-time  = 007/000
+
+color alert = 000,bold/007
+# }}}
+# }}}
+
+# vim: filetype=conf foldmethod=marker

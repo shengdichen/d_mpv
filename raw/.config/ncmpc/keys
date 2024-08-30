@@ -1,0 +1,77 @@
+# navigation {{{
+key up = 'k'
+key down = 'j'
+key scroll-up-half = 'u','K'
+key scroll-down-half = 'd','J'
+
+key home = 'g'
+key end = 'G'
+# }}}
+
+# browse {{{
+# open location in file-browser
+# |enter/return|
+key locate = 13
+
+key go-parent-directory = 'h'
+# |up|
+key move-up = 259
+# |down|
+key move-down = 258
+
+key select = 't'
+key select_all = 'T'
+key select-playing = 0
+
+key delete = 'D'
+# }}}
+
+# playback {{{
+key play = 'l'
+# |space|
+key pause = 32
+key stop = 0
+# clear queue
+key clear = 0
+
+# |left|
+key seek-backward = 260
+# |right|
+key seek-forward = 261
+
+# |-|
+key volume-down = 45
+# |=|
+key volume-up = 61
+
+key lyrics-interrupt = 0
+key lyrics-update = 0
+# }}}
+
+# page {{{
+key screen-help = F1
+
+key library-page = '1'
+key screen-browse = '2'
+key screen-search = 'F'
+
+key screen-outputs = '9'
+key screen-playlist = '0'
+
+key screen-lyrics = 0
+key screen-chat = 0
+key screen-keyedit = 0
+# }}}
+
+# misc {{{
+key quit = 'Q'
+
+key db-update = 0
+
+key crop = 0
+
+key wrap-mode = 0
+key autocenter-mode = 0
+# }}}
+
+# vim: filetype=conf foldmethod=marker
