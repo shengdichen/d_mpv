@@ -7,9 +7,9 @@ DIR_MPV="${HOME}/.config/mpv"
 
 __misc() {
     mkdir -p "${DIR_MPV}/scripts/"
-    (
-        cd "./js/" && npm install
-    )
+    if [ ! -d "./js/node_modules" ]; then
+        (cd "./js/" && npm install)
+    fi
 
     mkdir -p "${HOME}/.config/cmus"
 }
