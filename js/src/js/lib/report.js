@@ -146,6 +146,12 @@ function _format_category_sub(tracks, n_tracks_global) {
     str = str.concat(_format_id_in_category(t, n_tracks));
     if (t.lang) {
       str = str.concat(t.lang);
+    } else if (t.title) {
+      str = str.concat(t.title);
+    } else if (t.filename) {
+      str = str.concat(t.filename);
+    } else {
+      str = str.concat("??");
     }
     strings.push(str);
   }

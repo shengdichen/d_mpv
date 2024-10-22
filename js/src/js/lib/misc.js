@@ -59,7 +59,7 @@ MODULE.config = function () {
   util.bind("Shift+s", MODULE.screenshot);
 
   function title() {
-    var title = "";
+    var title = "mpv> ";
 
     var server = util.get_prop_string("input-ipc-server");
     if (server) {
@@ -72,17 +72,19 @@ MODULE.config = function () {
   }
 
   function savepos() {
-    util.set_prop_boolean("write-filename-in-watch-later-config");
-    util.set_prop_boolean("ignore-path-in-watch-later-config");
+    util.set_prop_boolean("write-filename-in-watch-later-config", true);
+    util.set_prop_boolean("ignore-path-in-watch-later-config", true);
 
     util.set_prop_string(
       "watch-later-options",
-      [util.get_prop_string("watch-later-options"), "secondary-sub-delay"].join(
-        ","
-      )
+      util.get_prop_string("watch-later-options") + ",secondary-sub-delay"
     );
 
     util.bind("Ctrl+s", function () {
+      util.run("write-watch-later-config");
+      util.print_osd("savepos> written");
+    });
+    util.bind("Ctrl+Shift+s", function () {
       util.cycle("save-position-on-quit");
       util.print_osd(
         "savepos> " +

@@ -11,7 +11,7 @@ MODULE.raw = mp; // eslint-disable-line no-undef
  */
 MODULE.bind = function (key, fn, opts) {
   if (!opts) {
-    this.raw.add_key_binding(key, fn, { repeatable: true });
+    MODULE.raw.add_key_binding(key, fn, { repeatable: true });
     return;
   }
 
@@ -19,9 +19,9 @@ MODULE.bind = function (key, fn, opts) {
     ? opts.repeatable
     : true;
   if (opts.force) {
-    this.raw.add_forced_key_binding(key, fn, delete opts.force);
+    MODULE.raw.add_forced_key_binding(key, fn, delete opts.force);
   } else {
-    this.raw.add_key_binding(key, fn, opts);
+    MODULE.raw.add_key_binding(key, fn, opts);
   }
 };
 
@@ -30,7 +30,7 @@ MODULE.bind = function (key, fn, opts) {
  * @param {number} [duration]
  */
 MODULE.print_osd = function (text, duration) {
-  this.raw.osd_message(text, duration || 0.7);
+  MODULE.raw.osd_message(text, duration || 0.7);
 };
 
 /**
@@ -38,9 +38,9 @@ MODULE.print_osd = function (text, duration) {
  */
 MODULE.run = function (fragments) {
   if (!Array.isArray(fragments)) {
-    this.raw.command(fragments);
+    MODULE.raw.command(fragments);
   } else {
-    this.raw.commandv.apply(null, fragments);
+    MODULE.raw.commandv.apply(null, fragments);
   }
 };
 
@@ -68,7 +68,7 @@ MODULE.run_script_fn = function (fn, args) {
  * @returns {Object.<string, *>}
  */
 MODULE.get_prop_config = function (prop, def) {
-  this.raw.options.read_options(def, prop);
+  MODULE.raw.options.read_options(def, prop);
   return def;
 };
 

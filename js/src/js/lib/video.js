@@ -82,10 +82,11 @@ MODULE.config = function () {
 
   util.bind("_", MODULE.navigate);
 
-  util.bind("Alt+LEFT", MODULE.reposition(+0.1, "x"));
-  util.bind("Alt+RIGHT", MODULE.reposition(-0.1, "x"));
-  util.bind("Alt+UP", MODULE.reposition(+0.1, "y"));
-  util.bind("Alt+DOWN", MODULE.reposition(-0.1, "y"));
+  var reposition_step = 0.025;
+  util.bind("Alt+LEFT", MODULE.reposition(reposition_step, "x"));
+  util.bind("Alt+RIGHT", MODULE.reposition(-reposition_step, "x"));
+  util.bind("Alt+UP", MODULE.reposition(+reposition_step, "y"));
+  util.bind("Alt+DOWN", MODULE.reposition(-reposition_step, "y"));
 
   util.bind("Alt+-", MODULE.resize(-0.1));
   util.bind("Alt++", MODULE.resize(+0.1));
