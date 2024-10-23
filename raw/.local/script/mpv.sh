@@ -148,36 +148,35 @@ __mpv_default() {
 }
 
 __mpv_paste() {
-    local _target _input
+    local _TARGETS=()
+
+    local _target
     while true; do
         _target="$(wl-paste)"
-        printf "mpv-paste> \"%s\"  [%s]\n" "$(yt-dlp --get-title "${_target}")" "${_target}"
-        printf "mpv-paste> go ahead? [y]es (default), [n]o "
-        read -r _input
-        case "${_input}" in
-            "n" | "N")
-                printf "mpv-paste> recopy to proceed "
-                read -r _
-                printf "\n"
-                ;;
-            *)
-                printf "mpv-paste> launching...\n"
-                __mpv "${_target}"
+        if [ ! "${_target}" ]; then
+            printf "mpv/paste> empty paste, try again\n"
+            sleep 1.0
+            continue
+        fi
+        printf "mpv/paste> \"%s\"  [%s]\n" "$(yt-dlp --get-title "${_target}")" "${_target}"
 
-                printf "\n"
-                printf "mpv-paste> break? [y]es (default), [n]o "
-                read -r _input
-                case "${_input}" in
-                    "n" | "N")
-                        printf "\n"
-                        ;;
-                    *)
-                        printf "mpv-paste> quiting\n"
-                        break
-                        ;;
-                esac
-                ;;
-        esac
+        if __yes_or_no "mpv/paste> enqueue?"; then
+            _TARGETS+=("${_target}")
+        fi
+        printf "\n"
+        if ! __yes_or_no "mpv/paste> current #queue = ${#_TARGETS[@]}; add more?"; then
+            break
+        fi
+        printf "\n\n"
+    done
+
+    __separator
+    printf "mpv/paste> launching now: #queue = %s; [%s]\n" "${#_TARGETS[@]}" "${_TARGETS[*]}"
+    __mpv
+    while true; do
+        if __yes_or_no "mpv/paste> mpv has started, i.e., we are done here?"; then
+            break
+        fi
     done
 }
 
