@@ -4,7 +4,7 @@
 . "${HOME}/.local/lib/process.bash"
 . "${HOME}/.local/lib/util.sh"
 
-GREPPER="${GREPPER}:-rg"
+GREPPER="${GREPPER:-rg}"
 
 WATCHLATER_DIR="${HOME}/.local/state/mpv/watch_later"
 SOCKET_DIR="${HOME}/.local/state/mpv"
@@ -66,13 +66,13 @@ __mpv_record_exists() {
         rg \
             --quiet \
             --follow --fixed-strings \
-            "${_name}" "${WATCHLATER_DIR}"
+            "# ${_name}" "${WATCHLATER_DIR}"
         return
     fi
     grep \
         --quiet \
         --dereference-recursive --fixed-strings \
-        "${_name}" "${WATCHLATER_DIR}"
+        "# ${_name}" "${WATCHLATER_DIR}"
 }
 
 __mpv_record_delete() {
