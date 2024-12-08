@@ -1,11 +1,13 @@
 var util_misc = require("../util").export;
 var report = require("./report").export;
 var util = require("./util").export;
+var misc = require("./misc").export;
 
 var MODULE = {};
 
 MODULE.playpause = function () {
   util.cycle("pause");
+  misc.osc.toggle();
 };
 
 MODULE.navigate_playlist = function (positive_dir) {
