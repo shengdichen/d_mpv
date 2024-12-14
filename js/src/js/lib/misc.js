@@ -52,54 +52,6 @@ MODULE.screenshot = function () {
   util.run(["screenshot"]);
 };
 
-MODULE.config = function () {
-  util.bind("i", MODULE.osc.toggle);
-  util.bind("I", MODULE.stats.toggle);
-  util.bind("`", MODULE.console.enable);
-  util.bind("Shift+s", MODULE.screenshot);
-
-  function title() {
-    var title = "";
-
-    var server = util.get_prop_string("input-ipc-server");
-    if (server) {
-      // show only filename of socket
-      title = title.concat("[" + server.split("/").slice(-1).toString() + "] ");
-    }
-
-    title = title.concat("${path}");
-    util.set_prop_string("title", title);
-  }
-
-  function savepos() {
-    util.set_prop_boolean("write-filename-in-watch-later-config", true);
-    util.set_prop_boolean("ignore-path-in-watch-later-config", true);
-
-    util.set_prop_string(
-      "watch-later-options",
-      util.get_prop_string("watch-later-options") + ",secondary-sub-delay"
-    );
-
-    util.bind("Ctrl+s", function () {
-      util.run("write-watch-later-config");
-      util.print_osd("savepos> written");
-    });
-    util.bind("Ctrl+Shift+s", function () {
-      util.cycle("save-position-on-quit");
-      util.print_osd(
-        "savepos> " +
-          (util.get_prop_boolean("save-position-on-quit") ? "T" : "F")
-      );
-    });
-    util.bind("Ctrl+q", function () {
-      util.run("quit-watch-later");
-    });
-  }
-
-  title();
-  savepos();
-};
-
 module.exports = {
   export: MODULE,
 };

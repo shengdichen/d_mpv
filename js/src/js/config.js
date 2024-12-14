@@ -5,6 +5,7 @@ var lib_video = require("./lib/video").export;
 var lib_subtitle = require("./lib/subtitle").export;
 var lib_audio = require("./lib/audio").export;
 var lib_playback = require("./lib/playback").export;
+var lib_misc = require("./lib/misc").export;
 
 function _video() {
   lib_util.bind("f", function () {
@@ -97,12 +98,60 @@ function _playback() {
   lib_util.bind("BS", lib_playback.adjust_speed());
 }
 
+function _misc() {
+  lib_util.bind("i", lib_misc.osc.toggle);
+  lib_util.bind("I", lib_misc.stats.toggle);
+  lib_util.bind("`", lib_misc.console.enable);
+  lib_util.bind("Shift+s", lib_misc.screenshot);
+
+  function title() {
+    var title = "";
+
+    var server = lib_util.get_prop_string("input-ipc-server");
+    if (server) {
+      // show only filename of socket
+      title = title.concat("[" + server.split("/").slice(-1).toString() + "] ");
+    }
+
+    title = title.concat("${path}");
+    lib_util.set_prop_string("title", title);
+  }
+
+  function savepos() {
+    lib_util.set_prop_boolean("write-filename-in-watch-later-config", true);
+    lib_util.set_prop_boolean("ignore-path-in-watch-later-config", true);
+
+    lib_util.set_prop_string(
+      "watch-later-options",
+      lib_util.get_prop_string("watch-later-options") + ",secondary-sub-delay"
+    );
+
+    lib_util.bind("Ctrl+s", function () {
+      lib_util.run("write-watch-later-config");
+      lib_util.print_osd("savepos> written");
+    });
+    lib_util.bind("Ctrl+Shift+s", function () {
+      lib_util.cycle("save-position-on-quit");
+      lib_util.print_osd(
+        "savepos> " +
+          (lib_util.get_prop_boolean("save-position-on-quit") ? "T" : "F")
+      );
+    });
+    lib_util.bind("Ctrl+q", function () {
+      lib_util.run("quit-watch-later");
+    });
+  }
+
+  title();
+  savepos();
+}
+
 function config() {
   _video();
   _subtitle();
   _audio();
   _playback();
-  require("./lib/misc").export.config();
+  _misc();
 }
 
 module.exports = {
