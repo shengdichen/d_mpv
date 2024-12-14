@@ -1,7 +1,10 @@
 var lib_util = require("./lib/util").export;
+var lib_report = require("./lib/report").export;
+
 var lib_video = require("./lib/video").export;
 var lib_subtitle = require("./lib/subtitle").export;
 var lib_audio = require("./lib/audio").export;
+var lib_playback = require("./lib/playback").export;
 
 function _video() {
   lib_util.bind("f", function () {
@@ -59,11 +62,46 @@ function _audio() {
   lib_util.bind("SHARP", lib_audio.navigate);
 }
 
+function _playback() {
+  lib_util.bind("SPACE", lib_playback.playpause);
+
+  lib_util.bind("<", lib_playback.navigate_playlist(false));
+  lib_util.bind(">", lib_playback.navigate_playlist(true));
+  lib_util.bind("k", lib_report.report_playlist);
+  lib_util.bind("Shift+k", function () {
+    lib_util.print_prop_object("playlist");
+  });
+
+  lib_util.bind("j", lib_report.report_categories);
+  lib_util.bind("Shift+j", function () {
+    lib_util.print_prop_object("track-list");
+  });
+
+  lib_util.bind("l", lib_playback.loop_ab);
+  lib_util.bind("L", lib_playback.loop_files);
+
+  lib_util.bind(",", lib_playback.navigate_file(-1, "frame"));
+  lib_util.bind(".", lib_playback.navigate_file(+1, "frame"));
+
+  lib_util.bind("LEFT", lib_playback.navigate_file(-3));
+  lib_util.bind("RIGHT", lib_playback.navigate_file(+3));
+  lib_util.bind("Shift+LEFT", lib_playback.navigate_file(-1));
+  lib_util.bind("Shift+RIGHT", lib_playback.navigate_file(+1));
+  lib_util.bind("Ctrl+LEFT", lib_playback.navigate_file(-7));
+  lib_util.bind("Ctrl+RIGHT", lib_playback.navigate_file(+7));
+  lib_util.bind("PGUP", lib_playback.navigate_file(-1, "chapter"));
+  lib_util.bind("PGDWN", lib_playback.navigate_file(+1, "chapter"));
+
+  lib_util.bind("[", lib_playback.adjust_speed(-0.1));
+  lib_util.bind("]", lib_playback.adjust_speed(+0.1));
+  lib_util.bind("BS", lib_playback.adjust_speed());
+}
+
 function config() {
   _video();
   _subtitle();
   _audio();
-  require("./lib/playback").export.config();
+  _playback();
   require("./lib/misc").export.config();
 }
 
