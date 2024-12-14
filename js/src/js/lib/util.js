@@ -77,13 +77,28 @@ MODULE.cycle = function (item, values) {
 };
 
 /**
- * @param {string} prop
- * @param {Object.<string, *>} def
+ * for every (key, val) in map, query key's config-value from script, using val as default
+ * NOTE: consider get_prop_script() when querying one single key for cleaner syntax
+ * @param {string} script
+ * @param {Object.<string, *>} map
  * @returns {Object.<string, *>}
  */
-MODULE.get_prop_config = function (prop, def) {
-  MODULE.raw.options.read_options(def, prop);
-  return def;
+MODULE.get_prop_script_multi = function (script, map) {
+  MODULE.raw.options.read_options(map, script);
+  return map;
+};
+
+/**
+ * query one single prop from script; a special case of get_prop_script_multi()
+ * @param {string} script
+ * @param {string} prop
+ * @param {*} def
+ * @returns {*}
+ */
+MODULE.get_prop_script = function (script, prop, def) {
+  var res = {};
+  res[prop] = def || "__NONE";
+  return MODULE.get_prop_script_multi(script, res)[prop];
 };
 
 /**

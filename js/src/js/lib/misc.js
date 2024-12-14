@@ -3,34 +3,37 @@ var util = require("./util").export;
 
 var MODULE = {};
 
-/**
- * @returns {boolean}
- */
-function osc_is_visible_by_default() {
-  var res = { visibility: "never" };
-  util.get_prop_config("osc", res);
-  return res.visibility !== "never";
-}
-var osc_is_visible = osc_is_visible_by_default();
-var osc_fn = "osc-visibility";
-MODULE.osc = {
+var _osc = {
+  _fn: "osc-visibility",
   // NOTE:
-  //    pass second arg |false| to disable osd-output (prepending 'no-osd' has no use)
+  //    first toggle() will:
+  //    1.  disable() := osc/visibility is always
+  //    2.  enable() := osc/visibility is unset OR auto (default) OR never
+  _is_visible:
+    util.get_prop_script(
+      "osc",
+      "visibility",
+      "auto" /* REF: https://mpv.io/manual/master/#on-screen-controller-visibility */
+    ) === "always",
+
+  // NOTE:
+  //    pass second arg |false| to disable osd-output (prepending "no-osd" has no use)
   disable: function () {
-    util.run_script_fn(osc_fn, ["never", false]);
+    util.run_script_fn(_osc._fn, ["never", false]);
   },
   enable: function () {
-    util.run_script_fn(osc_fn, ["always", false]);
+    util.run_script_fn(_osc._fn, ["always", false]);
   },
   toggle: function () {
-    if (osc_is_visible) {
-      MODULE.osc.disable();
+    if (_osc._is_visible) {
+      _osc.disable();
     } else {
-      MODULE.osc.enable();
+      _osc.enable();
     }
-    osc_is_visible = !osc_is_visible;
+    _osc._is_visible = !_osc._is_visible;
   },
 };
+MODULE.osc = _osc;
 
 MODULE.stats = {
   toggle: function () {
