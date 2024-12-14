@@ -118,28 +118,12 @@ function _misc() {
   }
 
   function savepos() {
-    lib_util.set_prop_boolean("write-filename-in-watch-later-config", true);
-    lib_util.set_prop_boolean("ignore-path-in-watch-later-config", true);
+    lib_misc.record.save_filename_only();
+    lib_misc.record.append_targets("secondary-sub-delay");
 
-    lib_util.set_prop_string(
-      "watch-later-options",
-      lib_util.get_prop_string("watch-later-options") + ",secondary-sub-delay"
-    );
-
-    lib_util.bind("Ctrl+s", function () {
-      lib_util.run("write-watch-later-config");
-      lib_util.print_osd("savepos> written");
-    });
-    lib_util.bind("Ctrl+Shift+s", function () {
-      lib_util.cycle("save-position-on-quit");
-      lib_util.print_osd(
-        "savepos> " +
-          (lib_util.get_prop_boolean("save-position-on-quit") ? "T" : "F")
-      );
-    });
-    lib_util.bind("Ctrl+q", function () {
-      lib_util.run("quit-watch-later");
-    });
+    lib_util.bind("Ctrl+s", lib_misc.record.save);
+    lib_util.bind("Ctrl+Shift+s", lib_misc.record.toggle);
+    lib_util.bind("Ctrl+q", lib_misc.record.save_quit);
   }
 
   title();
