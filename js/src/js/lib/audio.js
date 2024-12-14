@@ -39,17 +39,6 @@ MODULE.navigate = function () {
   report.report_category_audio();
 };
 
-MODULE.config = function () {
-  util.bind("9", MODULE.volume(-1));
-  util.bind("(", MODULE.volume(-7));
-  util.bind("0", MODULE.volume(+1));
-  util.bind(")", MODULE.volume(+7));
-
-  util.bind("m", MODULE.mute);
-
-  util.bind("SHARP", MODULE.navigate);
-};
-
 module.exports = {
   export: MODULE,
 };
