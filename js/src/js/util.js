@@ -64,13 +64,13 @@ MODULE.is_array = function (target) {
  * @returns {string}
  */
 MODULE.prepend_sign = function (num) {
-  var sign = "";
   if (MODULE.is_close(num, 0)) {
-    sign = "=";
-  } else if (num > 0) {
-    sign = "+";
+    return "=0";
   }
-  return sign + num;
+  if (num > 0) {
+    return "+" + num;
+  }
+  return num;
 };
 
 /**
@@ -88,11 +88,11 @@ MODULE.pad_integer_like = function (num, reference) {
  * @returns {string}
  */
 MODULE.pad_integer = function (num, len) {
-  num = num.toString();
-  while (num.length < len) {
-    num = "0" + num;
+  var len_num = MODULE.len_integer(num);
+  if (len_num >= len) {
+    return num;
   }
-  return num;
+  return Array(len - len_num + 1).join("0") + num; // repeat() not available
 };
 
 /**
