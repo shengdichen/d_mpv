@@ -18,11 +18,13 @@ MODULE.bind = function (key, fn, opts) {
   opts.repeatable = util_misc.has_member(opts, "repeatable")
     ? opts.repeatable
     : true;
+
   if (opts.force) {
-    MODULE.raw.add_forced_key_binding(key, fn, delete opts.force);
-  } else {
-    MODULE.raw.add_key_binding(key, fn, opts);
+    delete opts.force;
+    MODULE.raw.add_forced_key_binding(key, fn, opts);
+    return;
   }
+  MODULE.raw.add_key_binding(key, fn, opts);
 };
 
 /**
@@ -39,9 +41,9 @@ MODULE.print_osd = function (text, duration) {
 MODULE.run = function (fragments) {
   if (!Array.isArray(fragments)) {
     MODULE.raw.command(fragments);
-  } else {
-    MODULE.raw.commandv.apply(null, fragments);
+    return;
   }
+  MODULE.raw.commandv.apply(null, fragments);
 };
 
 /**
@@ -60,6 +62,18 @@ MODULE.run_script_bind = function (script, bind) {
  */
 MODULE.run_script_fn = function (fn, args) {
   MODULE.run(["script-message", fn].concat(args));
+};
+
+/**
+ * @param {string} item
+ * @param {Array.<*>} [values]
+ */
+MODULE.cycle = function (item, values) {
+  if (!values) {
+    MODULE.run(["cycle", item]);
+    return;
+  }
+  MODULE.run(["cycle-values", item].concat(values));
 };
 
 /**
@@ -168,18 +182,6 @@ MODULE.set_prop_autotype = function (prop, val) {
 };
 
 /**
- * @param {string} item
- * @param {Array.<*>} [values]
- */
-MODULE.cycle = function (item, values) {
-  if (!values) {
-    MODULE.run(["cycle", item]);
-  } else {
-    MODULE.run(["cycle-values", item].concat(values));
-  }
-};
-
-/**
  * @param {string} prop
  * @param {boolean} def
  */
@@ -217,14 +219,14 @@ MODULE.print_prop_string_formatted = function (prop, def) {
  */
 MODULE.print_prop_object = function (prop, def) {
   var obj = MODULE.get_prop_object(prop, def);
-  if (util_misc.is_array(obj)) {
-    var strings = obj.map(function (item) {
-      return JSON.stringify(item);
-    });
-    MODULE.print_osd(strings.join("\n\n"));
-  } else {
+  if (!util_misc.is_array(obj)) {
     MODULE.print_osd(JSON.stringify(obj));
+    return;
   }
+  var strings = obj.map(function (i) {
+    return JSON.stringify(i);
+  });
+  MODULE.print_osd(strings.join("\n\n"));
 };
 
 /**
