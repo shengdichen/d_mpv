@@ -96,7 +96,7 @@ MODULE.navigate = function (positive_dir) {
     } else {
       util.run(["cycle", "sub", "down"]);
     }
-    report.report_category_sub();
+    report.tracking.print_pretty_subtitle();
   };
 };
 

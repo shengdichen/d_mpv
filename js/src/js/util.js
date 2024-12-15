@@ -52,6 +52,26 @@ MODULE.has_member = function (obj, key) {
 };
 
 /**
+ * @param {Object.<*, *>} [count]
+ * @returns {Array.<string>}
+ */
+MODULE.obj_to_string = function (obj) {
+  var kvs = [];
+  var s, v;
+  for (var k in obj) {
+    s = k + ": ";
+    v = obj[k];
+    if (typeof v === "object") {
+      kvs.push(s + JSON.stringify(v));
+      continue;
+    }
+    kvs.push(s + MODULE.format(v));
+  }
+
+  return "{ " + kvs.join(", ") + " }";
+};
+
+/**
  * @param {*} target
  * @returns {boolean}
  */
@@ -92,7 +112,7 @@ MODULE.pad_integer = function (num, len) {
   if (len_num >= len) {
     return num;
   }
-  return Array(len - len_num + 1).join("0") + num; // repeat() not available
+  return MODULE.repeat("0", len - len_num) + num;
 };
 
 /**
@@ -113,6 +133,32 @@ MODULE.truncate_after_decimal = function (num, n_digits) {
   var scale = Math.pow(10, n_digits);
   num = Math.round(num * scale) / scale;
   return num.toFixed(n_digits);
+};
+
+/**
+ * @param {string} str
+ * @param {number} [count]
+ * @returns {string}
+ */
+MODULE.repeat = function (str, count) {
+  return Array(count + 1).join(str);
+};
+
+/**
+ * @param {integer} [count]
+ * @returns {string}
+ */
+MODULE.tab = function (count) {
+  return MODULE.repeat(" ", (count || 1) * 4);
+};
+
+/**
+ * @param {integer} [len]
+ * @param {string} [char]
+ * @returns {string}
+ */
+MODULE.separator = function (len, char) {
+  return "\n" + Array(len || 37).join(char || "-") + "\n";
 };
 
 module.exports = {

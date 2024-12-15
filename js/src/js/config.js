@@ -73,10 +73,8 @@ function _playback() {
     lib_util.print_prop_object("playlist");
   });
 
-  lib_util.bind("j", lib_report.report_categories);
-  lib_util.bind("Shift+j", function () {
-    lib_util.print_prop_object("track-list");
-  });
+  lib_util.bind("j", lib_report.tracking.print_pretty);
+  lib_util.bind("Shift+j", lib_report.tracking.print_raw);
 
   lib_util.bind("l", lib_playback.loop_ab);
   lib_util.bind("L", lib_playback.loop_files);

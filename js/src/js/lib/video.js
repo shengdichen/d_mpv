@@ -6,7 +6,7 @@ var MODULE = {};
 
 MODULE.navigate = function () {
   util.cycle("video");
-  report.report_category_video();
+  report.tracking.print_pretty_video();
 };
 
 function _position(dimension) {
