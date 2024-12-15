@@ -79,17 +79,18 @@ function _playback() {
   lib_util.bind("l", lib_playback.loop_ab);
   lib_util.bind("L", lib_playback.loop_files);
 
-  lib_util.bind(",", lib_playback.navigate_file(-1, "frame"));
-  lib_util.bind(".", lib_playback.navigate_file(+1, "frame"));
+  lib_util.bind(",", lib_playback.navigate_file_frame(-1));
+  lib_util.bind(".", lib_playback.navigate_file_frame(+1));
 
-  lib_util.bind("LEFT", lib_playback.navigate_file(-3));
-  lib_util.bind("RIGHT", lib_playback.navigate_file(+3));
-  lib_util.bind("Shift+LEFT", lib_playback.navigate_file(-1));
-  lib_util.bind("Shift+RIGHT", lib_playback.navigate_file(+1));
-  lib_util.bind("Ctrl+LEFT", lib_playback.navigate_file(-7));
-  lib_util.bind("Ctrl+RIGHT", lib_playback.navigate_file(+7));
-  lib_util.bind("PGUP", lib_playback.navigate_file(-1, "chapter"));
-  lib_util.bind("PGDWN", lib_playback.navigate_file(+1, "chapter"));
+  lib_util.bind("LEFT", lib_playback.navigate_file_time(-3));
+  lib_util.bind("RIGHT", lib_playback.navigate_file_time(+3));
+  lib_util.bind("Shift+LEFT", lib_playback.navigate_file_time(-1));
+  lib_util.bind("Shift+RIGHT", lib_playback.navigate_file_time(+1));
+  lib_util.bind("Ctrl+LEFT", lib_playback.navigate_file_time(-7));
+  lib_util.bind("Ctrl+RIGHT", lib_playback.navigate_file_time(+7));
+
+  lib_util.bind("PGUP", lib_playback.navigate_file_chapter(-1));
+  lib_util.bind("PGDWN", lib_playback.navigate_file_chapter(+1));
 
   lib_util.bind("[", lib_playback.adjust_speed(-0.1));
   lib_util.bind("]", lib_playback.adjust_speed(+0.1));

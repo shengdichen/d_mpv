@@ -21,25 +21,51 @@ MODULE.navigate_playlist = function (positive_dir) {
   };
 };
 
-MODULE.navigate_file = function (incr, mode) {
+/**
+ * @param {integer} incr
+ */
+MODULE.navigate_file_frame = function (incr) {
   return function () {
-    if (mode === "chapter") {
-      util.run(["add", "chapter", incr]);
-      report.report_chapter();
-    } else if (mode === "frame") {
-      if (incr > 0) {
-        util.run("frame-step");
-      } else {
-        util.run("frame-back-step");
-      }
-    } else {
-      util.run(["seek", incr, "relative+exact"]);
+    if (incr === 0) {
+      return;
     }
 
-    var current = util.get_prop_string_formatted("playback-time");
-    var duration = util.get_prop_string_formatted("duration", "raw");
-    util.print_osd("time> " + current + "/" + duration);
+    if (incr > 0) {
+      util.run("frame-step");
+    } else {
+      util.run("frame-back-step");
+    }
+    util.print_osd(MODULE._format_time());
   };
+};
+
+/**
+ * @param {number} incr
+ */
+MODULE.navigate_file_time = function (incr) {
+  return function () {
+    util.run(["seek", incr, "relative+exact"]);
+    util.print_osd(MODULE._format_time());
+  };
+};
+
+/**
+ * @param {integer} incr
+ */
+MODULE.navigate_file_chapter = function (incr) {
+  return function () {
+    util.run(["add", "chapter", incr]);
+    report.report_chapter();
+  };
+};
+
+/**
+ * @returns {string}
+ */
+MODULE._format_time = function () {
+  var current = util.get_prop_string_formatted("playback-time");
+  var duration = util.get_prop_string_formatted("duration", "raw");
+  return "time> " + current + "/" + duration;
 };
 
 MODULE.adjust_speed = function (incr) {
