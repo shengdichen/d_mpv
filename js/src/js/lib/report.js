@@ -404,38 +404,56 @@ var chapter = {
 };
 MODULE.chapter = chapter;
 
-MODULE.report_playlist = function () {
-  var strings = [];
-  strings.push("playlist");
-  var files = util.get_prop_object("playlist");
-  var n_files = files.length;
-  if (!n_files) {
-    util.print_osd(_format_tracks_empty(strings));
-  } else {
-    for (var i = 0; i < n_files; ++i) {
-      var f = files[i];
-      var str = _format_track_selected(f.playing);
-      str = str.concat(
-        util_misc.pad_integer_like(f.id, n_files) +
-          "/" +
-          n_files +
-          ") " +
-          f.filename
-      );
-      strings.push(str);
-    }
+var playlist = {
+  /**
+   * @return {Array.<Object.<string, *>>}
+   */
+  fetch_items: function () {
+    return util.get_prop_object("playlist");
+  },
+
+  print_raw: function () {
+    var strings = playlist.fetch_items().map(function (i) {
+      return util_misc.obj_to_string(i);
+    });
     util.print_osd(strings.join("\n"));
-  }
+  },
+
+  print_pretty: function () {
+    var items = playlist.fetch_items();
+
+    if (!items.length) {
+      util.print_osd("playlist: ??");
+      return;
+    }
+
+    var strings = [];
+    strings.push("playlist");
+    playlist._format_items(items).forEach(function (i) {
+      strings.push(i);
+    });
+    util.print_osd(strings.join("\n"));
+  },
+
+  /**
+   * @param {Array.<Object.<string, *>>} items
+   * @returns {Array.<string>}
+   */
+  _format_items: function (items) {
+    var n_items = items.length;
+    var strings = [];
+    items.forEach(function (item) {
+      strings.push(
+        ""
+          .concat(formatter.format_activeness(item.playing))
+          .concat(formatter.format_id(item.id, n_items))
+          .concat(item.filename)
+      );
+    });
+    return strings;
+  },
 };
-
-function _format_tracks_empty(strings) {
-  strings.push("  ?");
-  return strings.join("\n");
-}
-
-function _format_track_selected(test) {
-  return test ? "  > " : "    ";
-}
+MODULE.playlist = playlist;
 
 module.exports = {
   export: MODULE,

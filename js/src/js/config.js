@@ -68,10 +68,8 @@ function _playback() {
 
   lib_util.bind("<", lib_playback.navigate_playlist(false));
   lib_util.bind(">", lib_playback.navigate_playlist(true));
-  lib_util.bind("k", lib_report.report_playlist);
-  lib_util.bind("Shift+k", function () {
-    lib_util.print_prop_object("playlist");
-  });
+  lib_util.bind("k", lib_report.playlist.print_pretty);
+  lib_util.bind("Shift+k", lib_report.playlist.print_raw);
 
   lib_util.bind("j", lib_report.tracking.print_pretty);
   lib_util.bind("Shift+j", lib_report.tracking.print_raw);

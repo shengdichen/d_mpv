@@ -17,7 +17,7 @@ MODULE.navigate_playlist = function (positive_dir) {
     } else {
       util.run("playlist-prev");
     }
-    report.report_playlist();
+    report.playlist.print_pretty();
   };
 };
 
