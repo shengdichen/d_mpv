@@ -3,6 +3,34 @@ var util = require("./util").export;
 
 var MODULE = {};
 
+var formatter = {
+  /**
+   * @param {boolean} is_active
+   * @param {string} [indicator]
+   * @returns {string}
+   */
+  format_activeness: function (is_active, indicator) {
+    return is_active ? indicator || "  > " : util_misc.tab();
+  },
+
+  /**
+   * @param {integer} i
+   * @param {integer} n
+   * @returns {string}
+   */
+  format_id: function (i, n) {
+    return util_misc.pad_integer_like(i, n) + "/" + n + ") ";
+  },
+
+  /**
+   * @param {string} title
+   * @returns {string}
+   */
+  format_title: function (title) {
+    return "'" + title + "'";
+  },
+};
+
 // REF
 //  https://mpv.io/manual/master/#command-interface-track-list
 var tracking = {
@@ -79,15 +107,6 @@ var tracking = {
   },
 
   /**
-   * @param {boolean} is_active
-   * @param {string} [indicator]
-   * @returns {string}
-   */
-  _format_track_active: function (is_active, indicator) {
-    return is_active ? indicator || "  > " : util_misc.tab();
-  },
-
-  /**
    * @param {object} tracks
    * @param {object} track
    * @param {object} n_tracks_type
@@ -96,7 +115,7 @@ var tracking = {
   _format_track_id: function (tracks, track, n_tracks_type) {
     return (
       tracking._format_track_id_global(tracks, track) +
-      tracking._format_track_id_type(track, n_tracks_type)
+      formatter.format_id(track.id, n_tracks_type)
     );
   },
 
@@ -112,17 +131,6 @@ var tracking = {
     }
     return (
       "[" + util_misc.pad_integer_like(track["src-id"], tracks.n_tracks) + "] "
-    );
-  },
-
-  /**
-   * @param {Object.<string, *>} track
-   * @param {number} n_tracks
-   * @returns {string}
-   */
-  _format_track_id_type: function (track, n_tracks) {
-    return (
-      util_misc.pad_integer_like(track.id, n_tracks) + "/" + n_tracks + ") "
     );
   },
 
@@ -149,7 +157,7 @@ var tracking = {
    */
   _format_track_video: function (tracks, track) {
     return ""
-      .concat(tracking._format_track_active(track.selected))
+      .concat(formatter.format_activeness(track.selected))
       .concat(tracking._format_track_id(tracks, track, tracks.n_tracks_video))
       .concat(tracking._format_track_video_info(track));
   },
@@ -207,7 +215,7 @@ var tracking = {
    */
   _format_track_audio: function (tracks, track) {
     return ""
-      .concat(tracking._format_track_active(track.selected))
+      .concat(formatter.format_activeness(track.selected))
       .concat(tracking._format_track_id(tracks, track, tracks.n_tracks_audio))
       .concat(tracking._format_track_audio_info(track));
   },
@@ -286,26 +294,71 @@ var tracking = {
 };
 MODULE.tracking = tracking;
 
-MODULE.report_chapter = function () {
-  var strings = [];
-  strings.push("chapter");
-  var chapters = util.get_prop_object("chapter-list");
-  var n_chapters = chapters.length;
-  if (!n_chapters) {
-    util.print_osd(_format_tracks_empty(strings));
-  } else {
+// REF
+//  https://mpv.io/manual/master/#command-interface-chapter-list
+var chapter = {
+  /**
+   * @return {Array.<Object.<string, *>>}
+   */
+  fetch_chapters: function () {
+    return util.get_prop_object("chapter-list");
+  },
+
+  /**
+   * @returns {integer}
+   */
+  fetch_chapter_current: function () {
+    return util.get_prop_number("chapter");
+  },
+
+  print_raw: function () {
+    var strings = chapter.fetch_chapters().map(function (i) {
+      return util_misc.obj_to_string(i);
+    });
+    util.print_osd(strings.join("\n"));
+  },
+
+  print_pretty: function () {
+    var chapters = chapter.fetch_chapters();
+
+    if (!chapters.length) {
+      util.print_osd("chapter: ??");
+      return;
+    }
+
+    var strings = [];
+    strings.push("chapter");
+    chapter._format_chapters(chapters).forEach(function (i) {
+      strings.push(i);
+    });
+    util.print_osd(strings.join("\n"));
+  },
+
+  /**
+   * @param {Array.<Object.<string, *>>} chapters
+   * @returns {Array.<string>}
+   */
+  _format_chapters: function (chapters) {
+    var n_chapters = chapters.length;
+    var chapter_curr = chapter.fetch_chapter_current();
+    var strings = [];
     for (var i = 0; i < n_chapters; ++i) {
+      var str =
+        formatter.format_activeness(i === chapter_curr) +
+        formatter.format_id(i + 1 /* use human-indexing */, n_chapters);
+
       var c = chapters[i];
-      var str = _format_track_selected(util.get_prop_number("chapter") === i);
-      str = str.concat(i + 1 + "/" + n_chapters + ")");
       if (c.title) {
-        str = str.concat(" '" + c.title + "'");
+        str += formatter.format_title(c.title);
       }
+
       strings.push(str);
     }
-    util.print_osd(strings.join("\n"));
-  }
+
+    return strings;
+  },
 };
+MODULE.chapter = chapter;
 
 MODULE.report_playlist = function () {
   var strings = [];

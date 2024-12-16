@@ -55,7 +55,7 @@ MODULE.navigate_file_time = function (incr) {
 MODULE.navigate_file_chapter = function (incr) {
   return function () {
     util.run(["add", "chapter", incr]);
-    report.report_chapter();
+    report.chapter.print_pretty();
   };
 };
 
