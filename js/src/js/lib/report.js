@@ -388,11 +388,12 @@ var chapter = {
     for (var i = 0; i < n_chapters; ++i) {
       var str =
         formatter.format_activeness(i === chapter_curr) +
-        formatter.format_id(i + 1 /* use human-indexing */, n_chapters);
+        formatter.format_id(i + 1 /* use human-indexing */, n_chapters) +
+        util_misc.format_as_time(chapters[i].time);
 
       var c = chapters[i];
       if (c.title) {
-        str += formatter.format_title(c.title);
+        str += " " + formatter.format_title(c.title);
       }
 
       strings.push(str);

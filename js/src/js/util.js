@@ -189,6 +189,25 @@ MODULE.format = function (item) {
   return item.toString();
 };
 
+/**
+ * @param {number} duration
+ * @returns {string}
+ */
+MODULE.format_as_time = function (duration) {
+  var hours = Math.floor(duration / 3600);
+
+  duration -= hours * 3600;
+  var minutes = Math.floor(duration / 60);
+
+  duration -= minutes * 60;
+  var seconds = duration.toFixed(3);
+  if (duration < 10) {
+    seconds = "0" + seconds;
+  }
+
+  return hours + ":" + MODULE.pad_integer(minutes, 2) + ":" + seconds;
+};
+
 module.exports = {
   export: MODULE,
 };
