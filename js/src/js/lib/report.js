@@ -126,12 +126,13 @@ var tracking = {
    * @returns {string}
    */
   _format_track_id_global: function (tracks, track) {
-    if (!("src-id" in track)) {
-      return "";
-    }
-    return (
-      "[" + util_misc.pad_integer_like(track["src-id"], tracks.n_tracks) + "] "
-    );
+    var n_tracks = tracks.n_tracks;
+    var s =
+      "src-id" in track
+        ? util_misc.pad_integer_like(track["src-id"], n_tracks)
+        : util_misc.space_like(n_tracks.toString());
+
+    return "[" + s + "] ";
   },
 
   /**

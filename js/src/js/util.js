@@ -145,6 +145,14 @@ MODULE.repeat = function (str, count) {
 };
 
 /**
+ * @param {string} str
+ * @returns {string}
+ */
+MODULE.space_like = function (str) {
+  return MODULE.repeat(" ", str.length);
+};
+
+/**
  * @param {integer} [count]
  * @returns {string}
  */
