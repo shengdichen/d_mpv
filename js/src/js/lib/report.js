@@ -281,16 +281,18 @@ var tracking = {
    * @returns {string}
    */
   _format_track_subtitle_info: function (track) {
+    var strings = [];
+
     if (track.lang) {
-      return track.lang;
+      strings.push(track.lang);
     }
     if (track.title) {
-      return track.title;
+      strings.push(formatter.format_title(track.title));
     }
     if (track.filename) {
-      return track.filename;
+      strings.push("<" + track.filename + ">");
     }
-    return "??";
+    return strings ? strings.join(" ") : "??";
   },
 };
 MODULE.tracking = tracking;
