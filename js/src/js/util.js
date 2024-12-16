@@ -161,6 +161,26 @@ MODULE.separator = function (len, char) {
   return "\n" + Array(len || 37).join(char || "-") + "\n";
 };
 
+/**
+ * @param {boolean|number|string} item
+ * @returns {string}
+ */
+MODULE.format = function (item) {
+  if (typeof item === "string") {
+    return "'" + item + "'";
+  }
+  if (typeof item === "boolean") {
+    if (item) {
+      return "T";
+    }
+    return "F";
+  }
+  if (MODULE.is_float(item)) {
+    return MODULE.truncate_after_decimal(item, 4);
+  }
+  return item.toString();
+};
+
 module.exports = {
   export: MODULE,
 };

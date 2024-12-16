@@ -27,7 +27,7 @@ var formatter = {
    * @returns {string}
    */
   format_title: function (title) {
-    return "'" + title + "'";
+    return util_misc.format(title);
   },
 };
 
