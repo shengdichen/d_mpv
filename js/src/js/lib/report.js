@@ -297,6 +297,46 @@ var tracking = {
 };
 MODULE.tracking = tracking;
 
+var playback = {
+  /**
+   * @returns {string}
+   */
+  time_current_second: function () {
+    return util.get_prop_string_formatted("time-pos");
+  },
+
+  /**
+   * @returns {string}
+   */
+  time_current_millisecond: function () {
+    return util.get_prop_string_formatted("time-pos/full");
+  },
+
+  /**
+   * @returns {string}
+   */
+  progress: function () {
+    var current = playback.time_current_millisecond();
+    var duration = util.get_prop_string_formatted("duration", "raw");
+    return "time> " + current + "/" + duration;
+  },
+
+  /**
+   * @returns {integer}
+   */
+  chapter: function () {
+    return util.get_prop_number("chapter");
+  },
+
+  /**
+   * @returns {integer}
+   */
+  edition: function () {
+    return util.get_prop_number("edition");
+  },
+};
+MODULE.playback = playback;
+
 // REF
 //  https://mpv.io/manual/master/#command-interface-chapter-list
 var chapter = {
@@ -311,7 +351,7 @@ var chapter = {
    * @returns {integer}
    */
   fetch_chapter_current: function () {
-    return util.get_prop_number("chapter");
+    return playback.chapter();
   },
 
   print_raw: function () {

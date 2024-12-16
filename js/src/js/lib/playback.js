@@ -35,7 +35,7 @@ MODULE.navigate_file_frame = function (incr) {
     } else {
       util.run("frame-back-step");
     }
-    util.print_osd(MODULE._format_time());
+    util.print_osd(report.playback.progress());
   };
 };
 
@@ -45,7 +45,7 @@ MODULE.navigate_file_frame = function (incr) {
 MODULE.navigate_file_time = function (incr) {
   return function () {
     util.run(["seek", incr, "relative+exact"]);
-    util.print_osd(MODULE._format_time());
+    util.print_osd(report.playback.progress());
   };
 };
 
@@ -57,15 +57,6 @@ MODULE.navigate_file_chapter = function (incr) {
     util.run(["add", "chapter", incr]);
     report.chapter.print_pretty();
   };
-};
-
-/**
- * @returns {string}
- */
-MODULE._format_time = function () {
-  var current = util.get_prop_string_formatted("playback-time");
-  var duration = util.get_prop_string_formatted("duration", "raw");
-  return "time> " + current + "/" + duration;
 };
 
 MODULE.adjust_speed = function (incr) {
