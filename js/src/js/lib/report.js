@@ -472,14 +472,7 @@ var playlist = {
 
     var n_hidden_start = i_start - i_min;
     if (n_hidden_start) {
-      strings.push(
-        util_misc.tab() +
-          "// " +
-          n_hidden_start +
-          " " +
-          (n_hidden_start === 1 ? "item" : "items") +
-          " a priori..."
-      );
+      strings.push(playlist._format_items_hidden(n_hidden_start, true));
     }
 
     var n_lines_cycle = playlist._n_lines_cycle(n_items);
@@ -490,10 +483,7 @@ var playlist = {
       for (var i = i_max + 1 - n_lines_cycle_start; i < i_max + 1; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
-      strings.push(
-        "----START" +
-          util_misc.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 })
-      );
+      strings.push("----START" + util_misc.separator_no_linebreaks());
     }
 
     for (i = i_start; i <= i_end; ++i) {
@@ -502,10 +492,7 @@ var playlist = {
 
     var n_lines_cycle_end = n_lines_cycle - (i_max - i_current);
     if (n_lines_cycle_end > 0) {
-      strings.push(
-        "----END" +
-          util_misc.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 })
-      );
+      strings.push("----END" + util_misc.separator_no_linebreaks());
       for (i = i_min; i < i_min + n_lines_cycle_end; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
@@ -513,14 +500,7 @@ var playlist = {
 
     var n_hidden_end = i_max - i_end;
     if (n_hidden_end) {
-      strings.push(
-        util_misc.tab() +
-          "// " +
-          n_hidden_end +
-          " " +
-          (n_hidden_end === 1 ? "item" : "items") +
-          " a posteriori..."
-      );
+      strings.push(playlist._format_items_hidden(n_hidden_end));
     }
     return strings;
   },
@@ -554,6 +534,22 @@ var playlist = {
     //  4           3 := n_lines_cycle_max
     //  ...         3
     return util_misc.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
+  },
+
+  /**
+   * @param {number} n_items_hidden
+   * @param {boolean} direction_start
+   * @returns {string}
+   */
+  _format_items_hidden: function (n_items_hidden, direction_start) {
+    return (
+      util_misc.tab() +
+      "// " +
+      n_items_hidden +
+      " " +
+      (n_items_hidden === 1 ? "item" : "items") +
+      (direction_start ? " a priori..." : " a posteriori...")
+    );
   },
 };
 MODULE.playlist = playlist;

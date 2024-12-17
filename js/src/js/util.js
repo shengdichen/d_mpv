@@ -185,6 +185,13 @@ MODULE.separator = function (opts) {
 };
 
 /**
+ * @returns {string}
+ */
+MODULE.separator_no_linebreaks = function () {
+  return MODULE.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 });
+};
+
+/**
  * @param {boolean|number|string} item
  * @returns {string}
  */
