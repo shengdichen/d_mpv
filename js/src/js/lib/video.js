@@ -10,8 +10,8 @@ MODULE.navigate = function () {
 };
 
 function _position(dimension) {
-  return util_misc.prepend_sign(
-    util_misc.truncate_after_decimal(
+  return util_misc.format.prepend_sign(
+    util_misc.format.truncate_after_decimal(
       util.get_prop_number("video-pan-" + dimension)
     )
   );
@@ -31,8 +31,8 @@ MODULE.reposition = function (incr, dimension) {
 };
 
 function _size() {
-  return util_misc.prepend_sign(
-    util_misc.truncate_after_decimal(util.get_prop_number("video-zoom"))
+  return util_misc.format.prepend_sign(
+    util_misc.format.truncate_after_decimal(util.get_prop_number("video-zoom"))
   );
 }
 /**

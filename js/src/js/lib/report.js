@@ -10,7 +10,7 @@ var formatter = {
    * @returns {string}
    */
   format_activeness: function (is_active, indicator) {
-    return is_active ? indicator || "  > " : util_misc.tab();
+    return is_active ? indicator || "  > " : util_misc.visual.tab();
   },
 
   /**
@@ -19,7 +19,7 @@ var formatter = {
    * @returns {string}
    */
   format_id: function (i, n) {
-    return util_misc.pad_integer_like(i, n) + "/" + n + ") ";
+    return util_misc.format.pad_integer_like(i, n) + "/" + n + ") ";
   },
 
   /**
@@ -27,7 +27,7 @@ var formatter = {
    * @returns {string}
    */
   format_title: function (title) {
-    return util_misc.format(title);
+    return util_misc.format.format(title);
   },
 };
 
@@ -78,7 +78,7 @@ var tracking = {
 
   print_raw: function () {
     var strings = tracking._fetch_tracks_simple().map(function (i) {
-      return util_misc.obj_to_string(i);
+      return util_misc.format.obj_to_string(i);
     });
     util.print_osd(strings.join("\n\n"));
   },
@@ -91,7 +91,7 @@ var tracking = {
       tracking._format_tracks_audio(tracks),
       tracking._format_tracks_subtitle(tracks),
     ];
-    util.print_osd(strings.join(util_misc.separator()));
+    util.print_osd(strings.join(util_misc.visual.separator()));
   },
 
   print_pretty_video: function () {
@@ -129,8 +129,8 @@ var tracking = {
     var n_tracks = tracks.n_tracks;
     var s =
       "src-id" in track
-        ? util_misc.pad_integer_like(track["src-id"], n_tracks)
-        : util_misc.space_like(n_tracks.toString());
+        ? util_misc.format.pad_integer_like(track["src-id"], n_tracks)
+        : util_misc.visual.space_like(n_tracks.toString());
 
     return "[" + s + "] ";
   },
@@ -177,8 +177,8 @@ var tracking = {
         return "[static]";
       }
 
-      if (util_misc.is_float(fps)) {
-        fps = util_misc.truncate_after_decimal(fps, 3);
+      if (util_misc.typing.is_float(fps)) {
+        fps = util_misc.format.truncate_after_decimal(fps, 3);
       }
       return "@" + fps + "fps";
     }
@@ -257,7 +257,7 @@ var tracking = {
   _format_track_subtitle: function (tracks, track) {
     function active() {
       if (!track.selected) {
-        return util_misc.tab();
+        return util_misc.visual.tab();
       }
 
       // REF:
@@ -356,7 +356,7 @@ var chapter = {
 
   print_raw: function () {
     var strings = chapter.fetch_chapters().map(function (i) {
-      return util_misc.obj_to_string(i);
+      return util_misc.format.obj_to_string(i);
     });
     util.print_osd(strings.join("\n"));
   },
@@ -389,7 +389,7 @@ var chapter = {
       var str =
         formatter.format_activeness(i === chapter_curr) +
         formatter.format_id(i + 1 /* use human-indexing */, n_chapters) +
-        util_misc.format_as_time(chapters[i].time);
+        util_misc.format.format_as_time(chapters[i].time);
 
       var c = chapters[i];
       if (c.title) {
@@ -434,7 +434,7 @@ var playlist = {
 
   print_raw: function () {
     var strings = playlist.fetch_playlist().items.map(function (i) {
-      return util_misc.obj_to_string(i);
+      return util_misc.format.obj_to_string(i);
     });
     util.print_osd(strings.join("\n"));
   },
@@ -483,7 +483,7 @@ var playlist = {
       for (var i = i_max + 1 - n_lines_cycle_start; i < i_max + 1; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
-      strings.push("----START" + util_misc.separator_no_linebreaks());
+      strings.push("----START" + util_misc.visual.separator_no_linebreaks());
     }
 
     for (i = i_start; i <= i_end; ++i) {
@@ -492,7 +492,7 @@ var playlist = {
 
     var n_lines_cycle_end = n_lines_cycle - (i_max - i_current);
     if (n_lines_cycle_end > 0) {
-      strings.push("----END" + util_misc.separator_no_linebreaks());
+      strings.push("----END" + util_misc.visual.separator_no_linebreaks());
       for (i = i_min; i < i_min + n_lines_cycle_end; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
@@ -533,7 +533,7 @@ var playlist = {
     //  3           2
     //  4           3 := n_lines_cycle_max
     //  ...         3
-    return util_misc.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
+    return util_misc.math.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
   },
 
   /**
@@ -543,7 +543,7 @@ var playlist = {
    */
   _format_items_hidden: function (n_items_hidden, direction_start) {
     return (
-      util_misc.tab() +
+      util_misc.visual.tab() +
       "// " +
       n_items_hidden +
       " " +

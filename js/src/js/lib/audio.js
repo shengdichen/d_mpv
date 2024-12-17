@@ -26,7 +26,7 @@ function _format_volume_incr(incr) {
   if (incr === -1) {
     return "--";
   }
-  return util_misc.prepend_sign(incr);
+  return util_misc.format.prepend_sign(incr);
 }
 
 MODULE.mute = function () {

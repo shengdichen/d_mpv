@@ -68,7 +68,7 @@ MODULE.adjust_speed = function (incr) {
       util.run(["add", "speed", incr]);
       util.print_osd(
         "speed> " +
-          util_misc.truncate_after_decimal(util.get_prop_number("speed"))
+          util_misc.format.truncate_after_decimal(util.get_prop_number("speed"))
       );
     }
   };
@@ -84,7 +84,7 @@ function _loop_ab_bound(mode) {
   if (bound === "no") {
     return undefined;
   }
-  return util_misc.truncate_after_decimal(bound, 3);
+  return util_misc.format.truncate_after_decimal(bound, 3);
 }
 
 MODULE.loop_ab = function () {

@@ -15,9 +15,7 @@ MODULE.bind = function (key, fn, opts) {
     return;
   }
 
-  opts.repeatable = util_misc.has_member(opts, "repeatable")
-    ? opts.repeatable
-    : true;
+  opts.repeatable = "repeatable" in opts ? opts.repeatable : true;
 
   if (opts.force) {
     delete opts.force;
@@ -147,7 +145,7 @@ MODULE.get_prop_string_formatted = function (prop, def) {
  */
 MODULE.get_prop_object = function (prop, def) {
   var res = MODULE.raw.get_property_native(prop, def);
-  if (util_misc.is_object(res)) {
+  if (util_misc.typing.is_object(res)) {
     return res;
   }
   return { _prop: res };
@@ -234,7 +232,7 @@ MODULE.print_prop_string_formatted = function (prop, def) {
  */
 MODULE.print_prop_object = function (prop, def) {
   var obj = MODULE.get_prop_object(prop, def);
-  if (!util_misc.is_array(obj)) {
+  if (!util_misc.typing.is_array(obj)) {
     MODULE.print_osd(JSON.stringify(obj));
     return;
   }

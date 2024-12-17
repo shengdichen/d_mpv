@@ -75,7 +75,7 @@ var _record = {
    * @param {Array.<string>|string} targets
    */
   append_targets: function (targets) {
-    if (!util_misc.is_array(targets)) {
+    if (!util_misc.typing.is_array(targets)) {
       _record.set_targets(_record.get_targets() + "," + targets);
       return;
     }

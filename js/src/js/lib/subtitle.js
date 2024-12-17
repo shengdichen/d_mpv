@@ -10,7 +10,7 @@ function _delay(target) {
   } else if (target === "secondary") {
     target = "secondary-sub-delay";
   }
-  return util_misc.truncate_after_decimal(util.get_prop_number(target));
+  return util_misc.format.truncate_after_decimal(util.get_prop_number(target));
 }
 function _retime_primary(incr) {
   util.run(["add", "sub-delay", incr]);
@@ -53,7 +53,9 @@ MODULE.resize = function (incr) {
     util.run(["add", "sub-scale", incr]);
     util.print_osd(
       "subtitle/scale> " +
-        util_misc.truncate_after_decimal(util.get_prop_number("sub-scale"))
+        util_misc.format.truncate_after_decimal(
+          util.get_prop_number("sub-scale")
+        )
     );
   };
 };
