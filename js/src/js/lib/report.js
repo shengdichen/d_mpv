@@ -408,50 +408,65 @@ var playlist = {
   _n_lines_context: 7,
   _n_lines_cycle_max: 3,
 
-  _i_min: 0,
-
   /**
-   * @return {Array.<Object.<string, *>>}
+   * @return {Object.<string, *>}
    */
-  fetch_items: function () {
-    return util.get_prop_object("playlist");
+  fetch_playlist: function () {
+    var items = util.get_prop_object("playlist");
+    var n_items = items.length;
+
+    var i_zero = 0; // zero-indexing by default in mpv
+    var i_min = i_zero;
+    var i_max = i_zero + n_items - 1;
+    var i_current = i_zero + util.get_prop_number("playlist-current-pos");
+
+    return {
+      items: items,
+      n_items: n_items,
+      is_empty: n_items === 0,
+
+      _i_zero: i_zero,
+      i_min: i_min,
+      i_max: i_max,
+      i_current: i_current,
+    };
   },
 
   print_raw: function () {
-    var strings = playlist.fetch_items().map(function (i) {
+    var strings = playlist.fetch_playlist().items.map(function (i) {
       return util_misc.obj_to_string(i);
     });
     util.print_osd(strings.join("\n"));
   },
 
   print_pretty: function () {
-    var items = playlist.fetch_items();
+    var pl = playlist.fetch_playlist();
 
-    if (!items.length) {
+    if (pl.is_empty) {
       util.print_osd("playlist: ??");
       return;
     }
 
     var strings = [];
     strings.push("playlist");
-    playlist._format_items(items).forEach(function (i) {
+    playlist._format_playlist(pl).forEach(function (i) {
       strings.push(i);
     });
     util.print_osd(strings.join("\n"));
   },
 
   /**
-   * @param {Array.<Object.<string, *>>} items
+   * @param {Object.<string, *>} pl
    * @returns {Array.<string>}
    */
-  _format_items: function (items) {
-    var n_items = items.length;
-    var i_min = playlist._i_min;
-    var i_max = playlist._i_min + n_items - 1;
+  _format_playlist: function (pl) {
+    var n_items = pl.n_items;
+    var i_min = pl.i_min;
+    var i_max = pl.i_max;
 
-    var i_playing = i_min + playlist._index_playing(items);
-    var i_start = Math.max(i_min, i_playing - playlist._n_lines_context);
-    var i_end = Math.min(i_max, i_playing + playlist._n_lines_context);
+    var i_current = pl.i_current;
+    var i_start = Math.max(i_min, i_current - playlist._n_lines_context);
+    var i_end = Math.min(i_max, i_current + playlist._n_lines_context);
 
     var strings = [];
 
@@ -469,11 +484,11 @@ var playlist = {
 
     var n_lines_cycle = playlist._n_lines_cycle(n_items);
 
-    var n_lines_cycle_start = n_lines_cycle - (i_playing - i_min);
+    var n_lines_cycle_start = n_lines_cycle - (i_current - i_min);
     if (n_lines_cycle_start > 0) {
       // reverse of: (var i = i_max; i > i_max - n_lines_cycle_start; --i)
       for (var i = i_max + 1 - n_lines_cycle_start; i < i_max + 1; ++i) {
-        strings.push(playlist._format_item(items[i], n_items));
+        strings.push(playlist._format_item(pl.items[i], n_items));
       }
       strings.push(
         "----START" +
@@ -482,17 +497,17 @@ var playlist = {
     }
 
     for (i = i_start; i <= i_end; ++i) {
-      strings.push(playlist._format_item(items[i], n_items));
+      strings.push(playlist._format_item(pl.items[i], n_items));
     }
 
-    var n_lines_cycle_end = n_lines_cycle - (i_max - i_playing);
+    var n_lines_cycle_end = n_lines_cycle - (i_max - i_current);
     if (n_lines_cycle_end > 0) {
       strings.push(
         "----END" +
           util_misc.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 })
       );
       for (i = i_min; i < i_min + n_lines_cycle_end; ++i) {
-        strings.push(playlist._format_item(items[i], n_items));
+        strings.push(playlist._format_item(pl.items[i], n_items));
       }
     }
 
@@ -508,19 +523,6 @@ var playlist = {
       );
     }
     return strings;
-  },
-
-  /**
-   * @param {Array.<Object.<string, *>>} items
-   * @returns {integer}
-   */
-  _index_playing: function (items) {
-    var n_items = items.length;
-    for (var i = 0; i < n_items; ++i) {
-      if (items[i].current) {
-        return i;
-      }
-    }
   },
 
   /**
