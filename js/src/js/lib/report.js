@@ -517,7 +517,7 @@ var playlist = {
   _index_playing: function (items) {
     var n_items = items.length;
     for (var i = 0; i < n_items; ++i) {
-      if (items[i].playing) {
+      if (items[i].current) {
         return i;
       }
     }
@@ -529,8 +529,11 @@ var playlist = {
    * @returns {string}
    */
   _format_item: function (item, n_items) {
+    // NOTE:
+    //  use .current to check current track; .playing does NOT update when
+    //  switching tracks and will thus report erroneously
     return ""
-      .concat(formatter.format_activeness(item.playing))
+      .concat(formatter.format_activeness(item.current))
       .concat(formatter.format_id(item.id, n_items))
       .concat(item.filename);
   },
