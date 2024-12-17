@@ -405,6 +405,8 @@ var chapter = {
 MODULE.chapter = chapter;
 
 var playlist = {
+  _n_lines_context: 7,
+
   /**
    * @return {Array.<Object.<string, *>>}
    */
@@ -442,15 +444,57 @@ var playlist = {
   _format_items: function (items) {
     var n_items = items.length;
     var strings = [];
-    items.forEach(function (item) {
+
+    var i_playing = playlist._index_playing(items);
+    var i_start = Math.max(0, i_playing - playlist._n_lines_context);
+    var i_end = Math.min(n_items, i_playing + playlist._n_lines_context + 1);
+
+    if (i_start) {
       strings.push(
-        ""
-          .concat(formatter.format_activeness(item.playing))
-          .concat(formatter.format_id(item.id, n_items))
-          .concat(item.filename)
+        util_misc.tab() +
+          "// " +
+          i_start +
+          " " +
+          (i_start === 1 ? "item" : "items") +
+          " a priori..."
       );
-    });
+    }
+
+    for (var i = i_start; i < i_end; ++i) {
+      var item = items[i];
+      var str = ""
+        .concat(formatter.format_activeness(item.playing))
+        .concat(formatter.format_id(item.id, n_items))
+        .concat(item.filename);
+
+      strings.push(str);
+    }
+
+    var n_hidden_end = n_items - i_end;
+    if (n_hidden_end) {
+      strings.push(
+        util_misc.tab() +
+          "// " +
+          n_hidden_end +
+          " " +
+          (n_hidden_end === 1 ? "item" : "items") +
+          " a posteriori..."
+      );
+    }
     return strings;
+  },
+
+  /**
+   * @param {Array.<Object.<string, *>>} items
+   * @returns {integer}
+   */
+  _index_playing: function (items) {
+    var n_items = items.length;
+    for (var i = 0; i < n_items; ++i) {
+      if (items[i].playing) {
+        return i;
+      }
+    }
   },
 };
 MODULE.playlist = playlist;
