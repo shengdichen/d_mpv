@@ -161,12 +161,27 @@ MODULE.tab = function (count) {
 };
 
 /**
- * @param {integer} [len]
- * @param {string} [char]
+ * @param {Object.<*, *>} [opts]
  * @returns {string}
  */
-MODULE.separator = function (len, char) {
-  return "\n" + Array(len || 37).join(char || "-") + "\n";
+MODULE.separator = function (opts) {
+  var s = "";
+
+  if (opts && "n_linebreaks_before" in opts) {
+    s += MODULE.repeat("\n", opts.n_linebreaks_before);
+  } else {
+    s += "\n";
+  }
+
+  s += Array((opts && opts.len) || 37).join((opts && opts.char) || "-");
+
+  if (opts && "n_linebreaks_after" in opts) {
+    s += MODULE.repeat("\n", opts.n_linebreaks_after);
+  } else {
+    s += "\n";
+  }
+
+  return s;
 };
 
 /**
@@ -206,6 +221,16 @@ MODULE.format_as_time = function (duration) {
   }
 
   return hours + ":" + MODULE.pad_integer(minutes, 2) + ":" + seconds;
+};
+
+/**
+ * @param {number} n
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+MODULE.clamp = function (n, min, max) {
+  return Math.min(max, Math.max(min, n));
 };
 
 module.exports = {

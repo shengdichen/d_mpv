@@ -406,6 +406,7 @@ MODULE.chapter = chapter;
 
 var playlist = {
   _n_lines_context: 7,
+  _n_lines_cycle_max: 3,
 
   /**
    * @return {Array.<Object.<string, *>>}
@@ -460,14 +461,30 @@ var playlist = {
       );
     }
 
-    for (var i = i_start; i < i_end; ++i) {
-      var item = items[i];
-      var str = ""
-        .concat(formatter.format_activeness(item.playing))
-        .concat(formatter.format_id(item.id, n_items))
-        .concat(item.filename);
+    var n_lines_cycle = playlist._n_lines_cycle(n_items);
 
-      strings.push(str);
+    if (i_playing < n_lines_cycle) {
+      for (var i = n_items - n_lines_cycle + i_playing; i < n_items; ++i) {
+        strings.push(playlist._format_item(items[i], n_items));
+      }
+      strings.push(
+        "----START" +
+          util_misc.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 })
+      );
+    }
+
+    for (i = i_start; i < i_end; ++i) {
+      strings.push(playlist._format_item(items[i], n_items));
+    }
+
+    if (i_playing > n_items - n_lines_cycle - 1) {
+      strings.push(
+        "----END" +
+          util_misc.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 })
+      );
+      for (i = 0; i < i_playing - n_items + n_lines_cycle + 1; ++i) {
+        strings.push(playlist._format_item(items[i], n_items));
+      }
     }
 
     var n_hidden_end = n_items - i_end;
@@ -495,6 +512,34 @@ var playlist = {
         return i;
       }
     }
+  },
+
+  /**
+   * @param {Object.<string, *>} item
+   * @param {interger} n_items
+   * @returns {string}
+   */
+  _format_item: function (item, n_items) {
+    return ""
+      .concat(formatter.format_activeness(item.playing))
+      .concat(formatter.format_id(item.id, n_items))
+      .concat(item.filename);
+  },
+
+  /**
+   * @param {interger} n_items
+   * @returns {integer}
+   */
+  _n_lines_cycle: function (n_items) {
+    // NOTE:
+    //  n_items <=> n_lines_cycle
+    //  0           0
+    //  1           0
+    //  2           1
+    //  3           2
+    //  4           3 := n_lines_cycle_max
+    //  ...         3
+    return util_misc.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
   },
 };
 MODULE.playlist = playlist;
