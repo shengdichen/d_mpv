@@ -408,6 +408,8 @@ var playlist = {
   _n_lines_context: 7,
   _n_lines_cycle_max: 3,
 
+  _i_min: 0,
+
   /**
    * @return {Array.<Object.<string, *>>}
    */
@@ -444,27 +446,33 @@ var playlist = {
    */
   _format_items: function (items) {
     var n_items = items.length;
+    var i_min = playlist._i_min;
+    var i_max = playlist._i_min + n_items - 1;
+
+    var i_playing = i_min + playlist._index_playing(items);
+    var i_start = Math.max(i_min, i_playing - playlist._n_lines_context);
+    var i_end = Math.min(i_max, i_playing + playlist._n_lines_context);
+
     var strings = [];
 
-    var i_playing = playlist._index_playing(items);
-    var i_start = Math.max(0, i_playing - playlist._n_lines_context);
-    var i_end = Math.min(n_items, i_playing + playlist._n_lines_context + 1);
-
-    if (i_start) {
+    var n_hidden_start = i_start - i_min;
+    if (n_hidden_start) {
       strings.push(
         util_misc.tab() +
           "// " +
-          i_start +
+          n_hidden_start +
           " " +
-          (i_start === 1 ? "item" : "items") +
+          (n_hidden_start === 1 ? "item" : "items") +
           " a priori..."
       );
     }
 
     var n_lines_cycle = playlist._n_lines_cycle(n_items);
 
-    if (i_playing < n_lines_cycle) {
-      for (var i = n_items - n_lines_cycle + i_playing; i < n_items; ++i) {
+    var n_lines_cycle_start = n_lines_cycle - (i_playing - i_min);
+    if (n_lines_cycle_start > 0) {
+      // reverse of: (var i = i_max; i > i_max - n_lines_cycle_start; --i)
+      for (var i = i_max + 1 - n_lines_cycle_start; i < i_max + 1; ++i) {
         strings.push(playlist._format_item(items[i], n_items));
       }
       strings.push(
@@ -473,21 +481,22 @@ var playlist = {
       );
     }
 
-    for (i = i_start; i < i_end; ++i) {
+    for (i = i_start; i <= i_end; ++i) {
       strings.push(playlist._format_item(items[i], n_items));
     }
 
-    if (i_playing > n_items - n_lines_cycle - 1) {
+    var n_lines_cycle_end = n_lines_cycle - (i_max - i_playing);
+    if (n_lines_cycle_end > 0) {
       strings.push(
         "----END" +
           util_misc.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 })
       );
-      for (i = 0; i < i_playing - n_items + n_lines_cycle + 1; ++i) {
+      for (i = i_min; i < i_min + n_lines_cycle_end; ++i) {
         strings.push(playlist._format_item(items[i], n_items));
       }
     }
 
-    var n_hidden_end = n_items - i_end;
+    var n_hidden_end = i_max - i_end;
     if (n_hidden_end) {
       strings.push(
         util_misc.tab() +
