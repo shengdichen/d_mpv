@@ -1,4 +1,4 @@
-var util_misc = require("../util");
+var util = require("../util");
 
 var _MPV = mp; // eslint-disable-line no-undef
 
@@ -173,7 +173,7 @@ var property = {
    */
   get_object: function (prop, def) {
     var res = _MPV.get_property_native(prop, def);
-    if (util_misc.typing.is_object(res)) {
+    if (util.typing.is_object(res)) {
       return res;
     }
     return { _prop: res };
@@ -237,7 +237,7 @@ var osd = {
    */
   print_prop_object: function (prop, def) {
     var obj = property.get_object(prop, def);
-    if (!util_misc.typing.is_array(obj)) {
+    if (!util.typing.is_array(obj)) {
       osd.print(JSON.stringify(obj));
       return;
     }

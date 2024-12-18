@@ -1,6 +1,6 @@
-var util_misc = require("../util");
+var util = require("../util");
 var report = require("./report");
-var util = require("./util");
+var mpv = require("./util");
 
 var MODULE = {};
 
@@ -10,17 +10,15 @@ function _delay(target) {
   } else if (target === "secondary") {
     target = "secondary-sub-delay";
   }
-  return util_misc.format.truncate_after_decimal(
-    util.property.get_number(target)
-  );
+  return util.format.truncate_after_decimal(mpv.property.get_number(target));
 }
 function _retime_primary(incr) {
-  util.exec.run(["add", "sub-delay", incr]);
-  util.osd.print("subtitle/delay-primary> " + _delay("primary"));
+  mpv.exec.run(["add", "sub-delay", incr]);
+  mpv.osd.print("subtitle/delay-primary> " + _delay("primary"));
 }
 function _retime_secondary(incr) {
-  util.exec.run(["add", "secondary-sub-delay", incr]);
-  util.osd.print("subtitle/delay-secondary> " + _delay("secondary"));
+  mpv.exec.run(["add", "secondary-sub-delay", incr]);
+  mpv.osd.print("subtitle/delay-secondary> " + _delay("secondary"));
 }
 /**
  * @param {number} incr
@@ -36,7 +34,7 @@ MODULE.retime = function (incr, target) {
     } else if (target === "both") {
       _retime_primary(incr);
       _retime_secondary(incr);
-      util.osd.print(
+      mpv.osd.print(
         "subtitle/delay> (primary, secondary): " +
           _delay("primary") +
           ", " +
@@ -52,12 +50,10 @@ MODULE.retime = function (incr, target) {
  */
 MODULE.resize = function (incr) {
   return function () {
-    util.exec.run(["add", "sub-scale", incr]);
-    util.osd.print(
+    mpv.exec.run(["add", "sub-scale", incr]);
+    mpv.osd.print(
       "subtitle/scale> " +
-        util_misc.format.truncate_after_decimal(
-          util.property.get_number("sub-scale")
-        )
+        util.format.truncate_after_decimal(mpv.property.get_number("sub-scale"))
     );
   };
 };
@@ -68,8 +64,8 @@ MODULE.resize = function (incr) {
  */
 MODULE.move = function (incr) {
   return function () {
-    util.exec.run(["add", "sub-pos", incr]);
-    util.osd.print("subtitle/pos> " + util.property.get_number("sub-pos"));
+    mpv.exec.run(["add", "sub-pos", incr]);
+    mpv.osd.print("subtitle/pos> " + mpv.property.get_number("sub-pos"));
   };
 };
 
@@ -96,9 +92,9 @@ MODULE.move_up = function (incr) {
 MODULE.navigate = function (positive_dir) {
   return function () {
     if (positive_dir) {
-      util.exec.run(["cycle", "sub", "up"]);
+      mpv.exec.run(["cycle", "sub", "up"]);
     } else {
-      util.exec.run(["cycle", "sub", "down"]);
+      mpv.exec.run(["cycle", "sub", "down"]);
     }
     report.tracking.print_pretty_subtitle();
   };
@@ -125,21 +121,21 @@ MODULE.navigate_next = function () {
 MODULE.toggle = function (target) {
   return function () {
     if (target === "both") {
-      util.property.cycle("sub-visibility");
-      var visible_primary = util.property.get_boolean("sub-visibility");
-      util.osd.print(
+      mpv.property.cycle("sub-visibility");
+      var visible_primary = mpv.property.get_boolean("sub-visibility");
+      mpv.osd.print(
         "subtitle/visibility> " + (!visible_primary ? "primary" : "secondary")
       );
-      util.property.set_boolean("secondary-sub-visibility", !visible_primary);
+      mpv.property.set_boolean("secondary-sub-visibility", !visible_primary);
     } else {
       var opt =
         target === "primary" ? "sub-visibility" : "secondary-sub-visibility";
-      util.property.cycle(opt);
-      util.osd.print(
+      mpv.property.cycle(opt);
+      mpv.osd.print(
         "subtitle/visibility-" +
           target +
           "> " +
-          (util.property.get_boolean(opt) ? "T" : "F")
+          (mpv.property.get_boolean(opt) ? "T" : "F")
       );
     }
   };

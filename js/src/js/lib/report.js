@@ -1,5 +1,5 @@
-var util_misc = require("../util");
-var util = require("./util");
+var util = require("../util");
+var mpv = require("./util");
 
 var formatter = {
   /**
@@ -8,7 +8,7 @@ var formatter = {
    * @returns {string}
    */
   format_activeness: function (is_active, indicator) {
-    return is_active ? indicator || "  > " : util_misc.visual.tab();
+    return is_active ? indicator || "  > " : util.visual.tab();
   },
 
   /**
@@ -17,7 +17,7 @@ var formatter = {
    * @returns {string}
    */
   format_id: function (i, n) {
-    return util_misc.format.pad_integer_like(i, n) + "/" + n + ") ";
+    return util.format.pad_integer_like(i, n) + "/" + n + ") ";
   },
 
   /**
@@ -25,7 +25,7 @@ var formatter = {
    * @returns {string}
    */
   format_title: function (title) {
-    return util_misc.format.format(title);
+    return util.format.format(title);
   },
 };
 
@@ -36,7 +36,7 @@ var tracking = {
    * @return {Array.<Object.<string, *>>}
    */
   _fetch_tracks_simple: function () {
-    return util.property.get_object("track-list");
+    return mpv.property.get_object("track-list");
   },
 
   _fetch_tracks: function () {
@@ -76,9 +76,9 @@ var tracking = {
 
   print_raw: function () {
     var strings = tracking._fetch_tracks_simple().map(function (i) {
-      return util_misc.format.obj_to_string(i);
+      return util.format.obj_to_string(i);
     });
-    util.osd.print(strings.join("\n\n"));
+    mpv.osd.print(strings.join("\n\n"));
   },
 
   print_pretty: function () {
@@ -89,19 +89,19 @@ var tracking = {
       tracking._format_tracks_audio(tracks),
       tracking._format_tracks_subtitle(tracks),
     ];
-    util.osd.print(strings.join(util_misc.visual.separator()));
+    mpv.osd.print(strings.join(util.visual.separator()));
   },
 
   print_pretty_video: function () {
-    util.osd.print(tracking._format_tracks_video(tracking._fetch_tracks()));
+    mpv.osd.print(tracking._format_tracks_video(tracking._fetch_tracks()));
   },
 
   print_pretty_audio: function () {
-    util.osd.print(tracking._format_tracks_audio(tracking._fetch_tracks()));
+    mpv.osd.print(tracking._format_tracks_audio(tracking._fetch_tracks()));
   },
 
   print_pretty_subtitle: function () {
-    util.osd.print(tracking._format_tracks_subtitle(tracking._fetch_tracks()));
+    mpv.osd.print(tracking._format_tracks_subtitle(tracking._fetch_tracks()));
   },
 
   /**
@@ -127,8 +127,8 @@ var tracking = {
     var n_tracks = tracks.n_tracks;
     var s =
       "src-id" in track
-        ? util_misc.format.pad_integer_like(track["src-id"], n_tracks)
-        : util_misc.visual.space_like(n_tracks.toString());
+        ? util.format.pad_integer_like(track["src-id"], n_tracks)
+        : util.visual.space_like(n_tracks.toString());
 
     return "[" + s + "] ";
   },
@@ -175,8 +175,8 @@ var tracking = {
         return "[static]";
       }
 
-      if (util_misc.typing.is_float(fps)) {
-        fps = util_misc.format.truncate_after_decimal(fps, 3);
+      if (util.typing.is_float(fps)) {
+        fps = util.format.truncate_after_decimal(fps, 3);
       }
       return "@" + fps + "fps";
     }
@@ -255,7 +255,7 @@ var tracking = {
   _format_track_subtitle: function (tracks, track) {
     function active() {
       if (!track.selected) {
-        return util_misc.visual.tab();
+        return util.visual.tab();
       }
 
       // REF:
@@ -299,14 +299,14 @@ var playback = {
    * @returns {string}
    */
   time_current_second: function () {
-    return util.property.get_string_formatted("time-pos");
+    return mpv.property.get_string_formatted("time-pos");
   },
 
   /**
    * @returns {string}
    */
   time_current_millisecond: function () {
-    return util.property.get_string_formatted("time-pos/full");
+    return mpv.property.get_string_formatted("time-pos/full");
   },
 
   /**
@@ -314,7 +314,7 @@ var playback = {
    */
   progress: function () {
     var current = playback.time_current_millisecond();
-    var duration = util.property.get_string_formatted("duration", "raw");
+    var duration = mpv.property.get_string_formatted("duration", "raw");
     return "time> " + current + "/" + duration;
   },
 
@@ -322,14 +322,14 @@ var playback = {
    * @returns {integer}
    */
   chapter: function () {
-    return util.property.get_number("chapter");
+    return mpv.property.get_number("chapter");
   },
 
   /**
    * @returns {integer}
    */
   edition: function () {
-    return util.property.get_number("edition");
+    return mpv.property.get_number("edition");
   },
 };
 
@@ -340,7 +340,7 @@ var chapter = {
    * @return {Array.<Object.<string, *>>}
    */
   fetch_chapters: function () {
-    return util.property.get_object("chapter-list");
+    return mpv.property.get_object("chapter-list");
   },
 
   /**
@@ -352,16 +352,16 @@ var chapter = {
 
   print_raw: function () {
     var strings = chapter.fetch_chapters().map(function (i) {
-      return util_misc.format.obj_to_string(i);
+      return util.format.obj_to_string(i);
     });
-    util.osd.print(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   print_pretty: function () {
     var chapters = chapter.fetch_chapters();
 
     if (!chapters.length) {
-      util.osd.print("chapter: ??");
+      mpv.osd.print("chapter: ??");
       return;
     }
 
@@ -370,7 +370,7 @@ var chapter = {
     chapter._format_chapters(chapters).forEach(function (i) {
       strings.push(i);
     });
-    util.osd.print(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   /**
@@ -385,7 +385,7 @@ var chapter = {
       var str =
         formatter.format_activeness(i === chapter_curr) +
         formatter.format_id(i + 1 /* use human-indexing */, n_chapters) +
-        util_misc.format.format_as_time(chapters[i].time);
+        util.format.format_as_time(chapters[i].time);
 
       var c = chapters[i];
       if (c.title) {
@@ -407,13 +407,13 @@ var playlist = {
    * @return {Object.<string, *>}
    */
   fetch_playlist: function () {
-    var items = util.property.get_object("playlist");
+    var items = mpv.property.get_object("playlist");
     var n_items = items.length;
 
     var i_zero = 0; // zero-indexing by default in mpv
     var i_min = i_zero;
     var i_max = i_zero + n_items - 1;
-    var i_current = i_zero + util.property.get_number("playlist-current-pos");
+    var i_current = i_zero + mpv.property.get_number("playlist-current-pos");
 
     return {
       items: items,
@@ -429,16 +429,16 @@ var playlist = {
 
   print_raw: function () {
     var strings = playlist.fetch_playlist().items.map(function (i) {
-      return util_misc.format.obj_to_string(i);
+      return util.format.obj_to_string(i);
     });
-    util.osd.print(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   print_pretty: function () {
     var pl = playlist.fetch_playlist();
 
     if (pl.is_empty) {
-      util.osd.print("playlist: ??");
+      mpv.osd.print("playlist: ??");
       return;
     }
 
@@ -447,7 +447,7 @@ var playlist = {
     playlist._format_playlist(pl).forEach(function (i) {
       strings.push(i);
     });
-    util.osd.print(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   /**
@@ -478,7 +478,7 @@ var playlist = {
       for (var i = i_max + 1 - n_lines_cycle_start; i < i_max + 1; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
-      strings.push("----START" + util_misc.visual.separator_no_linebreaks());
+      strings.push("----START" + util.visual.separator_no_linebreaks());
     }
 
     for (i = i_start; i <= i_end; ++i) {
@@ -487,7 +487,7 @@ var playlist = {
 
     var n_lines_cycle_end = n_lines_cycle - (i_max - i_current);
     if (n_lines_cycle_end > 0) {
-      strings.push("----END" + util_misc.visual.separator_no_linebreaks());
+      strings.push("----END" + util.visual.separator_no_linebreaks());
       for (i = i_min; i < i_min + n_lines_cycle_end; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
@@ -528,7 +528,7 @@ var playlist = {
     //  3           2
     //  4           3 := n_lines_cycle_max
     //  ...         3
-    return util_misc.math.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
+    return util.math.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
   },
 
   /**
@@ -538,7 +538,7 @@ var playlist = {
    */
   _format_items_hidden: function (n_items_hidden, direction_start) {
     return (
-      util_misc.visual.tab() +
+      util.visual.tab() +
       "// " +
       n_items_hidden +
       " " +

@@ -1,21 +1,21 @@
-var util_misc = require("../util");
+var util = require("../util");
 var report = require("./report");
-var util = require("./util");
+var mpv = require("./util");
 var misc = require("./misc").export;
 
 var MODULE = {};
 
 MODULE.playpause = function () {
-  util.property.cycle("pause");
+  mpv.property.cycle("pause");
   misc.osc.toggle();
 };
 
 MODULE.navigate_playlist = function (positive_dir) {
   return function () {
     if (positive_dir) {
-      util.exec.run("playlist-next");
+      mpv.exec.run("playlist-next");
     } else {
-      util.exec.run("playlist-prev");
+      mpv.exec.run("playlist-prev");
     }
     report.playlist.print_pretty();
   };
@@ -31,11 +31,11 @@ MODULE.navigate_file_frame = function (incr) {
     }
 
     if (incr > 0) {
-      util.exec.run("frame-step");
+      mpv.exec.run("frame-step");
     } else {
-      util.exec.run("frame-back-step");
+      mpv.exec.run("frame-back-step");
     }
-    util.osd.print(report.playback.progress());
+    mpv.osd.print(report.playback.progress());
   };
 };
 
@@ -44,8 +44,8 @@ MODULE.navigate_file_frame = function (incr) {
  */
 MODULE.navigate_file_time = function (incr) {
   return function () {
-    util.exec.run(["seek", incr, "relative+exact"]);
-    util.osd.print(report.playback.progress());
+    mpv.exec.run(["seek", incr, "relative+exact"]);
+    mpv.osd.print(report.playback.progress());
   };
 };
 
@@ -54,7 +54,7 @@ MODULE.navigate_file_time = function (incr) {
  */
 MODULE.navigate_file_chapter = function (incr) {
   return function () {
-    util.exec.run(["add", "chapter", incr]);
+    mpv.exec.run(["add", "chapter", incr]);
     report.chapter.print_pretty();
   };
 };
@@ -62,35 +62,33 @@ MODULE.navigate_file_chapter = function (incr) {
 MODULE.adjust_speed = function (incr) {
   return function () {
     if (!incr) {
-      util.exec.run(["set", "speed", 1.0]);
-      util.osd.print("speed> 1.0");
+      mpv.exec.run(["set", "speed", 1.0]);
+      mpv.osd.print("speed> 1.0");
     } else {
-      util.exec.run(["add", "speed", incr]);
-      util.osd.print(
+      mpv.exec.run(["add", "speed", incr]);
+      mpv.osd.print(
         "speed> " +
-          util_misc.format.truncate_after_decimal(
-            util.property.get_number("speed")
-          )
+          util.format.truncate_after_decimal(mpv.property.get_number("speed"))
       );
     }
   };
 };
 
 MODULE.loop_files = function () {
-  util.property.cycle("loop-file", ["inf", "no"]);
-  util.osd.print_prop_autotype("loop-file");
+  mpv.property.cycle("loop-file", ["inf", "no"]);
+  mpv.osd.print_prop_autotype("loop-file");
 };
 
 function _loop_ab_bound(mode) {
-  var bound = util.property.get_autotype("ab-loop-" + mode);
+  var bound = mpv.property.get_autotype("ab-loop-" + mode);
   if (bound === "no") {
     return undefined;
   }
-  return util_misc.format.truncate_after_decimal(bound, 3);
+  return util.format.truncate_after_decimal(bound, 3);
 }
 
 MODULE.loop_ab = function () {
-  util.exec.run("ab-loop");
+  mpv.exec.run("ab-loop");
 
   var msg;
   var bound_a = _loop_ab_bound("a");
@@ -105,7 +103,7 @@ MODULE.loop_ab = function () {
   } else {
     msg = "?";
   }
-  util.osd.print("loop-ab> " + msg);
+  mpv.osd.print("loop-ab> " + msg);
 };
 
 module.exports = {
