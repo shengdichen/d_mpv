@@ -129,7 +129,7 @@ var property = {
   /**
    * @param {string} prop
    * @param {boolean} def
-   * @returns {boolean}
+   * @returns {boolean|undefined}
    */
   get_boolean: function (prop, def) {
     return _MPV.get_property_bool(prop, def);
@@ -146,7 +146,7 @@ var property = {
   /**
    * @param {string} prop
    * @param {number} def
-   * @returns {number}
+   * @returns {number|undefined}
    */
   get_number: function (prop, def) {
     return _MPV.get_property_number(prop, def);
@@ -163,7 +163,7 @@ var property = {
   /**
    * @param {string} prop
    * @param {string} def
-   * @returns {string}
+   * @returns {string|undefined}
    */
   get_string: function (prop, def) {
     return _MPV.get_property(prop, def);
@@ -182,7 +182,7 @@ var property = {
    * property is not constant, e.g., can be both boolean or string)
    * @param {string} prop
    * @param {boolean|number|string|Object} def
-   * @returns {boolean|number|string|Object}
+   * @returns {boolean|number|string|Object|undefined}
    */
   get_autotype: function (prop, def) {
     return _MPV.get_property_native(prop, def);
