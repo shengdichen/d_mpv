@@ -5,14 +5,14 @@ var util = require("./util").export;
 var MODULE = {};
 
 MODULE.navigate = function () {
-  util.cycle("video");
+  util.property.cycle("video");
   report.tracking.print_pretty_video();
 };
 
 function _position(dimension) {
   return util_misc.format.prepend_sign(
     util_misc.format.truncate_after_decimal(
-      util.get_prop_number("video-pan-" + dimension)
+      util.property.get_number("video-pan-" + dimension)
     )
   );
 }
@@ -23,8 +23,8 @@ function _position(dimension) {
  */
 MODULE.reposition = function (incr, dimension) {
   return function () {
-    util.run(["add", "video-pan-" + dimension, incr]);
-    util.print_osd(
+    util.exec.run(["add", "video-pan-" + dimension, incr]);
+    util.osd.print(
       "video/pos> (" + _position("x") + ", " + _position("y") + ")"
     );
   };
@@ -32,7 +32,9 @@ MODULE.reposition = function (incr, dimension) {
 
 function _size() {
   return util_misc.format.prepend_sign(
-    util_misc.format.truncate_after_decimal(util.get_prop_number("video-zoom"))
+    util_misc.format.truncate_after_decimal(
+      util.property.get_number("video-zoom")
+    )
   );
 }
 /**
@@ -41,8 +43,8 @@ function _size() {
  */
 MODULE.resize = function (incr) {
   return function () {
-    util.run(["add", "video-zoom", incr]);
-    util.print_osd("video/size> " + _size());
+    util.exec.run(["add", "video-zoom", incr]);
+    util.osd.print("video/size> " + _size());
   };
 };
 
@@ -51,9 +53,9 @@ MODULE.resize = function (incr) {
  */
 MODULE.deinterlace = function () {
   return function () {
-    util.cycle("deinterlace");
-    util.print_osd(
-      "video/deinterlace> " + util.get_prop_autotype("deinterlace")
+    util.property.cycle("deinterlace");
+    util.osd.print(
+      "video/deinterlace> " + util.property.get_autotype("deinterlace")
     );
   };
 };
@@ -62,12 +64,12 @@ MODULE.deinterlace = function () {
  * @returns {function(): void}
  */
 MODULE.hwdec = function () {
-  util.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
-  util.print_osd(
+  util.property.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
+  util.osd.print(
     "video/hwdec> " +
-      util.get_prop_string("hwdec-current") +
+      util.property.get_string("hwdec-current") +
       " [" +
-      util.get_prop_string("hwdec") +
+      util.property.get_string("hwdec") +
       "]"
   );
 };

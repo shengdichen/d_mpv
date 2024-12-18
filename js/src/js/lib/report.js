@@ -36,7 +36,7 @@ var tracking = {
    * @return {Array.<Object.<string, *>>}
    */
   _fetch_tracks_simple: function () {
-    return util.get_prop_object("track-list");
+    return util.property.get_object("track-list");
   },
 
   _fetch_tracks: function () {
@@ -78,7 +78,7 @@ var tracking = {
     var strings = tracking._fetch_tracks_simple().map(function (i) {
       return util_misc.format.obj_to_string(i);
     });
-    util.print_osd(strings.join("\n\n"));
+    util.osd.print(strings.join("\n\n"));
   },
 
   print_pretty: function () {
@@ -89,19 +89,19 @@ var tracking = {
       tracking._format_tracks_audio(tracks),
       tracking._format_tracks_subtitle(tracks),
     ];
-    util.print_osd(strings.join(util_misc.visual.separator()));
+    util.osd.print(strings.join(util_misc.visual.separator()));
   },
 
   print_pretty_video: function () {
-    util.print_osd(tracking._format_tracks_video(tracking._fetch_tracks()));
+    util.osd.print(tracking._format_tracks_video(tracking._fetch_tracks()));
   },
 
   print_pretty_audio: function () {
-    util.print_osd(tracking._format_tracks_audio(tracking._fetch_tracks()));
+    util.osd.print(tracking._format_tracks_audio(tracking._fetch_tracks()));
   },
 
   print_pretty_subtitle: function () {
-    util.print_osd(tracking._format_tracks_subtitle(tracking._fetch_tracks()));
+    util.osd.print(tracking._format_tracks_subtitle(tracking._fetch_tracks()));
   },
 
   /**
@@ -299,14 +299,14 @@ var playback = {
    * @returns {string}
    */
   time_current_second: function () {
-    return util.get_prop_string_formatted("time-pos");
+    return util.property.get_string_formatted("time-pos");
   },
 
   /**
    * @returns {string}
    */
   time_current_millisecond: function () {
-    return util.get_prop_string_formatted("time-pos/full");
+    return util.property.get_string_formatted("time-pos/full");
   },
 
   /**
@@ -314,7 +314,7 @@ var playback = {
    */
   progress: function () {
     var current = playback.time_current_millisecond();
-    var duration = util.get_prop_string_formatted("duration", "raw");
+    var duration = util.property.get_string_formatted("duration", "raw");
     return "time> " + current + "/" + duration;
   },
 
@@ -322,14 +322,14 @@ var playback = {
    * @returns {integer}
    */
   chapter: function () {
-    return util.get_prop_number("chapter");
+    return util.property.get_number("chapter");
   },
 
   /**
    * @returns {integer}
    */
   edition: function () {
-    return util.get_prop_number("edition");
+    return util.property.get_number("edition");
   },
 };
 
@@ -340,7 +340,7 @@ var chapter = {
    * @return {Array.<Object.<string, *>>}
    */
   fetch_chapters: function () {
-    return util.get_prop_object("chapter-list");
+    return util.property.get_object("chapter-list");
   },
 
   /**
@@ -354,14 +354,14 @@ var chapter = {
     var strings = chapter.fetch_chapters().map(function (i) {
       return util_misc.format.obj_to_string(i);
     });
-    util.print_osd(strings.join("\n"));
+    util.osd.print(strings.join("\n"));
   },
 
   print_pretty: function () {
     var chapters = chapter.fetch_chapters();
 
     if (!chapters.length) {
-      util.print_osd("chapter: ??");
+      util.osd.print("chapter: ??");
       return;
     }
 
@@ -370,7 +370,7 @@ var chapter = {
     chapter._format_chapters(chapters).forEach(function (i) {
       strings.push(i);
     });
-    util.print_osd(strings.join("\n"));
+    util.osd.print(strings.join("\n"));
   },
 
   /**
@@ -407,13 +407,13 @@ var playlist = {
    * @return {Object.<string, *>}
    */
   fetch_playlist: function () {
-    var items = util.get_prop_object("playlist");
+    var items = util.property.get_object("playlist");
     var n_items = items.length;
 
     var i_zero = 0; // zero-indexing by default in mpv
     var i_min = i_zero;
     var i_max = i_zero + n_items - 1;
-    var i_current = i_zero + util.get_prop_number("playlist-current-pos");
+    var i_current = i_zero + util.property.get_number("playlist-current-pos");
 
     return {
       items: items,
@@ -431,14 +431,14 @@ var playlist = {
     var strings = playlist.fetch_playlist().items.map(function (i) {
       return util_misc.format.obj_to_string(i);
     });
-    util.print_osd(strings.join("\n"));
+    util.osd.print(strings.join("\n"));
   },
 
   print_pretty: function () {
     var pl = playlist.fetch_playlist();
 
     if (pl.is_empty) {
-      util.print_osd("playlist: ??");
+      util.osd.print("playlist: ??");
       return;
     }
 
@@ -447,7 +447,7 @@ var playlist = {
     playlist._format_playlist(pl).forEach(function (i) {
       strings.push(i);
     });
-    util.print_osd(strings.join("\n"));
+    util.osd.print(strings.join("\n"));
   },
 
   /**

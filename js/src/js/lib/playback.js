@@ -6,16 +6,16 @@ var misc = require("./misc").export;
 var MODULE = {};
 
 MODULE.playpause = function () {
-  util.cycle("pause");
+  util.property.cycle("pause");
   misc.osc.toggle();
 };
 
 MODULE.navigate_playlist = function (positive_dir) {
   return function () {
     if (positive_dir) {
-      util.run("playlist-next");
+      util.exec.run("playlist-next");
     } else {
-      util.run("playlist-prev");
+      util.exec.run("playlist-prev");
     }
     report.playlist.print_pretty();
   };
@@ -31,11 +31,11 @@ MODULE.navigate_file_frame = function (incr) {
     }
 
     if (incr > 0) {
-      util.run("frame-step");
+      util.exec.run("frame-step");
     } else {
-      util.run("frame-back-step");
+      util.exec.run("frame-back-step");
     }
-    util.print_osd(report.playback.progress());
+    util.osd.print(report.playback.progress());
   };
 };
 
@@ -44,8 +44,8 @@ MODULE.navigate_file_frame = function (incr) {
  */
 MODULE.navigate_file_time = function (incr) {
   return function () {
-    util.run(["seek", incr, "relative+exact"]);
-    util.print_osd(report.playback.progress());
+    util.exec.run(["seek", incr, "relative+exact"]);
+    util.osd.print(report.playback.progress());
   };
 };
 
@@ -54,7 +54,7 @@ MODULE.navigate_file_time = function (incr) {
  */
 MODULE.navigate_file_chapter = function (incr) {
   return function () {
-    util.run(["add", "chapter", incr]);
+    util.exec.run(["add", "chapter", incr]);
     report.chapter.print_pretty();
   };
 };
@@ -62,25 +62,27 @@ MODULE.navigate_file_chapter = function (incr) {
 MODULE.adjust_speed = function (incr) {
   return function () {
     if (!incr) {
-      util.run(["set", "speed", 1.0]);
-      util.print_osd("speed> 1.0");
+      util.exec.run(["set", "speed", 1.0]);
+      util.osd.print("speed> 1.0");
     } else {
-      util.run(["add", "speed", incr]);
-      util.print_osd(
+      util.exec.run(["add", "speed", incr]);
+      util.osd.print(
         "speed> " +
-          util_misc.format.truncate_after_decimal(util.get_prop_number("speed"))
+          util_misc.format.truncate_after_decimal(
+            util.property.get_number("speed")
+          )
       );
     }
   };
 };
 
 MODULE.loop_files = function () {
-  util.cycle("loop-file", ["inf", "no"]);
-  util.print_prop_autotype("loop-file");
+  util.property.cycle("loop-file", ["inf", "no"]);
+  util.osd.print_prop_autotype("loop-file");
 };
 
 function _loop_ab_bound(mode) {
-  var bound = util.get_prop_autotype("ab-loop-" + mode);
+  var bound = util.property.get_autotype("ab-loop-" + mode);
   if (bound === "no") {
     return undefined;
   }
@@ -88,7 +90,7 @@ function _loop_ab_bound(mode) {
 }
 
 MODULE.loop_ab = function () {
-  util.run("ab-loop");
+  util.exec.run("ab-loop");
 
   var msg;
   var bound_a = _loop_ab_bound("a");
@@ -103,7 +105,7 @@ MODULE.loop_ab = function () {
   } else {
     msg = "?";
   }
-  util.print_osd("loop-ab> " + msg);
+  util.osd.print("loop-ab> " + msg);
 };
 
 module.exports = {

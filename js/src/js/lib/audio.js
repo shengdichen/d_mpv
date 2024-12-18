@@ -10,10 +10,10 @@ var MODULE = {};
  */
 MODULE.volume = function (incr) {
   return function () {
-    var vol_prev = util.get_prop_number("volume");
+    var vol_prev = util.property.get_number("volume");
     var vol_next = vol_prev + incr;
-    util.set_prop_number("volume", vol_next);
-    util.print_osd(
+    util.property.set_number("volume", vol_next);
+    util.osd.print(
       "volume> " + vol_next + " [" + vol_prev + _format_volume_incr(incr) + "]"
     );
   };
@@ -30,12 +30,12 @@ function _format_volume_incr(incr) {
 }
 
 MODULE.mute = function () {
-  util.cycle("mute");
-  util.print_osd("mute> " + (util.get_prop_boolean("mute") ? "T" : "F"));
+  util.property.cycle("mute");
+  util.osd.print("mute> " + (util.property.get_boolean("mute") ? "T" : "F"));
 };
 
 MODULE.navigate = function () {
-  util.cycle("audio");
+  util.property.cycle("audio");
   report.tracking.print_pretty_audio();
 };
 
