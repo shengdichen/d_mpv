@@ -1,8 +1,6 @@
 var util_misc = require("../util");
 var util = require("./util").export;
 
-var MODULE = {};
-
 var formatter = {
   /**
    * @param {boolean} is_active
@@ -295,7 +293,6 @@ var tracking = {
     return strings ? strings.join(" ") : "??";
   },
 };
-MODULE.tracking = tracking;
 
 var playback = {
   /**
@@ -335,7 +332,6 @@ var playback = {
     return util.get_prop_number("edition");
   },
 };
-MODULE.playback = playback;
 
 // REF
 //  https://mpv.io/manual/master/#command-interface-chapter-list
@@ -402,7 +398,6 @@ var chapter = {
     return strings;
   },
 };
-MODULE.chapter = chapter;
 
 var playlist = {
   _n_lines_context: 7,
@@ -552,8 +547,10 @@ var playlist = {
     );
   },
 };
-MODULE.playlist = playlist;
 
 module.exports = {
-  export: MODULE,
+  tracking: tracking,
+  playback: playback,
+  chapter: chapter,
+  playlist: playlist,
 };
