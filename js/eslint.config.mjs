@@ -1,3 +1,4 @@
+import globals from "globals";
 import pluginJs from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 
@@ -9,12 +10,22 @@ export default [
       semi: "off",
     },
   },
+
   {
-    name: "js5",
-    files: ["**/*.js"],
+    name: "src",
+    files: ["src/**/*.js"],
     languageOptions: {
       ecmaVersion: 5,
       sourceType: "commonjs",
+    },
+  },
+  {
+    name: "test",
+    files: ["tests/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
     },
   },
 ];
