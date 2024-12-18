@@ -1,4 +1,4 @@
-var lib_util = require("./lib/util").export;
+var lib_util = require("./lib/util");
 var lib_report = require("./lib/report");
 
 var lib_video = require("./lib/video").export;

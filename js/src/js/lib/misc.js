@@ -1,5 +1,5 @@
 var util_misc = require("../util");
-var util = require("./util").export;
+var util = require("./util");
 
 var MODULE = {};
 

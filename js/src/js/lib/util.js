@@ -1,9 +1,6 @@
 var util_misc = require("../util");
 
-var MODULE = {};
-
-var _mpv = mp; // eslint-disable-line no-undef
-MODULE.raw = _mpv;
+var _MPV = mp; // eslint-disable-line no-undef
 
 var keybind = {
   /**
@@ -13,7 +10,7 @@ var keybind = {
    */
   bind: function (key, fn, opts) {
     if (!opts) {
-      _mpv.add_key_binding(key, fn, { repeatable: true });
+      _MPV.add_key_binding(key, fn, { repeatable: true });
       return;
     }
 
@@ -21,13 +18,12 @@ var keybind = {
 
     if (opts.force) {
       delete opts.force;
-      _mpv.add_forced_key_binding(key, fn, opts);
+      _MPV.add_forced_key_binding(key, fn, opts);
       return;
     }
-    _mpv.add_key_binding(key, fn, opts);
+    _MPV.add_key_binding(key, fn, opts);
   },
 };
-MODULE.keybind = keybind;
 
 var exec = {
   /**
@@ -35,10 +31,10 @@ var exec = {
    */
   run: function (fragments) {
     if (!Array.isArray(fragments)) {
-      _mpv.command(fragments);
+      _MPV.command(fragments);
       return;
     }
-    _mpv.commandv.apply(null, fragments);
+    _MPV.commandv.apply(null, fragments);
   },
 
   /**
@@ -59,7 +55,6 @@ var exec = {
     exec.run(["script-message", fn].concat(args));
   },
 };
-MODULE.exec = exec;
 
 var property = {
   /**
@@ -82,7 +77,7 @@ var property = {
    * @returns {Object.<string, *>}
    */
   get_prop_script_multi: function (script, map) {
-    _mpv.options.read_options(map, script);
+    _MPV.options.read_options(map, script);
     return map;
   },
 
@@ -105,7 +100,7 @@ var property = {
    * @returns {boolean}
    */
   get_boolean: function (prop, def) {
-    return _mpv.get_property_bool(prop, def);
+    return _MPV.get_property_bool(prop, def);
   },
 
   /**
@@ -113,7 +108,7 @@ var property = {
    * @param {boolean} val
    */
   set_boolean: function (prop, val) {
-    return _mpv.set_property_bool(prop, val);
+    return _MPV.set_property_bool(prop, val);
   },
 
   /**
@@ -122,7 +117,7 @@ var property = {
    * @returns {number}
    */
   get_number: function (prop, def) {
-    return _mpv.get_property_number(prop, def);
+    return _MPV.get_property_number(prop, def);
   },
 
   /**
@@ -130,7 +125,7 @@ var property = {
    * @param {number} val
    */
   set_number: function (prop, val) {
-    return _mpv.set_property_number(prop, val);
+    return _MPV.set_property_number(prop, val);
   },
 
   /**
@@ -139,7 +134,7 @@ var property = {
    * @returns {string}
    */
   get_string: function (prop, def) {
-    return _mpv.get_property(prop, def);
+    return _MPV.get_property(prop, def);
   },
 
   /**
@@ -147,7 +142,7 @@ var property = {
    * @param {string} val
    */
   set_string: function (prop, val) {
-    return _mpv.set_property(prop, val);
+    return _MPV.set_property(prop, val);
   },
 
   /**
@@ -158,7 +153,7 @@ var property = {
    * @returns {boolean|number|string|Object}
    */
   get_autotype: function (prop, def) {
-    return _mpv.get_property_native(prop, def);
+    return _MPV.get_property_native(prop, def);
   },
 
   /**
@@ -166,7 +161,7 @@ var property = {
    * @param {boolean|number|string|Object} val
    */
   set_autotype: function (prop, val) {
-    return _mpv.set_property_native(prop, val);
+    return _MPV.set_property_native(prop, val);
   },
 
   /**
@@ -177,7 +172,7 @@ var property = {
    * @returns {Object.<string, *>|Array.<*>}
    */
   get_object: function (prop, def) {
-    var res = _mpv.get_property_native(prop, def);
+    var res = _MPV.get_property_native(prop, def);
     if (util_misc.typing.is_object(res)) {
       return res;
     }
@@ -191,10 +186,9 @@ var property = {
    * @returns {string}
    */
   get_string_formatted: function (prop, def) {
-    return _mpv.get_property_osd(prop, def);
+    return _MPV.get_property_osd(prop, def);
   },
 };
-MODULE.property = property;
 
 var osd = {
   /**
@@ -202,7 +196,7 @@ var osd = {
    * @param {number} [duration]
    */
   print: function (text, duration) {
-    _mpv.osd_message(text, duration || 0.7);
+    _MPV.osd_message(text, duration || 0.7);
   },
 
   /**
@@ -261,8 +255,11 @@ var osd = {
     osd.print(property.get_string_formatted(prop, def));
   },
 };
-MODULE.osd = osd;
 
 module.exports = {
-  export: MODULE,
+  raw: _MPV,
+  keybind: keybind,
+  exec: exec,
+  property: property,
+  osd: osd,
 };
