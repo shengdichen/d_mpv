@@ -26,12 +26,14 @@ function _format_volume_incr(incr) {
   if (incr === -1) {
     return "--";
   }
-  return util.format.prepend_sign(incr);
+  return util.format.format_float(incr, { prepend_sign: true });
 }
 
 MODULE.mute = function () {
   mpv.property.cycle("mute");
-  mpv.osd.print("mute> " + (mpv.property.get_boolean("mute") ? "T" : "F"));
+  mpv.osd.print(
+    "mute> " + util.format.format_boolean(mpv.property.get_boolean("mute"))
+  );
 };
 
 MODULE.navigate = function () {

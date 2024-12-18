@@ -104,29 +104,102 @@ var visual = {
 var format = {
   /**
    * @param {boolean|number|string} item
+   * @param {Object.<string, *>} [opts]
    * @returns {string}
    */
-  format: function (item) {
+  format: function (item, opts) {
     if (typeof item === "string") {
-      return "'" + item + "'";
+      return format.format_string(item, opts);
     }
     if (typeof item === "boolean") {
-      if (item) {
-        return "T";
-      }
-      return "F";
+      return format.format_boolean(item);
     }
     if (typing.is_float(item)) {
-      return format.truncate_after_decimal(item, 4);
+      return format.format_float(item, opts);
     }
     return item.toString();
   },
 
   /**
+   * @param {string} item
+   * @param {Object.<string, *>} [opts]
+   * @returns {string}
+   */
+  format_string: function (item, opts) {
+    var quote = opts && "quote" in opts ? opts.quote : "single";
+    switch (quote) {
+      case "double":
+        quote = '"';
+        break;
+      case "back":
+        quote = "`";
+        break;
+      case "single":
+        quote = "'";
+        break;
+    }
+    return quote + item + quote;
+  },
+
+  /**
+   * @param {boolean} item
+   * @returns {string}
+   */
+  format_boolean: function (item) {
+    if (item) {
+      return "T";
+    }
+    return "F";
+  },
+
+  /**
+   * @param {number} item
+   * @param {Object.<string, *>} [opts]
+   * @returns {string}
+   */
+  format_float: function (item, opts) {
+    var s = "";
+
+    var n_digits_int = math.floor_abs(item).toString().length;
+    var n_digits_before_decimal =
+      opts && "n_digits_before_decimal" in opts
+        ? opts.n_digits_before_decimal
+        : 0;
+    if (n_digits_before_decimal > n_digits_int) {
+      s += visual.repeat("0", n_digits_before_decimal - n_digits_int);
+    }
+
+    var n_digits_after_decimal =
+      opts && "n_digits_after_decimal" in opts
+        ? opts.n_digits_after_decimal
+        : -1;
+    if (n_digits_after_decimal === -1) {
+      s += item.toString();
+    } else {
+      s += format._truncate_after_decimal(item, n_digits_after_decimal);
+    }
+
+    var prepend_sign =
+      opts && "prepend_sign" in opts ? opts.prepend_sign : false;
+    if (!prepend_sign) {
+      return s;
+    }
+
+    if (math.is_close(item, 0)) {
+      return "=" + s;
+    }
+    if (item > 0) {
+      return "+" + s;
+    }
+    return s;
+  },
+
+  /**
    * @param {Object.<*, *>} [count]
+   * @param {Object.<string, *>} [opts]
    * @returns {Array.<string>}
    */
-  obj_to_string: function (obj) {
+  obj_to_string: function (obj, opts) {
     var kvs = [];
     var s, v;
     for (var k in obj) {
@@ -136,7 +209,7 @@ var format = {
         kvs.push(s + JSON.stringify(v));
         continue;
       }
-      kvs.push(s + format.format(v));
+      kvs.push(s + format.format(v, opts));
     }
 
     return "{ " + kvs.join(", ") + " }";
@@ -158,60 +231,34 @@ var format = {
       seconds = "0" + seconds;
     }
 
-    return hours + ":" + format.pad_integer(minutes, 2) + ":" + seconds;
+    minutes = format.format_float(minutes, {
+      n_digits_before_decimal: 2,
+    });
+    seconds = format.format_float(seconds, {
+      n_digits_before_decimal: 2,
+      n_digits_after_decimal: 3,
+    });
+    return hours + ":" + minutes + ":" + seconds;
   },
 
   /**
-   * @param {number} num
-   * @returns {string}
-   */
-  prepend_sign: function (num) {
-    if (math.is_close(num, 0)) {
-      return "=0";
-    }
-    if (num > 0) {
-      return "+" + num;
-    }
-    return num;
-  },
-
-  /**
-   * @param {number} num
-   * @param {number} reference
-   * @returns {string}
-   */
-  pad_integer_like: function (num, reference) {
-    return format.pad_integer(num, format._len_integer(reference));
-  },
-
-  /**
-   * @param {number} num
-   * @param {number} len
-   * @returns {string}
-   */
-  pad_integer: function (num, len) {
-    var len_num = format._len_integer(num);
-    if (len_num >= len) {
-      return num;
-    }
-    return visual.repeat("0", len - len_num) + num;
-  },
-
-  /**
-   * @param {number} num
-   * @returns {number}
-   */
-  _len_integer: function (num) {
-    return num.toString().length;
-  },
-
-  /**
+   * 10/3 becomes:
+   *   n_digits < 0 => error
+   *   n_digits := 0 => 3.
+   *   n_digits := 1 => 3.3
+   *   n_digits := 2 => 3.33
+   *   ...
    * @param {number} num
    * @param {number} [n_digits]
    * @returns {string}
    */
-  truncate_after_decimal: function (num, n_digits) {
-    n_digits = n_digits || 2;
+  _truncate_after_decimal: function (num, n_digits) {
+    n_digits = n_digits !== undefined ? n_digits : 2;
+
+    if (n_digits === 0) {
+      return Math.round(num) + ".";
+    }
+
     var scale = Math.pow(10, n_digits);
     num = Math.round(num * scale) / scale;
     return num.toFixed(n_digits);
@@ -238,6 +285,17 @@ var math = {
   is_close: function (num_1, num_2, precision) {
     precision = precision !== undefined ? precision : 1e-6;
     return Math.abs(num_1 - num_2) <= precision;
+  },
+
+  /**
+   * implemention of Math.trunc(), not available in mujs
+   * @param {number} n
+   * @returns {number}
+   */
+  floor_abs: function (num) {
+    if (math.is_close(num, 0)) return 0;
+    if (num > 0) return Math.floor(num);
+    return -Math.floor(-num);
   },
 };
 

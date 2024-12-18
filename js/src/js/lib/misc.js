@@ -102,7 +102,7 @@ var record = {
     mpv.property.cycle("save-position-on-quit");
     mpv.osd.print(
       "savepos> " +
-        (mpv.property.get_boolean("save-position-on-quit") ? "T" : "F")
+        util.format.format(mpv.property.get_boolean("save-position-on-quit"))
     );
   },
 };

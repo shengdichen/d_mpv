@@ -17,7 +17,9 @@ var formatter = {
    * @returns {string}
    */
   format_id: function (i, n) {
-    return util.format.pad_integer_like(i, n) + "/" + n + ") ";
+    n = n.toString();
+    i = util.format.format_float(i, { n_digits_before_decimal: n.length });
+    return i + "/" + n + ") ";
   },
 
   /**
@@ -25,7 +27,7 @@ var formatter = {
    * @returns {string}
    */
   format_title: function (title) {
-    return util.format.format(title);
+    return util.format.format_string(title);
   },
 };
 
@@ -124,11 +126,13 @@ var tracking = {
    * @returns {string}
    */
   _format_track_id_global: function (tracks, track) {
-    var n_tracks = tracks.n_tracks;
+    var n_tracks = tracks.n_tracks.toString();
     var s =
       "src-id" in track
-        ? util.format.pad_integer_like(track["src-id"], n_tracks)
-        : util.visual.space_like(n_tracks.toString());
+        ? util.format.format_float(track["src-id"], {
+            n_digits_before_decimal: n_tracks.length,
+          })
+        : util.visual.space_like(n_tracks);
 
     return "[" + s + "] ";
   },
@@ -176,7 +180,7 @@ var tracking = {
       }
 
       if (util.typing.is_float(fps)) {
-        fps = util.format.truncate_after_decimal(fps, 3);
+        fps = util.format.format_float(fps, { n_digits_after_decimal: 3 });
       }
       return "@" + fps + "fps";
     }

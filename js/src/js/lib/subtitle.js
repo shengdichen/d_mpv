@@ -10,7 +10,10 @@ function _delay(target) {
   } else if (target === "secondary") {
     target = "secondary-sub-delay";
   }
-  return util.format.truncate_after_decimal(mpv.property.get_number(target));
+  return util.format.format_float(mpv.property.get_number(target), {
+    prepend_sign: true,
+    n_digits_after_decimal: 2,
+  });
 }
 function _retime_primary(incr) {
   mpv.exec.run(["add", "sub-delay", incr]);
@@ -53,7 +56,9 @@ MODULE.resize = function (incr) {
     mpv.exec.run(["add", "sub-scale", incr]);
     mpv.osd.print(
       "subtitle/scale> " +
-        util.format.truncate_after_decimal(mpv.property.get_number("sub-scale"))
+        util.format.format_float(mpv.property.get_number("sub-scale"), {
+          n_digits_after_decimal: 2,
+        })
     );
   };
 };
@@ -135,7 +140,7 @@ MODULE.toggle = function (target) {
         "subtitle/visibility-" +
           target +
           "> " +
-          (mpv.property.get_boolean(opt) ? "T" : "F")
+          util.format.format_boolean(mpv.property.get_boolean(opt))
       );
     }
   };

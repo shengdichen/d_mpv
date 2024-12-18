@@ -68,7 +68,9 @@ MODULE.adjust_speed = function (incr) {
       mpv.exec.run(["add", "speed", incr]);
       mpv.osd.print(
         "speed> " +
-          util.format.truncate_after_decimal(mpv.property.get_number("speed"))
+          util.format.format_float(mpv.property.get_number("speed"), {
+            n_digits_after_decimal: 2,
+          })
       );
     }
   };
@@ -79,12 +81,14 @@ MODULE.loop_files = function () {
   mpv.osd.print_prop_autotype("loop-file");
 };
 
+/**
+ * @param {string} mode
+ * @returns {string}
+ */
 function _loop_ab_bound(mode) {
-  var bound = mpv.property.get_autotype("ab-loop-" + mode);
-  if (bound === "no") {
-    return undefined;
-  }
-  return util.format.truncate_after_decimal(bound, 3);
+  var bound = mpv.property.get_number("ab-loop-" + mode);
+  if (bound === undefined /* bound not set */) return "";
+  return util.format.format_as_time(bound);
 }
 
 MODULE.loop_ab = function () {
