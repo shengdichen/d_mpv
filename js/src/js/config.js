@@ -1,11 +1,11 @@
 var lib_mpv = require("./lib/util");
 var lib_report = require("./lib/report");
+var lib_misc = require("./lib/misc");
 
 var lib_video = require("./lib/video").export;
 var lib_subtitle = require("./lib/subtitle").export;
 var lib_audio = require("./lib/audio").export;
 var lib_playback = require("./lib/playback").export;
-var lib_misc = require("./lib/misc").export;
 
 function _video() {
   lib_mpv.keybind.bind("f", function () {

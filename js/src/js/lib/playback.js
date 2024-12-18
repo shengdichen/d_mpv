@@ -1,7 +1,7 @@
 var util = require("../util");
 var report = require("./report");
 var mpv = require("./util");
-var misc = require("./misc").export;
+var misc = require("./misc");
 
 var MODULE = {};
 

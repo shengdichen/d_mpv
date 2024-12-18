@@ -1,9 +1,7 @@
 var util = require("../util");
 var mpv = require("./util");
 
-var MODULE = {};
-
-var _osc = {
+var osc = {
   _fn: "osc-visibility",
   // NOTE:
   //    first toggle() will:
@@ -19,23 +17,22 @@ var _osc = {
   // NOTE:
   //    pass second arg |false| to disable osd-output (prepending "no-osd" has no use)
   disable: function () {
-    mpv.exec.run_script_fn(_osc._fn, ["never", false]);
+    mpv.exec.run_script_fn(osc._fn, ["never", false]);
   },
   enable: function () {
-    mpv.exec.run_script_fn(_osc._fn, ["always", false]);
+    mpv.exec.run_script_fn(osc._fn, ["always", false]);
   },
   toggle: function () {
-    if (_osc._is_visible) {
-      _osc.disable();
+    if (osc._is_visible) {
+      osc.disable();
     } else {
-      _osc.enable();
+      osc.enable();
     }
-    _osc._is_visible = !_osc._is_visible;
+    osc._is_visible = !osc._is_visible;
   },
 };
-MODULE.osc = _osc;
 
-MODULE.stats = {
+var stats = {
   toggle: function () {
     // REF:
     // https://github.com/Argon-/mpv-stats/blob/master/stats.lua
@@ -44,7 +41,7 @@ MODULE.stats = {
   },
 };
 
-MODULE.console = {
+var _console = {
   enable: function () {
     // REF:
     // https://github.com/mpv-player/mpv/blob/master/player/lua/console.lua
@@ -52,11 +49,11 @@ MODULE.console = {
   },
 };
 
-MODULE.screenshot = function () {
+var screenshot = function () {
   mpv.exec.run(["screenshot"]);
 };
 
-var _record = {
+var record = {
   /**
    * @returns {string}
    */
@@ -76,7 +73,7 @@ var _record = {
    */
   append_targets: function (targets) {
     if (!util.typing.is_array(targets)) {
-      _record.set_targets(_record.get_targets() + "," + targets);
+      record.set_targets(record.get_targets() + "," + targets);
       return;
     }
 
@@ -84,7 +81,7 @@ var _record = {
     for (var i = 0; i < targets.length; ++i) {
       str_append += "," + targets[i];
     }
-    _record.set_targets(_record.get_targets() + str_append);
+    record.set_targets(record.get_targets() + str_append);
   },
 
   save_filename_only: function () {
@@ -109,8 +106,11 @@ var _record = {
     );
   },
 };
-MODULE.record = _record;
 
 module.exports = {
-  export: MODULE,
+  osc: osc,
+  stats: stats,
+  console: _console,
+  screenshot: screenshot,
+  record: record,
 };
