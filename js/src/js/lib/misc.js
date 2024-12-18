@@ -50,7 +50,7 @@ var _console = {
 };
 
 var screenshot = function () {
-  mpv.exec.run(["screenshot"]);
+  mpv.exec.run("screenshot");
 };
 
 var record = {

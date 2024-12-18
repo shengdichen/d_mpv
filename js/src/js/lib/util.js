@@ -31,15 +31,36 @@ var exec = {
    */
   run: function (fragments) {
     if (!Array.isArray(fragments)) {
-      // REF:
-      //    https://mpv.io/manual/master/#lua-scripting-mp-command(string)
-      _MPV.command(fragments);
+      exec.run_string(fragments);
       return;
     }
 
+    exec.run_array(fragments);
+  },
+
+  /**
+   * @param {string} cmd
+   */
+  run_string: function (cmd) {
+    // REF:
+    //  https://mpv.io/manual/master/#lua-scripting-mp-command(string)
+    _MPV.command(cmd);
+  },
+
+  /**
+   * @param {Array.<string>} fragments
+   */
+  run_array: function (fragments) {
     // REF:
     //  https://mpv.io/manual/master/#lua-scripting-)
     _MPV.commandv.apply(null, fragments); // no spread-syntax in mujs
+
+    // NOTE:
+    // the tempting alternative:
+    //  _MPV.command_native(fragments);
+    // forwards non-string types in <fragments> (e.g., boolean) erroneously
+    // REF:
+    //  https://mpv.io/manual/master/#lua-scripting-mp-command-native(table-[,def])
   },
 
   /**
@@ -52,7 +73,7 @@ var exec = {
   run_script_bind: function (script, bind) {
     // REF:
     //  https://mpv.io/manual/master/#command-interface-script-binding
-    exec.run(["script-binding", script + "/" + bind]);
+    exec.run_array(["script-binding", script + "/" + bind]);
   },
 
   /**
@@ -63,7 +84,7 @@ var exec = {
    * @param {Array.<*>} args
    */
   run_script_fn: function (fn, args) {
-    exec.run(["script-message", fn].concat(args));
+    exec.run_array(["script-message", fn].concat(args));
   },
 };
 
