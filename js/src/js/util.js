@@ -67,7 +67,7 @@ var visual = {
   },
 
   /**
-   * @param {Object.<*, *>} [opts]
+   * @param {Object.<string, *>} [opts]
    * @returns {string}
    */
   separator: function (opts) {
