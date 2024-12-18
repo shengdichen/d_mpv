@@ -31,13 +31,21 @@ var exec = {
    */
   run: function (fragments) {
     if (!Array.isArray(fragments)) {
+      // REF:
+      //    https://mpv.io/manual/master/#lua-scripting-mp-command(string)
       _MPV.command(fragments);
       return;
     }
-    _MPV.commandv.apply(null, fragments);
+
+    // REF:
+    //  https://mpv.io/manual/master/#lua-scripting-)
+    _MPV.commandv.apply(null, fragments); // no spread-syntax in mujs
   },
 
   /**
+   * evoke <callback> declared in <script>{.lua, .js} with
+   *    mp.add_key_binding(nil, <bind>, <callback>)
+   * no args forwarded, i.e., (<script>, <bind>) is an alias for <callback>
    * @param {string} script
    * @param {string} bind
    */
@@ -48,8 +56,11 @@ var exec = {
   },
 
   /**
+   * evoke <callback> declared in ANY script with
+   *    mp.register_script_message(<fn>, <callback>)
+   * forwarding <args>, i.e., <fn> is an alias for <callback>
    * @param {string} fn
-   * @param {Array.<string>} args
+   * @param {Array.<*>} args
    */
   run_script_fn: function (fn, args) {
     exec.run(["script-message", fn].concat(args));
