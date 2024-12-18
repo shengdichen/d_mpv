@@ -1,5 +1,3 @@
-var MODULE = {};
-
 var typing = {
   /**
    * @param {*} target
@@ -243,11 +241,9 @@ var math = {
   },
 };
 
-MODULE.typing = typing;
-MODULE.format = format;
-MODULE.visual = visual;
-MODULE.math = math;
-
 module.exports = {
-  export: MODULE,
+  typing: typing,
+  format: format,
+  visual: visual,
+  math: math,
 };

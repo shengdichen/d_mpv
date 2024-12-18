@@ -1,4 +1,4 @@
-var util_misc = require("../util").export;
+var util_misc = require("../util");
 var report = require("./report").export;
 var util = require("./util").export;
 
