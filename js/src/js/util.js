@@ -47,6 +47,7 @@ var visual = {
    * @returns {string}
    */
   repeat: function (str, count) {
+    if (count < 1) return "";
     return Array(count + 1).join(str);
   },
 
@@ -63,6 +64,7 @@ var visual = {
    * @returns {string}
    */
   tab: function (count) {
+    if (count < 1) return "";
     return visual.repeat(" ", (count || 1) * 4);
   },
 
@@ -146,9 +148,7 @@ var format = {
    * @returns {string}
    */
   format_boolean: function (item) {
-    if (item) {
-      return "T";
-    }
+    if (item) return "T";
     return "F";
   },
 
