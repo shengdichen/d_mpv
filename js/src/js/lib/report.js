@@ -52,6 +52,9 @@ var tracking = {
       n_tracks_video: 0,
       n_tracks_audio: 0,
       n_tracks_subtitle: 0,
+
+      src_ids: [],
+      src_id_max: -1,
     };
 
     tracks.forEach(function (track) {
@@ -70,6 +73,11 @@ var tracking = {
           break;
         default:
           break; /* intentionally left empty */
+      }
+
+      if ("src-id" in track) {
+        res.src_ids.push(track["src-id"]);
+        res.src_id_max = Math.max(res.src_id_max, track["src-id"]);
       }
     });
 
@@ -126,13 +134,15 @@ var tracking = {
    * @returns {string}
    */
   _format_track_id_global: function (tracks, track) {
-    var n_tracks = tracks.n_tracks.toString();
+    var src_id_max = tracks.src_id_max;
+    var len = src_id_max !== -1 ? src_id_max.toString().length : 0;
+
     var s =
       "src-id" in track
         ? util.format.format_float(track["src-id"], {
-            n_digits_before_decimal: n_tracks.length,
+            n_digits_before_decimal: len,
           })
-        : util.visual.space_like(n_tracks);
+        : util.visual.repeat(" ", len);
 
     return "[" + s + "] ";
   },
