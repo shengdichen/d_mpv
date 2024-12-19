@@ -238,11 +238,17 @@ var tracking = {
    * @returns {string}
    */
   _format_track_audio_info: function (track) {
-    var str = track.codec + "[x" + track["demux-channel-count"] + "]";
-    if (!("lang" in track)) {
-      return str;
+    var strings = [];
+
+    strings.push(track.codec + "[x" + track["demux-channel-count"] + "]");
+    if (track.lang) {
+      strings.push(track.lang);
     }
-    return str.concat(" " + track.lang);
+    if (track.title) {
+      strings.push(formatter.format_title(track.title));
+    }
+
+    return strings.join(" ");
   },
 
   /**
