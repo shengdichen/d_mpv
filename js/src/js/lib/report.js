@@ -19,7 +19,7 @@ var formatter = {
   format_id: function (i, n) {
     n = n.toString();
     i = util.format.format_float(i, { n_digits_before_decimal: n.length });
-    return i + "/" + n + ") ";
+    return i + "/" + n + ")";
   },
 
   /**
@@ -123,6 +123,7 @@ var tracking = {
   _format_track_id: function (tracks, track, n_tracks_type) {
     return (
       tracking._format_track_id_global(tracks, track) +
+      " " +
       formatter.format_id(track.id, n_tracks_type)
     );
   },
@@ -144,7 +145,7 @@ var tracking = {
           })
         : util.visual.repeat(" ", len);
 
-    return "[" + s + "] ";
+    return "[" + s + "]";
   },
 
   /**
@@ -169,10 +170,12 @@ var tracking = {
    * @returns {string}
    */
   _format_track_video: function (tracks, track) {
-    return ""
-      .concat(formatter.format_activeness(track.selected))
-      .concat(tracking._format_track_id(tracks, track, tracks.n_tracks_video))
-      .concat(tracking._format_track_video_info(track));
+    return (
+      formatter.format_activeness(track.selected) +
+      tracking._format_track_id(tracks, track, tracks.n_tracks_video) +
+      " " +
+      tracking._format_track_video_info(track)
+    );
   },
 
   /**
@@ -227,10 +230,12 @@ var tracking = {
    * @returns {string}
    */
   _format_track_audio: function (tracks, track) {
-    return ""
-      .concat(formatter.format_activeness(track.selected))
-      .concat(tracking._format_track_id(tracks, track, tracks.n_tracks_audio))
-      .concat(tracking._format_track_audio_info(track));
+    return (
+      formatter.format_activeness(track.selected) +
+      tracking._format_track_id(tracks, track, tracks.n_tracks_audio) +
+      " " +
+      tracking._format_track_audio_info(track)
+    );
   },
 
   /**
@@ -286,12 +291,12 @@ var tracking = {
       return "  > "; // primary subtitle
     }
 
-    return ""
-      .concat(active())
-      .concat(
-        tracking._format_track_id(tracks, track, tracks.n_tracks_subtitle)
-      )
-      .concat(tracking._format_track_subtitle_info(track));
+    return (
+      active() +
+      tracking._format_track_id(tracks, track, tracks.n_tracks_subtitle) +
+      " " +
+      tracking._format_track_subtitle_info(track)
+    );
   },
 
   /**
@@ -310,7 +315,8 @@ var tracking = {
     if (track.filename) {
       strings.push("<" + track.filename + ">");
     }
-    return strings ? strings.join(" ") : "??";
+
+    return strings ? strings.join(" ") : "?";
   },
 };
 
@@ -402,17 +408,19 @@ var chapter = {
     var chapter_curr = chapter.fetch_chapter_current();
     var strings = [];
     for (var i = 0; i < n_chapters; ++i) {
-      var str =
-        formatter.format_activeness(i === chapter_curr) +
-        formatter.format_id(i + 1 /* use human-indexing */, n_chapters) +
-        util.format.format_as_time(chapters[i].time);
+      var s = [];
 
+      s.push(
+        formatter.format_activeness(i === chapter_curr) +
+          formatter.format_id(i + 1 /* use human-indexing */, n_chapters)
+      );
       var c = chapters[i];
+      s.push(util.format.format_as_time(c.time));
       if (c.title) {
-        str += " " + formatter.format_title(c.title);
+        s.push(formatter.format_title(c.title));
       }
 
-      strings.push(str);
+      strings.push(s.join(" "));
     }
 
     return strings;
@@ -529,10 +537,12 @@ var playlist = {
     // NOTE:
     //  use .current to check current track; .playing does NOT update when
     //  switching tracks and will thus report erroneously
-    return ""
-      .concat(formatter.format_activeness(item.current))
-      .concat(formatter.format_id(item.id, n_items))
-      .concat(item.filename);
+    return (
+      formatter.format_activeness(item.current) +
+      formatter.format_id(item.id, n_items) +
+      " " +
+      item.filename
+    );
   },
 
   /**
