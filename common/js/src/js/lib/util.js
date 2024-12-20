@@ -310,6 +310,37 @@ var osd = {
   print_prop_string_formatted: function (prop, def) {
     osd.print(property.get_string_formatted(prop, def));
   },
+
+  /**
+   * for Shevska
+   * @return {string} [char]
+   */
+  repeat_char_width: function (char) {
+    osd.print(util.visual.repeat(char || "-", osd.width_chars()));
+  },
+
+  /**
+   * for Shevska
+   * @return {number}
+   */
+  width_chars: function () {
+    return osd._width_chars(2.31);
+  },
+
+  /**
+   * NOTE: assumes osd-scale-by-window is set to false
+   * @param {number} factor
+   * @return {number}
+   */
+  _width_chars: function (factor) {
+    var fontsize = property.get_number("osd-font-size");
+    var width = property.get_number("osd-dimensions/w");
+    var margin = property.get_number("osd-margin-x");
+
+    var width_term =
+      width > margin ? Math.floor((factor / fontsize) * (width - margin)) : 0;
+    return width_term;
+  },
 };
 
 module.exports = {
