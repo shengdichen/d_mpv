@@ -314,9 +314,45 @@ var math = {
   },
 };
 
+var path = {
+  _root: "/",
+  _separator: "/",
+
+  /**
+   * REF:
+   *    https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.parent
+   * @param {string} p
+   * @returns {string}
+   */
+  parent: function (p) {
+    return p.split(path._separator).slice(0, -1).join(path._separator);
+  },
+
+  /**
+   * REF:
+   *    https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.name
+   * @param {string} p
+   * @returns {string}
+   */
+  name: function (p) {
+    return p.split(path._separator).slice(-1).toString();
+  },
+
+  /**
+   * REF:
+   *    https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.is_absolute
+   * @param {string} p
+   * @returns {boolean}
+   */
+  is_absolute: function (p) {
+    return p.substring(0, 1) === path._root;
+  },
+};
+
 module.exports = {
   typing: typing,
   format: format,
   visual: visual,
   math: math,
+  path: path,
 };

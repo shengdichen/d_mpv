@@ -183,9 +183,39 @@ class TestMath {
   }
 }
 
+class TestPath {
+  static test_parent() {
+    print("test> path/parent");
+
+    assert(util.path.parent("a/b/c/d.e"), "a/b/c");
+  }
+
+  static test_name() {
+    print("test> path/name");
+
+    assert(util.path.name("a/b/c/d.e"), "d.e");
+    assert(util.path.name("/d.e"), "d.e");
+    assert(util.path.name("./d.e"), "d.e");
+    assert(util.path.name("d.e"), "d.e");
+  }
+
+  static test_is_absolute() {
+    assert(util.path.is_absolute("/a/b"));
+    assert(!util.path.is_absolute("./a/b"));
+    assert(!util.path.is_absolute("a/b"));
+  }
+
+  test() {
+    TestPath.test_parent();
+    TestPath.test_name();
+    TestPath.test_is_absolute();
+  }
+}
+
 function main() {
   new TestVisual().test();
   new TestFormat().test();
   new TestMath().test();
+  new TestPath().test();
 }
 main();

@@ -1,3 +1,5 @@
+var util = require("./util");
+
 var lib_mpv = require("./lib/util");
 var lib_report = require("./lib/report");
 var lib_misc = require("./lib/misc");
@@ -109,8 +111,7 @@ function _misc() {
 
     var server = lib_mpv.property.get_string("input-ipc-server");
     if (server) {
-      // show only filename of socket
-      title = title.concat("[" + server.split("/").slice(-1).toString() + "] ");
+      title = title.concat("[" + util.path.name(server) + "] ");
     }
 
     title = title.concat("${path}");
