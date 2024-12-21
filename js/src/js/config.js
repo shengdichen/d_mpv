@@ -69,7 +69,7 @@ function _audio() {
 }
 
 function _playback() {
-  lib_mpv.keybind.bind("SPACE", lib_playback.playpause);
+  lib_mpv.keybind.bind("SPACE", lib_playback.playpause.toggle);
 
   lib_mpv.keybind.bind("<", lib_playback.navigate_playlist(false));
   lib_mpv.keybind.bind(">", lib_playback.navigate_playlist(true));
