@@ -1,44 +1,99 @@
-#!/usr/bin/env dash
+#!/usr/bin/env bash
 
-GREPPER="${GREPPER}:-rg"
+. "${HOME}/.local/lib/filter.sh"
+. "${HOME}/.local/lib/process.bash"
+. "${HOME}/.local/lib/util.sh"
+
+GREPPER="${GREPPER:-rg}"
 
 WATCHLATER_DIR="${HOME}/.local/state/mpv/watch_later"
 SOCKET_DIR="${HOME}/.local/state/mpv"
 
-. "${HOME}/.local/lib/util.sh"
+declare -a _TARGETS
+
+__pre() {
+    _TARGETS=()
+
+    local _filter="yes"
+    if [ "${1}" = "--no-filter" ]; then
+        _filter=""
+        shift
+    fi
+
+    if [ "${#}" -eq 0 ]; then
+        printf "mpv> no arg from cmdln, reading from stdin...\n" >&2
+    fi
+
+    __process "${@}"
+
+    if [ "${#_ARGS[@]}" -eq 0 ]; then
+        printf "mpv> no arg received, exiting...\n" >&2
+        exit 3
+    fi
+
+    if [ ! "${_filter}" ]; then
+        _TARGETS+=("${_ARGS[@]}")
+        printf "mpv> targets (unfiltered): [%s]\n" "${_TARGETS[*]}" >&2
+        return
+    fi
+
+    local _target
+    while read -r _target; do
+        _TARGETS+=("${_target}")
+    done < <(__filter_media "${_ARGS[@]}")
+    if [ "${#_TARGETS[@]}" -eq 0 ]; then
+        printf "mpv> no media to play, exiting...\n" >&2
+        exit 3
+    fi
+    printf "mpv> targets: [%s]\n" "${_TARGETS[*]}" >&2
+}
 
 __mpv() {
-    __x mpv "${@}"
+    __x mpv \
+        "${_OPTS[@]}" \
+        -- "${_TARGETS[@]}"
 }
 
 __mpv_record() {
-    __mpv \
-        --save-position-on-quit \
-        --resume-playback \
-        "${@}"
+    _OPTS+=("--save-position-on-quit" "--resume-playback")
+    __mpv
 }
 
-__mpv_has_record() {
+__mpv_record_exists() {
+    local _name
+    _name="$(basename "$(realpath "${1}")")"
     if [ "${GREPPER}" = "rg" ]; then
         rg \
             --quiet \
             --follow --fixed-strings \
-            "${1}" "${WATCHLATER_DIR}"
+            "# ${_name}" "${WATCHLATER_DIR}"
         return
     fi
     grep \
         --quiet \
         --dereference-recursive --fixed-strings \
-        "${1}" "${WATCHLATER_DIR}"
+        "# ${_name}" "${WATCHLATER_DIR}"
+}
+
+__mpv_record_delete() {
+    local _f
+    _f="$(
+        grep \
+            --files-with-matches \
+            --dereference-recursive --fixed-strings \
+            "${1}" "${WATCHLATER_DIR}"
+    )"
+    rm "${_f}"
+    printf "mpv/record> deleted [%s]\n" "${_f}"
 }
 
 __mpv_default() {
-    if [ "${1}" = "--" ]; then shift; fi
+    __pre "${@}"
 
-    local _n_watchlaters=0 _fname="" _f_watchlater=""
-    for _f in "${@}"; do
-        _fname="$(basename "$(realpath "${_f}")")"
-        if __mpv_has_record "${_fname}"; then
+    local _n_watchlaters=0 _f_watchlater=""
+    local _f
+    for _f in "${_TARGETS[@]}"; do
+        if __mpv_record_exists "${_f}"; then
             printf "mpv> history found [%s]\n" "${_f}"
             _f_watchlater="${_f}"
             _n_watchlaters=$((_n_watchlaters + 1))
@@ -46,7 +101,7 @@ __mpv_default() {
     done
 
     if [ "${_n_watchlaters}" -eq 0 ]; then
-        __mpv -- "${@}"
+        __mpv "${_OPTS[@]}" -- "${_TARGETS[@]}"
         return
     fi
 
@@ -57,22 +112,16 @@ __mpv_default() {
         case "$(__fzf_opts "history (${_f_watchlater})" "blank" "delete")" in
             "history")
                 printf "mpv> continuing history [%s]\n\n" "${_f_watchlater}"
-                __mpv_record -- "${@}"
+                __mpv_record "${_OPTS[@]}" -- "${_TARGETS[@]}"
                 ;;
             "blank")
                 printf "mpv> starting new\n\n"
-                __mpv -- "${@}"
+                __mpv "${_OPTS[@]}" -- "${_TARGETS[@]}"
                 ;;
             "delete")
-                _f="$(
-                    grep \
-                        --files-with-matches \
-                        --dereference-recursive --fixed-strings \
-                        "${_f_watchlater}" "${WATCHLATER_DIR}"
-                )"
-                rm "${_f}"
-                printf "mpv> starting new [also removed %s]\n\n" "${_f}"
-                __mpv -- "${@}"
+                __mpv_record_delete "${_f_watchlater}"
+                printf "mpv> starting new\n\n"
+                __mpv "${_OPTS[@]}" -- "${_TARGETS[@]}"
                 ;;
         esac
         return
@@ -83,7 +132,7 @@ __mpv_default() {
         "blank")
             printf "mpv> using none... "
             read -r _
-            __mpv -- "${@}"
+            __mpv "${_OPTS[@]}" -- "${_TARGETS[@]}"
             printf "\n\n"
             ;;
         "quit")
@@ -93,77 +142,74 @@ __mpv_default() {
             return
             ;;
         "record")
-            __mpv_record -- "${@}"
+            __mpv_record "${_OPTS[@]}" -- "${_TARGETS[@]}"
             ;;
     esac
 }
 
 __mpv_paste() {
-    local _target _input
+    local _TARGETS=()
+
+    local _target
     while true; do
         _target="$(wl-paste)"
-        printf "mpv-paste> \"%s\"  [%s]\n" "$(yt-dlp --get-title "${_target}")" "${_target}"
-        printf "mpv-paste> go ahead? [y]es (default), [n]o "
-        read -r _input
-        case "${_input}" in
-            "n" | "N")
-                printf "mpv-paste> recopy to proceed "
-                read -r _
-                printf "\n"
-                ;;
-            *)
-                printf "mpv-paste> launching...\n"
-                __mpv -- "${_target}"
+        if [ ! "${_target}" ]; then
+            printf "mpv/paste> empty paste, try again\n"
+            sleep 1.0
+            continue
+        fi
+        printf "mpv/paste> \"%s\"  [%s]\n" "$(yt-dlp --get-title "${_target}")" "${_target}"
 
-                printf "\n"
-                printf "mpv-paste> break? [y]es (default), [n]o "
-                read -r _input
-                case "${_input}" in
-                    "n" | "N")
-                        printf "\n"
-                        ;;
-                    *)
-                        printf "mpv-paste> quiting\n"
-                        break
-                        ;;
-                esac
-                ;;
-        esac
+        if __yes_or_no "mpv/paste> enqueue?"; then
+            _TARGETS+=("${_target}")
+        fi
+        printf "\n"
+        if ! __yes_or_no "mpv/paste> current #queue = ${#_TARGETS[@]}; add more?"; then
+            break
+        fi
+        printf "\n\n"
+    done
+
+    __separator
+    printf "mpv/paste> launching now: #queue = %s; [%s]\n" "${#_TARGETS[@]}" "${_TARGETS[*]}"
+    __mpv
+    while true; do
+        if __yes_or_no "mpv/paste> mpv has started, i.e., we are done here?"; then
+            break
+        fi
     done
 }
 
 __mpv_socket() {
-    __find_files() {
-        find "${@}" -type f -print | sort
-    }
-
     local _socket="throw"
     if [ "${1}" = "-s" ]; then
         _socket="${2}"
         shift 2
     fi
-    if [ "${1}" = "--" ]; then shift; fi
+
+    __pre "${@}"
 
     if ! pgrep -u "$(whoami)" -a |
         cut -d " " -f 2- |
         grep -q "^mpv.*--input-ipc-server=.*/\.local/state/mpv/${_socket}\.sok"; then
-        __mpv --input-ipc-server="${SOCKET_DIR}/${_socket}.sok" -- "${@}"
+        __mpv --input-ipc-server="${SOCKET_DIR}/${_socket}.sok" "${_OPTS[@]}" -- "${_ARGS[@]}"
         return
     fi
 
     __to_socket() {
         printf "%s\n" "${1}" | socat - "${SOCKET_DIR}/${_socket}.sok"
     }
+    local _f
     case "$(__fzf_opts "append" "replace")" in
         "append")
-            for _f in "${@}"; do
+            for _f in "${_ARGS[@]}"; do
                 _f="$(realpath "${_f}")"
                 __to_socket "loadfile \"${_f}\" append"
             done
             ;;
         "replace")
             local _is_first_file="yes"
-            for _f in "${@}"; do
+            for _f in "${_ARGS[@]}"; do
                 _f="$(realpath "${_f}")"
                 if [ "${_is_first_file}" ]; then
                     __to_socket "loadfile \"${_f}\" replace" # only replace first
@@ -180,11 +226,13 @@ __mpv_socket() {
 case "${1}" in
     "direct")
         shift
-        __mpv "${@}"
+        __pre "${@}"
+        __mpv
         ;;
     "record")
         shift
-        __mpv_record "${@}"
+        __pre "${@}"
+        __mpv_record
         ;;
     "paste")
         shift
