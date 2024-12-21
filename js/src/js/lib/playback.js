@@ -1,5 +1,6 @@
 var util = require("../util");
 var report = require("./report");
+var video = require("./video").export;
 var mpv = require("./util");
 var misc = require("./misc");
 
@@ -16,11 +17,19 @@ var playpause = {
   enable: function () {
     mpv.property.set_boolean("pause", false);
     misc.osc.disable();
+
+    if (report.tracking.is_music()) {
+      video.enable();
+    }
   },
 
   disable: function () {
     mpv.property.set_boolean("pause", true);
     misc.osc.enable();
+
+    if (report.tracking.is_music()) {
+      video.disable();
+    }
   },
 
   toggle: function () {

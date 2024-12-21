@@ -9,6 +9,23 @@ MODULE.navigate = function () {
   report.tracking.print_pretty_video();
 };
 
+MODULE.enable = function () {
+  if (MODULE.is_active()) return;
+  mpv.property.set_string("vid", "auto");
+};
+
+MODULE.disable = function () {
+  if (!MODULE.is_active()) return;
+  mpv.property.set_boolean("vid", false);
+};
+
+/**
+ * @returns {boolean}
+ */
+MODULE.is_active = function () {
+  return mpv.property.get_autotype("vid") !== false;
+};
+
 function _position(dimension) {
   return util.format.format_float(
     mpv.property.get_number("video-pan-" + dimension),
