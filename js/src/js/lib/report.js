@@ -1,7 +1,5 @@
-var util_misc = require("../util").export;
-var util = require("./util").export;
-
-var MODULE = {};
+var util = require("../util");
+var mpv = require("./util");
 
 var formatter = {
   /**
@@ -10,7 +8,7 @@ var formatter = {
    * @returns {string}
    */
   format_activeness: function (is_active, indicator) {
-    return is_active ? indicator || "  > " : util_misc.tab();
+    return is_active ? indicator || "  > " : util.visual.tab();
   },
 
   /**
@@ -19,7 +17,9 @@ var formatter = {
    * @returns {string}
    */
   format_id: function (i, n) {
-    return util_misc.pad_integer_like(i, n) + "/" + n + ") ";
+    n = n.toString();
+    i = util.format.format_float(i, { n_digits_before_decimal: n.length });
+    return i + "/" + n + ")";
   },
 
   /**
@@ -27,7 +27,7 @@ var formatter = {
    * @returns {string}
    */
   format_title: function (title) {
-    return util_misc.format(title);
+    return util.format.format_string(title);
   },
 };
 
@@ -38,7 +38,7 @@ var tracking = {
    * @return {Array.<Object.<string, *>>}
    */
   _fetch_tracks_simple: function () {
-    return util.get_prop_object("track-list");
+    return mpv.property.get_object("track-list");
   },
 
   _fetch_tracks: function () {
@@ -52,6 +52,9 @@ var tracking = {
       n_tracks_video: 0,
       n_tracks_audio: 0,
       n_tracks_subtitle: 0,
+
+      src_ids: [],
+      src_id_max: -1,
     };
 
     tracks.forEach(function (track) {
@@ -71,6 +74,11 @@ var tracking = {
         default:
           break; /* intentionally left empty */
       }
+
+      if ("src-id" in track) {
+        res.src_ids.push(track["src-id"]);
+        res.src_id_max = Math.max(res.src_id_max, track["src-id"]);
+      }
     });
 
     return res;
@@ -78,9 +86,9 @@ var tracking = {
 
   print_raw: function () {
     var strings = tracking._fetch_tracks_simple().map(function (i) {
-      return util_misc.obj_to_string(i);
+      return util.format.obj_to_string(i);
     });
-    util.print_osd(strings.join("\n\n"));
+    mpv.osd.print(strings.join("\n\n"));
   },
 
   print_pretty: function () {
@@ -91,19 +99,19 @@ var tracking = {
       tracking._format_tracks_audio(tracks),
       tracking._format_tracks_subtitle(tracks),
     ];
-    util.print_osd(strings.join(util_misc.separator()));
+    mpv.osd.print(strings.join(util.visual.separator()));
   },
 
   print_pretty_video: function () {
-    util.print_osd(tracking._format_tracks_video(tracking._fetch_tracks()));
+    mpv.osd.print(tracking._format_tracks_video(tracking._fetch_tracks()));
   },
 
   print_pretty_audio: function () {
-    util.print_osd(tracking._format_tracks_audio(tracking._fetch_tracks()));
+    mpv.osd.print(tracking._format_tracks_audio(tracking._fetch_tracks()));
   },
 
   print_pretty_subtitle: function () {
-    util.print_osd(tracking._format_tracks_subtitle(tracking._fetch_tracks()));
+    mpv.osd.print(tracking._format_tracks_subtitle(tracking._fetch_tracks()));
   },
 
   /**
@@ -115,6 +123,7 @@ var tracking = {
   _format_track_id: function (tracks, track, n_tracks_type) {
     return (
       tracking._format_track_id_global(tracks, track) +
+      " " +
       formatter.format_id(track.id, n_tracks_type)
     );
   },
@@ -126,13 +135,17 @@ var tracking = {
    * @returns {string}
    */
   _format_track_id_global: function (tracks, track) {
-    var n_tracks = tracks.n_tracks;
+    var src_id_max = tracks.src_id_max;
+    var len = src_id_max !== -1 ? src_id_max.toString().length : 0;
+
     var s =
       "src-id" in track
-        ? util_misc.pad_integer_like(track["src-id"], n_tracks)
-        : util_misc.space_like(n_tracks.toString());
+        ? util.format.format_float(track["src-id"], {
+            n_digits_before_decimal: len,
+          })
+        : util.visual.repeat(" ", len);
 
-    return "[" + s + "] ";
+    return "[" + s + "]";
   },
 
   /**
@@ -157,10 +170,12 @@ var tracking = {
    * @returns {string}
    */
   _format_track_video: function (tracks, track) {
-    return ""
-      .concat(formatter.format_activeness(track.selected))
-      .concat(tracking._format_track_id(tracks, track, tracks.n_tracks_video))
-      .concat(tracking._format_track_video_info(track));
+    return (
+      formatter.format_activeness(track.selected) +
+      tracking._format_track_id(tracks, track, tracks.n_tracks_video) +
+      " " +
+      tracking._format_track_video_info(track)
+    );
   },
 
   /**
@@ -177,8 +192,8 @@ var tracking = {
         return "[static]";
       }
 
-      if (util_misc.is_float(fps)) {
-        fps = util_misc.truncate_after_decimal(fps, 3);
+      if (util.typing.is_float(fps)) {
+        fps = util.format.format_float(fps, { n_digits_after_decimal: 3 });
       }
       return "@" + fps + "fps";
     }
@@ -215,10 +230,12 @@ var tracking = {
    * @returns {string}
    */
   _format_track_audio: function (tracks, track) {
-    return ""
-      .concat(formatter.format_activeness(track.selected))
-      .concat(tracking._format_track_id(tracks, track, tracks.n_tracks_audio))
-      .concat(tracking._format_track_audio_info(track));
+    return (
+      formatter.format_activeness(track.selected) +
+      tracking._format_track_id(tracks, track, tracks.n_tracks_audio) +
+      " " +
+      tracking._format_track_audio_info(track)
+    );
   },
 
   /**
@@ -226,11 +243,17 @@ var tracking = {
    * @returns {string}
    */
   _format_track_audio_info: function (track) {
-    var str = track.codec + "[x" + track["demux-channel-count"] + "]";
-    if (!("lang" in track)) {
-      return str;
+    var strings = [];
+
+    strings.push(track.codec + "[x" + track["demux-channel-count"] + "]");
+    if (track.lang) {
+      strings.push(track.lang);
     }
-    return str.concat(" " + track.lang);
+    if (track.title) {
+      strings.push(formatter.format_title(track.title));
+    }
+
+    return strings.join(" ");
   },
 
   /**
@@ -257,7 +280,7 @@ var tracking = {
   _format_track_subtitle: function (tracks, track) {
     function active() {
       if (!track.selected) {
-        return util_misc.tab();
+        return util.visual.tab();
       }
 
       // REF:
@@ -268,12 +291,12 @@ var tracking = {
       return "  > "; // primary subtitle
     }
 
-    return ""
-      .concat(active())
-      .concat(
-        tracking._format_track_id(tracks, track, tracks.n_tracks_subtitle)
-      )
-      .concat(tracking._format_track_subtitle_info(track));
+    return (
+      active() +
+      tracking._format_track_id(tracks, track, tracks.n_tracks_subtitle) +
+      " " +
+      tracking._format_track_subtitle_info(track)
+    );
   },
 
   /**
@@ -292,24 +315,24 @@ var tracking = {
     if (track.filename) {
       strings.push("<" + track.filename + ">");
     }
-    return strings ? strings.join(" ") : "??";
+
+    return strings ? strings.join(" ") : "?";
   },
 };
-MODULE.tracking = tracking;
 
 var playback = {
   /**
    * @returns {string}
    */
   time_current_second: function () {
-    return util.get_prop_string_formatted("time-pos");
+    return mpv.property.get_string_formatted("time-pos");
   },
 
   /**
    * @returns {string}
    */
   time_current_millisecond: function () {
-    return util.get_prop_string_formatted("time-pos/full");
+    return mpv.property.get_string_formatted("time-pos/full");
   },
 
   /**
@@ -317,7 +340,7 @@ var playback = {
    */
   progress: function () {
     var current = playback.time_current_millisecond();
-    var duration = util.get_prop_string_formatted("duration", "raw");
+    var duration = mpv.property.get_string_formatted("duration", "raw");
     return "time> " + current + "/" + duration;
   },
 
@@ -325,17 +348,16 @@ var playback = {
    * @returns {integer}
    */
   chapter: function () {
-    return util.get_prop_number("chapter");
+    return mpv.property.get_number("chapter");
   },
 
   /**
    * @returns {integer}
    */
   edition: function () {
-    return util.get_prop_number("edition");
+    return mpv.property.get_number("edition");
   },
 };
-MODULE.playback = playback;
 
 // REF
 //  https://mpv.io/manual/master/#command-interface-chapter-list
@@ -344,7 +366,7 @@ var chapter = {
    * @return {Array.<Object.<string, *>>}
    */
   fetch_chapters: function () {
-    return util.get_prop_object("chapter-list");
+    return mpv.property.get_object("chapter-list");
   },
 
   /**
@@ -356,16 +378,16 @@ var chapter = {
 
   print_raw: function () {
     var strings = chapter.fetch_chapters().map(function (i) {
-      return util_misc.obj_to_string(i);
+      return util.format.obj_to_string(i);
     });
-    util.print_osd(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   print_pretty: function () {
     var chapters = chapter.fetch_chapters();
 
     if (!chapters.length) {
-      util.print_osd("chapter: ??");
+      mpv.osd.print("chapter: ??");
       return;
     }
 
@@ -374,7 +396,7 @@ var chapter = {
     chapter._format_chapters(chapters).forEach(function (i) {
       strings.push(i);
     });
-    util.print_osd(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   /**
@@ -386,23 +408,24 @@ var chapter = {
     var chapter_curr = chapter.fetch_chapter_current();
     var strings = [];
     for (var i = 0; i < n_chapters; ++i) {
-      var str =
-        formatter.format_activeness(i === chapter_curr) +
-        formatter.format_id(i + 1 /* use human-indexing */, n_chapters) +
-        util_misc.format_as_time(chapters[i].time);
+      var s = [];
 
+      s.push(
+        formatter.format_activeness(i === chapter_curr) +
+          formatter.format_id(i + 1 /* use human-indexing */, n_chapters)
+      );
       var c = chapters[i];
+      s.push(util.format.format_as_time(c.time));
       if (c.title) {
-        str += " " + formatter.format_title(c.title);
+        s.push(formatter.format_title(c.title));
       }
 
-      strings.push(str);
+      strings.push(s.join(" "));
     }
 
     return strings;
   },
 };
-MODULE.chapter = chapter;
 
 var playlist = {
   _n_lines_context: 7,
@@ -412,13 +435,13 @@ var playlist = {
    * @return {Object.<string, *>}
    */
   fetch_playlist: function () {
-    var items = util.get_prop_object("playlist");
+    var items = mpv.property.get_object("playlist");
     var n_items = items.length;
 
     var i_zero = 0; // zero-indexing by default in mpv
     var i_min = i_zero;
     var i_max = i_zero + n_items - 1;
-    var i_current = i_zero + util.get_prop_number("playlist-current-pos");
+    var i_current = i_zero + mpv.property.get_number("playlist-current-pos");
 
     return {
       items: items,
@@ -434,16 +457,16 @@ var playlist = {
 
   print_raw: function () {
     var strings = playlist.fetch_playlist().items.map(function (i) {
-      return util_misc.obj_to_string(i);
+      return util.format.obj_to_string(i);
     });
-    util.print_osd(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   print_pretty: function () {
     var pl = playlist.fetch_playlist();
 
     if (pl.is_empty) {
-      util.print_osd("playlist: ??");
+      mpv.osd.print("playlist: ??");
       return;
     }
 
@@ -452,7 +475,7 @@ var playlist = {
     playlist._format_playlist(pl).forEach(function (i) {
       strings.push(i);
     });
-    util.print_osd(strings.join("\n"));
+    mpv.osd.print(strings.join("\n"));
   },
 
   /**
@@ -483,7 +506,7 @@ var playlist = {
       for (var i = i_max + 1 - n_lines_cycle_start; i < i_max + 1; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
-      strings.push("----START" + util_misc.separator_no_linebreaks());
+      strings.push("----START" + util.visual.separator_no_linebreaks());
     }
 
     for (i = i_start; i <= i_end; ++i) {
@@ -492,7 +515,7 @@ var playlist = {
 
     var n_lines_cycle_end = n_lines_cycle - (i_max - i_current);
     if (n_lines_cycle_end > 0) {
-      strings.push("----END" + util_misc.separator_no_linebreaks());
+      strings.push("----END" + util.visual.separator_no_linebreaks());
       for (i = i_min; i < i_min + n_lines_cycle_end; ++i) {
         strings.push(playlist._format_item(pl.items[i], n_items));
       }
@@ -514,10 +537,12 @@ var playlist = {
     // NOTE:
     //  use .current to check current track; .playing does NOT update when
     //  switching tracks and will thus report erroneously
-    return ""
-      .concat(formatter.format_activeness(item.current))
-      .concat(formatter.format_id(item.id, n_items))
-      .concat(item.filename);
+    return (
+      formatter.format_activeness(item.current) +
+      formatter.format_id(item.id, n_items) +
+      " " +
+      item.filename
+    );
   },
 
   /**
@@ -533,7 +558,7 @@ var playlist = {
     //  3           2
     //  4           3 := n_lines_cycle_max
     //  ...         3
-    return util_misc.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
+    return util.math.clamp(n_items - 1, 0, playlist._n_lines_cycle_max);
   },
 
   /**
@@ -543,7 +568,7 @@ var playlist = {
    */
   _format_items_hidden: function (n_items_hidden, direction_start) {
     return (
-      util_misc.tab() +
+      util.visual.tab() +
       "// " +
       n_items_hidden +
       " " +
@@ -552,8 +577,10 @@ var playlist = {
     );
   },
 };
-MODULE.playlist = playlist;
 
 module.exports = {
-  export: MODULE,
+  tracking: tracking,
+  playback: playback,
+  chapter: chapter,
+  playlist: playlist,
 };

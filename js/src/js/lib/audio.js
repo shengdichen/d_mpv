@@ -1,6 +1,6 @@
-var util_misc = require("../util").export;
-var report = require("./report").export;
-var util = require("./util").export;
+var util = require("../util");
+var report = require("./report");
+var mpv = require("./util");
 
 var MODULE = {};
 
@@ -10,10 +10,10 @@ var MODULE = {};
  */
 MODULE.volume = function (incr) {
   return function () {
-    var vol_prev = util.get_prop_number("volume");
+    var vol_prev = mpv.property.get_number("volume");
     var vol_next = vol_prev + incr;
-    util.set_prop_number("volume", vol_next);
-    util.print_osd(
+    mpv.property.set_number("volume", vol_next);
+    mpv.osd.print(
       "volume> " + vol_next + " [" + vol_prev + _format_volume_incr(incr) + "]"
     );
   };
@@ -26,16 +26,18 @@ function _format_volume_incr(incr) {
   if (incr === -1) {
     return "--";
   }
-  return util_misc.prepend_sign(incr);
+  return util.format.format_float(incr, { prepend_sign: true });
 }
 
 MODULE.mute = function () {
-  util.cycle("mute");
-  util.print_osd("mute> " + (util.get_prop_boolean("mute") ? "T" : "F"));
+  mpv.property.cycle("mute");
+  mpv.osd.print(
+    "mute> " + util.format.format_boolean(mpv.property.get_boolean("mute"))
+  );
 };
 
 MODULE.navigate = function () {
-  util.cycle("audio");
+  mpv.property.cycle("audio");
   report.tracking.print_pretty_audio();
 };
 

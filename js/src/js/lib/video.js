@@ -1,19 +1,18 @@
-var util_misc = require("../util").export;
-var report = require("./report").export;
-var util = require("./util").export;
+var util = require("../util");
+var report = require("./report");
+var mpv = require("./util");
 
 var MODULE = {};
 
 MODULE.navigate = function () {
-  util.cycle("video");
+  mpv.property.cycle("video");
   report.tracking.print_pretty_video();
 };
 
 function _position(dimension) {
-  return util_misc.prepend_sign(
-    util_misc.truncate_after_decimal(
-      util.get_prop_number("video-pan-" + dimension)
-    )
+  return util.format.format_float(
+    mpv.property.get_number("video-pan-" + dimension),
+    { prepend_sign: true, n_digits_after_decimal: 3 }
   );
 }
 /**
@@ -23,17 +22,18 @@ function _position(dimension) {
  */
 MODULE.reposition = function (incr, dimension) {
   return function () {
-    util.run(["add", "video-pan-" + dimension, incr]);
-    util.print_osd(
+    mpv.exec.run(["add", "video-pan-" + dimension, incr]);
+    mpv.osd.print(
       "video/pos> (" + _position("x") + ", " + _position("y") + ")"
     );
   };
 };
 
 function _size() {
-  return util_misc.prepend_sign(
-    util_misc.truncate_after_decimal(util.get_prop_number("video-zoom"))
-  );
+  return util.format.format_float(mpv.property.get_number("video-zoom"), {
+    prepend_sign: true,
+    n_digits_after_decimal: 2,
+  });
 }
 /**
  * @param {number} [incr]
@@ -41,8 +41,8 @@ function _size() {
  */
 MODULE.resize = function (incr) {
   return function () {
-    util.run(["add", "video-zoom", incr]);
-    util.print_osd("video/size> " + _size());
+    mpv.exec.run(["add", "video-zoom", incr]);
+    mpv.osd.print("video/size> " + _size());
   };
 };
 
@@ -51,9 +51,9 @@ MODULE.resize = function (incr) {
  */
 MODULE.deinterlace = function () {
   return function () {
-    util.cycle("deinterlace");
-    util.print_osd(
-      "video/deinterlace> " + util.get_prop_autotype("deinterlace")
+    mpv.property.cycle("deinterlace");
+    mpv.osd.print(
+      "video/deinterlace> " + mpv.property.get_autotype("deinterlace")
     );
   };
 };
@@ -62,12 +62,12 @@ MODULE.deinterlace = function () {
  * @returns {function(): void}
  */
 MODULE.hwdec = function () {
-  util.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
-  util.print_osd(
+  mpv.property.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
+  mpv.osd.print(
     "video/hwdec> " +
-      util.get_prop_string("hwdec-current") +
+      mpv.property.get_string("hwdec-current") +
       " [" +
-      util.get_prop_string("hwdec") +
+      mpv.property.get_string("hwdec") +
       "]"
   );
 };
