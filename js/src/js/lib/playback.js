@@ -17,28 +17,45 @@ MODULE.navigate_playlist = function (positive_dir) {
     } else {
       util.run("playlist-prev");
     }
-    report.report_playlist();
+    report.playlist.print_pretty();
   };
 };
 
-MODULE.navigate_file = function (incr, mode) {
+/**
+ * @param {integer} incr
+ */
+MODULE.navigate_file_frame = function (incr) {
   return function () {
-    if (mode === "chapter") {
-      util.run(["add", "chapter", incr]);
-      report.report_chapter();
-    } else if (mode === "frame") {
-      if (incr > 0) {
-        util.run("frame-step");
-      } else {
-        util.run("frame-back-step");
-      }
-    } else {
-      util.run(["seek", incr, "relative+exact"]);
+    if (incr === 0) {
+      return;
     }
 
-    var current = util.get_prop_string_formatted("playback-time");
-    var duration = util.get_prop_string_formatted("duration", "raw");
-    util.print_osd("time> " + current + "/" + duration);
+    if (incr > 0) {
+      util.run("frame-step");
+    } else {
+      util.run("frame-back-step");
+    }
+    util.print_osd(report.playback.progress());
+  };
+};
+
+/**
+ * @param {number} incr
+ */
+MODULE.navigate_file_time = function (incr) {
+  return function () {
+    util.run(["seek", incr, "relative+exact"]);
+    util.print_osd(report.playback.progress());
+  };
+};
+
+/**
+ * @param {integer} incr
+ */
+MODULE.navigate_file_chapter = function (incr) {
+  return function () {
+    util.run(["add", "chapter", incr]);
+    report.chapter.print_pretty();
   };
 };
 
@@ -87,41 +104,6 @@ MODULE.loop_ab = function () {
     msg = "?";
   }
   util.print_osd("loop-ab> " + msg);
-};
-
-MODULE.config = function () {
-  util.bind("SPACE", MODULE.playpause);
-
-  util.bind("<", MODULE.navigate_playlist(false));
-  util.bind(">", MODULE.navigate_playlist(true));
-  util.bind("k", report.report_playlist);
-  util.bind("Shift+k", function () {
-    util.print_prop_object("playlist");
-  });
-
-  util.bind("j", report.report_categories);
-  util.bind("Shift+j", function () {
-    util.print_prop_object("track-list");
-  });
-
-  util.bind("l", MODULE.loop_ab);
-  util.bind("L", MODULE.loop_files);
-
-  util.bind(",", MODULE.navigate_file(-1, "frame"));
-  util.bind(".", MODULE.navigate_file(+1, "frame"));
-
-  util.bind("LEFT", MODULE.navigate_file(-3));
-  util.bind("RIGHT", MODULE.navigate_file(+3));
-  util.bind("Shift+LEFT", MODULE.navigate_file(-1));
-  util.bind("Shift+RIGHT", MODULE.navigate_file(+1));
-  util.bind("Ctrl+LEFT", MODULE.navigate_file(-7));
-  util.bind("Ctrl+RIGHT", MODULE.navigate_file(+7));
-  util.bind("PGUP", MODULE.navigate_file(-1, "chapter"));
-  util.bind("PGDWN", MODULE.navigate_file(+1, "chapter"));
-
-  util.bind("[", MODULE.adjust_speed(-0.1));
-  util.bind("]", MODULE.adjust_speed(+0.1));
-  util.bind("BS", MODULE.adjust_speed());
 };
 
 module.exports = {

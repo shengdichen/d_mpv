@@ -96,7 +96,7 @@ MODULE.navigate = function (positive_dir) {
     } else {
       util.run(["cycle", "sub", "down"]);
     }
-    report.report_category_sub();
+    report.tracking.print_pretty_subtitle();
   };
 };
 
@@ -139,28 +139,6 @@ MODULE.toggle = function (target) {
       );
     }
   };
-};
-
-MODULE.config = function () {
-  util.bind("z", MODULE.retime(+0.1, "primary"));
-  util.bind("x", MODULE.retime(-0.1, "primary"));
-  util.bind("Shift+z", MODULE.retime(+0.1, "secondary"));
-  util.bind("Shift+x", MODULE.retime(-0.1, "secondary"));
-  util.bind("Ctrl+Shift+z", MODULE.retime(+0.1, "both"));
-  util.bind("Ctrl+Shift+x", MODULE.retime(-0.1, "both"));
-
-  util.bind("Shift+g", MODULE.resize(-0.1));
-  util.bind("g", MODULE.resize(+0.1));
-
-  util.bind("Shift+t", MODULE.move_up());
-  util.bind("t", MODULE.move_down());
-
-  util.bind("Shift+b", MODULE.navigate_prev());
-  util.bind("b", MODULE.navigate_next());
-
-  util.bind("v", MODULE.toggle("primary"));
-  util.bind("Shift+v", MODULE.toggle("secondary"));
-  util.bind("Alt+v", MODULE.toggle("both"));
 };
 
 module.exports = {

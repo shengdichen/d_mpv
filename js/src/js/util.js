@@ -52,6 +52,26 @@ MODULE.has_member = function (obj, key) {
 };
 
 /**
+ * @param {Object.<*, *>} [count]
+ * @returns {Array.<string>}
+ */
+MODULE.obj_to_string = function (obj) {
+  var kvs = [];
+  var s, v;
+  for (var k in obj) {
+    s = k + ": ";
+    v = obj[k];
+    if (typeof v === "object") {
+      kvs.push(s + JSON.stringify(v));
+      continue;
+    }
+    kvs.push(s + MODULE.format(v));
+  }
+
+  return "{ " + kvs.join(", ") + " }";
+};
+
+/**
  * @param {*} target
  * @returns {boolean}
  */
@@ -64,13 +84,13 @@ MODULE.is_array = function (target) {
  * @returns {string}
  */
 MODULE.prepend_sign = function (num) {
-  var sign = "";
   if (MODULE.is_close(num, 0)) {
-    sign = "=";
-  } else if (num > 0) {
-    sign = "+";
+    return "=0";
   }
-  return sign + num;
+  if (num > 0) {
+    return "+" + num;
+  }
+  return num;
 };
 
 /**
@@ -88,11 +108,11 @@ MODULE.pad_integer_like = function (num, reference) {
  * @returns {string}
  */
 MODULE.pad_integer = function (num, len) {
-  num = num.toString();
-  while (num.length < len) {
-    num = "0" + num;
+  var len_num = MODULE.len_integer(num);
+  if (len_num >= len) {
+    return num;
   }
-  return num;
+  return MODULE.repeat("0", len - len_num) + num;
 };
 
 /**
@@ -113,6 +133,111 @@ MODULE.truncate_after_decimal = function (num, n_digits) {
   var scale = Math.pow(10, n_digits);
   num = Math.round(num * scale) / scale;
   return num.toFixed(n_digits);
+};
+
+/**
+ * @param {string} str
+ * @param {number} [count]
+ * @returns {string}
+ */
+MODULE.repeat = function (str, count) {
+  return Array(count + 1).join(str);
+};
+
+/**
+ * @param {string} str
+ * @returns {string}
+ */
+MODULE.space_like = function (str) {
+  return MODULE.repeat(" ", str.length);
+};
+
+/**
+ * @param {integer} [count]
+ * @returns {string}
+ */
+MODULE.tab = function (count) {
+  return MODULE.repeat(" ", (count || 1) * 4);
+};
+
+/**
+ * @param {Object.<*, *>} [opts]
+ * @returns {string}
+ */
+MODULE.separator = function (opts) {
+  var s = "";
+
+  if (opts && "n_linebreaks_before" in opts) {
+    s += MODULE.repeat("\n", opts.n_linebreaks_before);
+  } else {
+    s += "\n";
+  }
+
+  s += Array((opts && opts.len) || 37).join((opts && opts.char) || "-");
+
+  if (opts && "n_linebreaks_after" in opts) {
+    s += MODULE.repeat("\n", opts.n_linebreaks_after);
+  } else {
+    s += "\n";
+  }
+
+  return s;
+};
+
+/**
+ * @returns {string}
+ */
+MODULE.separator_no_linebreaks = function () {
+  return MODULE.separator({ n_linebreaks_before: 0, n_linebreaks_after: 0 });
+};
+
+/**
+ * @param {boolean|number|string} item
+ * @returns {string}
+ */
+MODULE.format = function (item) {
+  if (typeof item === "string") {
+    return "'" + item + "'";
+  }
+  if (typeof item === "boolean") {
+    if (item) {
+      return "T";
+    }
+    return "F";
+  }
+  if (MODULE.is_float(item)) {
+    return MODULE.truncate_after_decimal(item, 4);
+  }
+  return item.toString();
+};
+
+/**
+ * @param {number} duration
+ * @returns {string}
+ */
+MODULE.format_as_time = function (duration) {
+  var hours = Math.floor(duration / 3600);
+
+  duration -= hours * 3600;
+  var minutes = Math.floor(duration / 60);
+
+  duration -= minutes * 60;
+  var seconds = duration.toFixed(3);
+  if (duration < 10) {
+    seconds = "0" + seconds;
+  }
+
+  return hours + ":" + MODULE.pad_integer(minutes, 2) + ":" + seconds;
+};
+
+/**
+ * @param {number} n
+ * @param {number} min
+ * @param {number} max
+ * @returns {number}
+ */
+MODULE.clamp = function (n, min, max) {
+  return Math.min(max, Math.max(min, n));
 };
 
 module.exports = {

@@ -1,35 +1,39 @@
+var util_misc = require("../util").export;
 var util = require("./util").export;
 
 var MODULE = {};
 
-/**
- * @returns {boolean}
- */
-function osc_is_visible_by_default() {
-  var res = { visibility: "never" };
-  util.get_prop_config("osc", res);
-  return res.visibility !== "never";
-}
-var osc_is_visible = osc_is_visible_by_default();
-var osc_fn = "osc-visibility";
-MODULE.osc = {
+var _osc = {
+  _fn: "osc-visibility",
   // NOTE:
-  //    pass second arg |false| to disable osd-output (prepending 'no-osd' has no use)
+  //    first toggle() will:
+  //    1.  disable() := osc/visibility is always
+  //    2.  enable() := osc/visibility is unset OR auto (default) OR never
+  _is_visible:
+    util.get_prop_script(
+      "osc",
+      "visibility",
+      "auto" /* REF: https://mpv.io/manual/master/#on-screen-controller-visibility */
+    ) === "always",
+
+  // NOTE:
+  //    pass second arg |false| to disable osd-output (prepending "no-osd" has no use)
   disable: function () {
-    util.run_script_fn(osc_fn, ["never", false]);
+    util.run_script_fn(_osc._fn, ["never", false]);
   },
   enable: function () {
-    util.run_script_fn(osc_fn, ["always", false]);
+    util.run_script_fn(_osc._fn, ["always", false]);
   },
   toggle: function () {
-    if (osc_is_visible) {
-      MODULE.osc.disable();
+    if (_osc._is_visible) {
+      _osc.disable();
     } else {
-      MODULE.osc.enable();
+      _osc.enable();
     }
-    osc_is_visible = !osc_is_visible;
+    _osc._is_visible = !_osc._is_visible;
   },
 };
+MODULE.osc = _osc;
 
 MODULE.stats = {
   toggle: function () {
@@ -52,53 +56,59 @@ MODULE.screenshot = function () {
   util.run(["screenshot"]);
 };
 
-MODULE.config = function () {
-  util.bind("i", MODULE.osc.toggle);
-  util.bind("I", MODULE.stats.toggle);
-  util.bind("`", MODULE.console.enable);
-  util.bind("Shift+s", MODULE.screenshot);
+var _record = {
+  /**
+   * @returns {string}
+   */
+  get_targets: function () {
+    return util.get_prop_string("watch-later-options");
+  },
 
-  function title() {
-    var title = "";
+  /**
+   * @param {string} str_targets
+   */
+  set_targets: function (str_targets) {
+    util.set_prop_string("watch-later-options", str_targets);
+  },
 
-    var server = util.get_prop_string("input-ipc-server");
-    if (server) {
-      // show only filename of socket
-      title = title.concat("[" + server.split("/").slice(-1).toString() + "] ");
+  /**
+   * @param {Array.<string>|string} targets
+   */
+  append_targets: function (targets) {
+    if (!util_misc.is_array(targets)) {
+      _record.set_targets(_record.get_targets() + "," + targets);
+      return;
     }
 
-    title = title.concat("${path}");
-    util.set_prop_string("title", title);
-  }
+    var str_append = "";
+    for (var i = 0; i < targets.length; ++i) {
+      str_append += "," + targets[i];
+    }
+    _record.set_targets(_record.get_targets() + str_append);
+  },
 
-  function savepos() {
+  save_filename_only: function () {
     util.set_prop_boolean("write-filename-in-watch-later-config", true);
     util.set_prop_boolean("ignore-path-in-watch-later-config", true);
+  },
 
-    util.set_prop_string(
-      "watch-later-options",
-      util.get_prop_string("watch-later-options") + ",secondary-sub-delay"
+  save: function () {
+    util.run("write-watch-later-config");
+    util.print_osd("savepos> written");
+  },
+
+  save_quit: function () {
+    util.run("quit-watch-later");
+  },
+
+  toggle: function () {
+    util.cycle("save-position-on-quit");
+    util.print_osd(
+      "savepos> " + (util.get_prop_boolean("save-position-on-quit") ? "T" : "F")
     );
-
-    util.bind("Ctrl+s", function () {
-      util.run("write-watch-later-config");
-      util.print_osd("savepos> written");
-    });
-    util.bind("Ctrl+Shift+s", function () {
-      util.cycle("save-position-on-quit");
-      util.print_osd(
-        "savepos> " +
-          (util.get_prop_boolean("save-position-on-quit") ? "T" : "F")
-      );
-    });
-    util.bind("Ctrl+q", function () {
-      util.run("quit-watch-later");
-    });
-  }
-
-  title();
-  savepos();
+  },
 };
+MODULE.record = _record;
 
 module.exports = {
   export: MODULE,

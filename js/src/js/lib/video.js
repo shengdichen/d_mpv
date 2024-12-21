@@ -6,7 +6,7 @@ var MODULE = {};
 
 MODULE.navigate = function () {
   util.cycle("video");
-  report.report_category_video();
+  report.tracking.print_pretty_video();
 };
 
 function _position(dimension) {
@@ -70,29 +70,6 @@ MODULE.hwdec = function () {
       util.get_prop_string("hwdec") +
       "]"
   );
-};
-
-MODULE.config = function () {
-  util.bind("f", function () {
-    util.cycle("fullscreen");
-  });
-  util.bind("Ctrl+r", function () {
-    util.cycle("video-rotate", [90, 180, 270, 0]);
-  });
-
-  util.bind("_", MODULE.navigate);
-
-  var reposition_step = 0.025;
-  util.bind("Alt+LEFT", MODULE.reposition(reposition_step, "x"));
-  util.bind("Alt+RIGHT", MODULE.reposition(-reposition_step, "x"));
-  util.bind("Alt+UP", MODULE.reposition(+reposition_step, "y"));
-  util.bind("Alt+DOWN", MODULE.reposition(-reposition_step, "y"));
-
-  util.bind("Alt+-", MODULE.resize(-0.1));
-  util.bind("Alt++", MODULE.resize(+0.1));
-
-  util.bind("d", MODULE.deinterlace(-0.1));
-  util.bind("Ctrl+h", MODULE.hwdec);
 };
 
 module.exports = {

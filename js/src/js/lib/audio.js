@@ -36,18 +36,7 @@ MODULE.mute = function () {
 
 MODULE.navigate = function () {
   util.cycle("audio");
-  report.report_category_audio();
-};
-
-MODULE.config = function () {
-  util.bind("9", MODULE.volume(-1));
-  util.bind("(", MODULE.volume(-7));
-  util.bind("0", MODULE.volume(+1));
-  util.bind(")", MODULE.volume(+7));
-
-  util.bind("m", MODULE.mute);
-
-  util.bind("SHARP", MODULE.navigate);
+  report.tracking.print_pretty_audio();
 };
 
 module.exports = {
