@@ -11,12 +11,22 @@ MODULE.report_categories = function () {
   var n_tracks_global = categories[3];
 
   var strings = [];
+  strings.push(_format_category_config());
   strings.push(_format_category_video(vids, n_tracks_global));
   strings.push(_format_category_audio(auds, n_tracks_global));
   strings.push(_format_category_sub(subs, n_tracks_global));
   var separator = "\n" + Array(37).join("-") + "\n";
   util.print_osd(strings.join(separator));
 };
+
+function _format_category_config() {
+  var s = "";
+  var save_pos = util.get_prop_boolean("save-position-on-quit");
+  if (save_pos) {
+    s += "save on quit";
+  }
+  return s;
+}
 
 MODULE.report_category_video = function () {
   util.print_osd(_format_category_video(_categorize_one("video")));
