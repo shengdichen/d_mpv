@@ -537,12 +537,15 @@ var playlist = {
     // NOTE:
     //  use .current to check current track; .playing does NOT update when
     //  switching tracks and will thus report erroneously
-    return (
-      formatter.format_activeness(item.current) +
-      formatter.format_id(item.id, n_items) +
-      " " +
-      item.filename
-    );
+    var active = formatter.format_activeness(item.current);
+    var id = formatter.format_id(item.id, n_items);
+
+    var filename = util.path.name(item.filename);
+    if (filename.length > 79) {
+      filename = "..." + filename.slice(-79);
+    }
+
+    return active + id + " " + filename;
   },
 
   /**
