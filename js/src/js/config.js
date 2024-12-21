@@ -111,10 +111,10 @@ function _misc() {
 
     var server = lib_mpv.property.get_string("input-ipc-server");
     if (server) {
-      title = title.concat("[" + util.path.name(server) + "] ");
+      title += "[" + util.path.name(server) + "] ";
     }
 
-    title = title.concat("${path}");
+    title += "${filename}";
     lib_mpv.property.set_string("title", title);
   }
 
