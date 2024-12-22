@@ -14,11 +14,15 @@ MODULE.volume = function (incr) {
     var vol_next = vol_prev + incr;
     mpv.property.set_number("volume", vol_next);
     mpv.osd.print(
-      "volume> " + vol_next + " [" + vol_prev + _format_volume_incr(incr) + "]"
+      "audio/volume> " +
+        vol_next +
+        " [" +
+        vol_prev +
+        _format_volume_incr(incr) +
+        "]"
     );
   };
 };
-
 function _format_volume_incr(incr) {
   if (incr === 1) {
     return "++";
@@ -32,12 +36,16 @@ function _format_volume_incr(incr) {
 MODULE.mute = function () {
   mpv.property.cycle("mute");
   mpv.osd.print(
-    "mute> " + util.format.format_boolean(mpv.property.get_boolean("mute"))
+    "audio/mute> " +
+      util.format.format_boolean(mpv.property.get_boolean("mute"))
   );
 };
 
-MODULE.navigate = function () {
-  mpv.property.cycle("audio");
+/**
+ * @param {integer} [incr]
+ */
+MODULE.navigate = function (incr) {
+  mpv.property.shift("audio", incr || +1);
   report.tracking.print_pretty_audio();
 };
 

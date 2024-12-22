@@ -4,8 +4,11 @@ var mpv = require("./util");
 
 var MODULE = {};
 
-MODULE.navigate = function () {
-  mpv.property.cycle("video");
+/**
+ * @param {integer} [incr]
+ */
+MODULE.navigate = function (incr) {
+  mpv.property.shift("video", incr || +1);
   report.tracking.print_pretty_video();
 };
 
@@ -35,15 +38,10 @@ function _position(dimension) {
 /**
  * @param {number} [incr]
  * @param {string} [dimension]
- * @returns {function(): void}
  */
 MODULE.reposition = function (incr, dimension) {
-  return function () {
-    mpv.exec.run(["add", "video-pan-" + dimension, incr]);
-    mpv.osd.print(
-      "video/pos> (" + _position("x") + ", " + _position("y") + ")"
-    );
-  };
+  mpv.exec.run(["add", "video-pan-" + dimension, incr]);
+  mpv.osd.print("video/pos> (" + _position("x") + ", " + _position("y") + ")");
 };
 
 function _size() {
@@ -54,39 +52,36 @@ function _size() {
 }
 /**
  * @param {number} [incr]
- * @returns {function(): void}
  */
 MODULE.resize = function (incr) {
-  return function () {
-    mpv.exec.run(["add", "video-zoom", incr]);
-    mpv.osd.print("video/size> " + _size());
-  };
+  mpv.exec.run(["add", "video-zoom", incr]);
+  mpv.osd.print("video/size> " + _size());
 };
 
-/**
- * @returns {function(): void}
- */
 MODULE.deinterlace = function () {
-  return function () {
-    mpv.property.cycle("deinterlace");
-    mpv.osd.print(
-      "video/deinterlace> " + mpv.property.get_autotype("deinterlace")
-    );
-  };
+  mpv.property.cycle("deinterlace");
+  mpv.osd.print(
+    "video/deinterlace> " + typeof mpv.property.get_autotype("deinterlace")
+  );
 };
 
-/**
- * @returns {function(): void}
- */
 MODULE.hwdec = function () {
   mpv.property.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
-  mpv.osd.print(
-    "video/hwdec> " +
-      mpv.property.get_string("hwdec-current") +
-      " [" +
-      mpv.property.get_string("hwdec") +
-      "]"
-  );
+
+  var strings = [
+    "video/hwdec>",
+    mpv.property.get_string("hwdec-current"),
+    "[" + mpv.property.get_string("hwdec") + "]",
+  ];
+  mpv.osd.print(strings.join(" "));
+};
+
+MODULE.fullscreen = function () {
+  mpv.property.cycle("fullscreen");
+};
+
+MODULE.rotate = function () {
+  mpv.property.cycle("video-rotate", [90, 180, 270, 0]);
 };
 
 module.exports = {

@@ -10,28 +10,38 @@ var lib_audio = require("./lib/audio").export;
 var lib_playback = require("./lib/playback").export;
 
 function _video() {
-  lib_mpv.keybind.bind("f", function () {
-    lib_mpv.property.cycle("fullscreen");
-  });
-  lib_mpv.keybind.bind("Ctrl+r", function () {
-    lib_mpv.property.cycle("video-rotate", [90, 180, 270, 0]);
-  });
+  lib_mpv.keybind.bind("f", lib_video.fullscreen);
+  lib_mpv.keybind.bind("Ctrl+r", lib_video.rotate);
 
-  lib_mpv.keybind.bind("_", lib_video.navigate);
+  lib_mpv.keybind.bind("-", function () {
+    lib_video.navigate(+1);
+  });
+  lib_mpv.keybind.bind("_", function () {
+    lib_video.navigate(-1);
+  });
 
   var reposition_step = 0.025;
-  lib_mpv.keybind.bind("Alt+LEFT", lib_video.reposition(+reposition_step, "x"));
-  lib_mpv.keybind.bind(
-    "Alt+RIGHT",
-    lib_video.reposition(-reposition_step, "x")
-  );
-  lib_mpv.keybind.bind("Alt+UP", lib_video.reposition(+reposition_step, "y"));
-  lib_mpv.keybind.bind("Alt+DOWN", lib_video.reposition(-reposition_step, "y"));
+  lib_mpv.keybind.bind("Alt+LEFT", function () {
+    lib_video.reposition(+reposition_step, "x");
+  });
+  lib_mpv.keybind.bind("Alt+RIGHT", function () {
+    lib_video.reposition(-reposition_step, "x");
+  });
+  lib_mpv.keybind.bind("Alt+UP", function () {
+    lib_video.reposition(+reposition_step, "y");
+  });
+  lib_mpv.keybind.bind("Alt+DOWN", function () {
+    lib_video.reposition(-reposition_step, "y");
+  });
 
-  lib_mpv.keybind.bind("Alt+-", lib_video.resize(-0.1));
-  lib_mpv.keybind.bind("Alt++", lib_video.resize(+0.1));
+  lib_mpv.keybind.bind("Alt+-", function () {
+    lib_video.resize(-0.1);
+  });
+  lib_mpv.keybind.bind("Alt++", function () {
+    lib_video.resize(+0.1);
+  });
 
-  lib_mpv.keybind.bind("d", lib_video.deinterlace(-0.1));
+  lib_mpv.keybind.bind("d", lib_video.deinterlace);
   lib_mpv.keybind.bind("Ctrl+h", lib_video.hwdec);
 }
 
@@ -65,7 +75,12 @@ function _audio() {
 
   lib_mpv.keybind.bind("m", lib_audio.mute);
 
-  lib_mpv.keybind.bind("SHARP", lib_audio.navigate);
+  lib_mpv.keybind.bind("3", function () {
+    lib_audio.navigate(+1);
+  });
+  lib_mpv.keybind.bind("SHARP", function () {
+    lib_audio.navigate(-1);
+  });
 }
 
 function _playback() {

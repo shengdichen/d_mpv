@@ -102,6 +102,30 @@ var property = {
   },
 
   /**
+   * @param {string} item
+   * @param {integer} offset
+   */
+  shift: function (item, offset) {
+    // NOTE:
+    //  mpv's native "add" function does NOT work:
+    //  exec.run(["add", item, 2]);
+
+    if (!offset) return;
+
+    if (offset > 0) {
+      for (var i = 0; i < offset; ++i) {
+        exec.run(["cycle", item, "up"]);
+      }
+      return;
+    }
+
+    offset = -offset;
+    for (i = 0; i < offset; ++i) {
+      exec.run(["cycle", item, "down"]);
+    }
+  },
+
+  /**
    * for every (key, val) in map, query key's config-value from script, using val as default
    * NOTE: consider get_prop_script() when querying one single key for cleaner syntax
    * @param {string} script
