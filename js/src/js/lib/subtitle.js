@@ -48,75 +48,70 @@ MODULE.retime = function (incr, target) {
 };
 
 /**
+ * @returns {number}
+ */
+MODULE.get_size = function () {
+  return mpv.property.get_number("sub-scale");
+};
+
+/**
+ * @returns {string}
+ */
+MODULE.get_size_formatted = function () {
+  return util.format.format_float(MODULE.get_size(), {
+    n_digits_after_decimal: 2,
+  });
+};
+
+/**
  * @param {number} incr
- * @returns {function(): void}
  */
 MODULE.resize = function (incr) {
-  return function () {
-    mpv.exec.run(["add", "sub-scale", incr]);
-    mpv.osd.print(
-      "subtitle/scale> " +
-        util.format.format_float(mpv.property.get_number("sub-scale"), {
-          n_digits_after_decimal: 2,
-        })
-    );
-  };
+  var size_avant = MODULE.get_size_formatted();
+  mpv.exec.run(["add", "sub-scale", incr]);
+  var size_apres = MODULE.get_size_formatted();
+
+  mpv.osd.print(
+    "subtitle/scale> " +
+      size_apres +
+      " " +
+      "[" +
+      size_avant +
+      util.format.format_float(incr, { prepend_sign: true }) +
+      "]"
+  );
 };
 
 /**
  * @param {number} incr
- * @returns {function(): void}
  */
-MODULE.move = function (incr) {
-  return function () {
-    mpv.exec.run(["add", "sub-pos", incr]);
-    mpv.osd.print("subtitle/pos> " + mpv.property.get_number("sub-pos"));
-  };
+MODULE.move_primary = function (incr) {
+  mpv.exec.run(["add", "sub-pos", incr]);
+  mpv.osd.print("subtitle/pos-primary> " + mpv.property.get_number("sub-pos"));
 };
 
 /**
- * @param {number} [incr]
- * @returns {function(): void}
+ * @param {number} incr
  */
-MODULE.move_down = function (incr) {
-  return MODULE.move(incr || 1);
+MODULE.move_secondary = function (incr) {
+  mpv.exec.run(["add", "secondary-sub-pos", incr]);
+  mpv.osd.print("subtitle/pos-secondary> " + mpv.property.get_number("secondary-sub-pos"));
 };
 
 /**
- * @param {number} [incr]
- * @returns {function(): void}
+ * @param {integer} [offset]
  */
-MODULE.move_up = function (incr) {
-  return MODULE.move(-(incr || 1));
+MODULE.navigate_primary = function (offset) {
+  mpv.property.shift("sid", offset || +1);
+  report.tracking.print_pretty_subtitle();
 };
 
 /**
- * @param {boolean} positive_dir
- * @returns {function(): void}
+ * @param {integer} [offset]
  */
-MODULE.navigate = function (positive_dir) {
-  return function () {
-    if (positive_dir) {
-      mpv.exec.run(["cycle", "sub", "up"]);
-    } else {
-      mpv.exec.run(["cycle", "sub", "down"]);
-    }
-    report.tracking.print_pretty_subtitle();
-  };
-};
-
-/**
- * @returns {function(): void}
- */
-MODULE.navigate_prev = function () {
-  return MODULE.navigate(false);
-};
-
-/**
- * @returns {function(): void}
- */
-MODULE.navigate_next = function () {
-  return MODULE.navigate(true);
+MODULE.navigate_secondary = function (offset) {
+  mpv.property.shift("secondary-sid", offset || +1);
+  report.tracking.print_pretty_subtitle();
 };
 
 /**
