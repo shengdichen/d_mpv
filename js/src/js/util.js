@@ -257,6 +257,30 @@ var format = {
   },
 
   /**
+   * @param {number} duration
+   * @returns {string}
+   */
+  format_as_increment: function (incr) {
+    if (incr === 1) {
+      return "++";
+    }
+    if (incr === -1) {
+      return "--";
+    }
+    return format.format_float(incr, { prepend_sign: true });
+  },
+
+  /**
+   * @param {number} avant
+   * @param {number} incr
+   * @param {number} apres
+   * @returns {string}
+   */
+  format_as_evolution: function (avant, incr, apres) {
+    return apres + " <-[" + avant + format.format_as_increment(incr) + "]";
+  },
+
+  /**
    * 10/3 becomes:
    *   n_digits < 0 => error
    *   n_digits := 0 => 3.

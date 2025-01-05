@@ -13,25 +13,13 @@ MODULE.volume = function (incr) {
     var vol_prev = mpv.property.get_number("volume");
     var vol_next = vol_prev + incr;
     mpv.property.set_number("volume", vol_next);
+
     mpv.osd.print(
       "audio/volume> " +
-        vol_next +
-        " [" +
-        vol_prev +
-        _format_volume_incr(incr) +
-        "]"
+        util.format.format_as_evolution(vol_prev, incr, vol_next)
     );
   };
 };
-function _format_volume_incr(incr) {
-  if (incr === 1) {
-    return "++";
-  }
-  if (incr === -1) {
-    return "--";
-  }
-  return util.format.format_float(incr, { prepend_sign: true });
-}
 
 MODULE.mute = function () {
   mpv.property.cycle("mute");

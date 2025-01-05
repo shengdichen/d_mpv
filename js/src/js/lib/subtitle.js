@@ -73,12 +73,7 @@ MODULE.resize = function (incr) {
 
   mpv.osd.print(
     "subtitle/scale> " +
-      size_apres +
-      " " +
-      "[" +
-      size_avant +
-      util.format.format_float(incr, { prepend_sign: true }) +
-      "]"
+      util.format.format_as_evolution(size_avant, incr, size_apres)
   );
 };
 
@@ -86,16 +81,28 @@ MODULE.resize = function (incr) {
  * @param {number} incr
  */
 MODULE.move_primary = function (incr) {
+  var pos_avant = mpv.property.get_number("sub-pos");
   mpv.exec.run(["add", "sub-pos", incr]);
-  mpv.osd.print("subtitle/pos-primary> " + mpv.property.get_number("sub-pos"));
+  var pos_apres = mpv.property.get_number("sub-pos");
+
+  mpv.osd.print(
+    "subtitle/pos-primary> " +
+      util.format.format_as_evolution(pos_avant, incr, pos_apres)
+  );
 };
 
 /**
  * @param {number} incr
  */
 MODULE.move_secondary = function (incr) {
+  var pos_avant = mpv.property.get_number("secondary-sub-pos");
   mpv.exec.run(["add", "secondary-sub-pos", incr]);
-  mpv.osd.print("subtitle/pos-secondary> " + mpv.property.get_number("secondary-sub-pos"));
+  var pos_apres = mpv.property.get_number("secondary-sub-pos");
+
+  mpv.osd.print(
+    "subtitle/pos-secondary> " +
+      util.format.format_as_evolution(pos_avant, incr, pos_apres)
+  );
 };
 
 /**
