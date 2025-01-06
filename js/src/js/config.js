@@ -46,12 +46,18 @@ function _video() {
 }
 
 function _subtitle() {
-  lib_mpv.keybind.bind("z", lib_subtitle.retime(+0.1, "primary"));
-  lib_mpv.keybind.bind("Shift+z", lib_subtitle.retime(+0.1, "secondary"));
-  lib_mpv.keybind.bind("Ctrl+Shift+z", lib_subtitle.retime(+0.1, "both"));
-  lib_mpv.keybind.bind("x", lib_subtitle.retime(-0.1, "primary"));
-  lib_mpv.keybind.bind("Shift+x", lib_subtitle.retime(-0.1, "secondary"));
-  lib_mpv.keybind.bind("Ctrl+Shift+x", lib_subtitle.retime(-0.1, "both"));
+  lib_mpv.keybind.bind("Shift+z", function () {
+    lib_subtitle.retime(-0.1, "secondary");
+  });
+  lib_mpv.keybind.bind("z", function () {
+    lib_subtitle.retime(+0.1, "secondary");
+  });
+  lib_mpv.keybind.bind("Shift+x", function () {
+    lib_subtitle.retime(-0.1, "primary");
+  });
+  lib_mpv.keybind.bind("x", function () {
+    lib_subtitle.retime(+0.1, "primary");
+  });
 
   lib_mpv.keybind.bind("Shift+c", function () {
     lib_subtitle.resize(-0.1);

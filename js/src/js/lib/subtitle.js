@@ -4,47 +4,48 @@ var mpv = require("./util");
 
 var MODULE = {};
 
-function _delay(target) {
-  if (target === "primary") {
-    target = "sub-delay";
-  } else if (target === "secondary") {
-    target = "secondary-sub-delay";
-  }
-  return util.format.format_float(mpv.property.get_number(target), {
-    prepend_sign: true,
-    n_digits_after_decimal: 2,
-  });
+function _offset_primary() {
+  var offset = -mpv.property.get_number("sub-delay");
+  return util.format.format_as_increment(offset, { n_digits_after_decimal: 2 });
 }
-function _retime_primary(incr) {
-  mpv.exec.run(["add", "sub-delay", incr]);
-  mpv.osd.print("subtitle/delay-primary> " + _delay("primary"));
+function _offset_secondary() {
+  var offset = -mpv.property.get_number("secondary-sub-delay");
+  return util.format.format_as_increment(offset, { n_digits_after_decimal: 2 });
 }
-function _retime_secondary(incr) {
-  mpv.exec.run(["add", "secondary-sub-delay", incr]);
-  mpv.osd.print("subtitle/delay-secondary> " + _delay("secondary"));
+function _retime_primary(offset) {
+  mpv.exec.run(["add", "sub-delay", -offset]);
+}
+function _retime_secondary(offset) {
+  mpv.exec.run(["add", "secondary-sub-delay", -offset]);
 }
 /**
- * @param {number} incr
+ * retime subtitle by offset:
+ *  negative offset := positive delay == subtitle appears later
+ *  positive offset := negative delay == subtitle appears earlier
+ * @param {number} offset
  * @param {string} target
- * @returns {function(): void}
  */
-MODULE.retime = function (incr, target) {
-  return function () {
-    if (target === "primary") {
-      _retime_primary(incr);
-    } else if (target === "secondary") {
-      _retime_secondary(incr);
-    } else if (target === "both") {
-      _retime_primary(incr);
-      _retime_secondary(incr);
-      mpv.osd.print(
-        "subtitle/delay> (primary, secondary): " +
-          _delay("primary") +
-          ", " +
-          _delay("secondary")
-      );
-    }
-  };
+MODULE.retime = function (offset, target) {
+  if (target === "primary") {
+    _retime_primary(offset);
+    mpv.osd.print("subtitle/offset-primary> " + _offset_primary());
+    return;
+  }
+
+  if (target === "secondary") {
+    _retime_secondary(offset);
+    mpv.osd.print("subtitle/offset-secondary> " + _offset_secondary());
+    return;
+  }
+
+  _retime_primary(offset);
+  _retime_secondary(offset);
+  mpv.osd.print(
+    "subtitle/offset> (primary, secondary): " +
+      _offset_primary() +
+      ", " +
+      _offset_secondary()
+  );
 };
 
 /**

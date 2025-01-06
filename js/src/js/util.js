@@ -258,26 +258,33 @@ var format = {
 
   /**
    * @param {number} duration
+   * @param {Object.<string, *>} [opts]
    * @returns {string}
    */
-  format_as_increment: function (incr) {
+  format_as_increment: function (incr, opts) {
     if (incr === 1) {
       return "++";
     }
     if (incr === -1) {
       return "--";
     }
-    return format.format_float(incr, { prepend_sign: true });
+
+    opts = opts || {};
+    opts.prepend_sign = true;
+    return format.format_float(incr, opts);
   },
 
   /**
    * @param {number} avant
    * @param {number} incr
    * @param {number} apres
+   * @param {Object.<string, *>} [opts]
    * @returns {string}
    */
-  format_as_evolution: function (avant, incr, apres) {
-    return apres + " <-[" + avant + format.format_as_increment(incr) + "]";
+  format_as_evolution: function (avant, incr, apres, opts) {
+    return (
+      apres + " <-[" + avant + format.format_as_increment(incr, opts) + "]"
+    );
   },
 
   /**
