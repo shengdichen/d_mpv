@@ -5,7 +5,7 @@ var lib_report = require("./lib/report");
 var lib_misc = require("./lib/misc");
 
 var lib_video = require("./lib/video").export;
-var lib_subtitle = require("./lib/subtitle").export;
+var lib_subtitle = require("./lib/subtitle");
 var lib_audio = require("./lib/audio").export;
 var lib_playback = require("./lib/playback").export;
 
@@ -47,52 +47,52 @@ function _video() {
 
 function _subtitle() {
   lib_mpv.keybind.bind("Shift+z", function () {
-    lib_subtitle.retime(-0.1, "secondary");
+    lib_subtitle.timing.retime(-0.1, "secondary");
   });
   lib_mpv.keybind.bind("z", function () {
-    lib_subtitle.retime(+0.1, "secondary");
+    lib_subtitle.timing.retime(+0.1, "secondary");
   });
   lib_mpv.keybind.bind("Shift+x", function () {
-    lib_subtitle.retime(-0.1, "primary");
+    lib_subtitle.timing.retime(-0.1, "primary");
   });
   lib_mpv.keybind.bind("x", function () {
-    lib_subtitle.retime(+0.1, "primary");
+    lib_subtitle.timing.retime(+0.1, "primary");
   });
 
   lib_mpv.keybind.bind("Shift+c", function () {
-    lib_subtitle.resize(-0.1);
+    lib_subtitle.sizing.resize(-0.1);
   });
   lib_mpv.keybind.bind("c", function () {
-    lib_subtitle.resize(+0.1);
+    lib_subtitle.sizing.resize(+0.1);
   });
 
   lib_mpv.keybind.bind("Shift+v", function () {
-    lib_subtitle.move_secondary(-1);
+    lib_subtitle.position.move_secondary(-1);
   });
   lib_mpv.keybind.bind("v", function () {
-    lib_subtitle.move_secondary(+1);
+    lib_subtitle.position.move_secondary(+1);
   });
   lib_mpv.keybind.bind("Shift+b", function () {
-    lib_subtitle.move_primary(-1);
+    lib_subtitle.position.move_primary(-1);
   });
   lib_mpv.keybind.bind("b", function () {
-    lib_subtitle.move_primary(+1);
+    lib_subtitle.position.move_primary(+1);
   });
 
   lib_mpv.keybind.bind("Shift+n", function () {
-    lib_subtitle.navigate_secondary(-1);
+    lib_subtitle.activation.navigate_secondary(-1);
   });
   lib_mpv.keybind.bind("n", function () {
-    lib_subtitle.navigate_secondary(+1);
+    lib_subtitle.activation.navigate_secondary(+1);
   });
-  lib_mpv.keybind.bind("Ctrl+n", lib_subtitle.toggle("secondary"));
+  lib_mpv.keybind.bind("Ctrl+n", lib_subtitle.activation.toggle_secondary);
   lib_mpv.keybind.bind("Shift+m", function () {
-    lib_subtitle.navigate_primary(-1);
+    lib_subtitle.activation.navigate_primary(-1);
   });
   lib_mpv.keybind.bind("m", function () {
-    lib_subtitle.navigate_primary(+1);
+    lib_subtitle.activation.navigate_primary(+1);
   });
-  lib_mpv.keybind.bind("Ctrl+m", lib_subtitle.toggle("primary"));
+  lib_mpv.keybind.bind("Ctrl+m", lib_subtitle.activation.toggle_primary);
 }
 
 function _audio() {
