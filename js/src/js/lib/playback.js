@@ -1,6 +1,6 @@
 var util = require("../util");
 var report = require("./report");
-var video = require("./video").export;
+var video = require("./video");
 var mpv = require("./util");
 var misc = require("./misc");
 
@@ -19,7 +19,7 @@ var playpause = {
     misc.osc.disable();
 
     if (report.tracking.is_music()) {
-      video.enable();
+      video.activation.enable();
     }
   },
 
@@ -28,7 +28,7 @@ var playpause = {
     misc.osc.enable();
 
     if (report.tracking.is_music()) {
-      video.disable();
+      video.activation.disable();
     }
   },
 

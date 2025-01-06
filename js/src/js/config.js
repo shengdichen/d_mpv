@@ -4,45 +4,45 @@ var lib_mpv = require("./lib/util");
 var lib_report = require("./lib/report");
 var lib_misc = require("./lib/misc");
 
-var lib_video = require("./lib/video").export;
+var lib_video = require("./lib/video");
 var lib_subtitle = require("./lib/subtitle");
 var lib_audio = require("./lib/audio").export;
 var lib_playback = require("./lib/playback").export;
 
 function _video() {
-  lib_mpv.keybind.bind("f", lib_video.fullscreen);
-  lib_mpv.keybind.bind("Ctrl+r", lib_video.rotate);
+  lib_mpv.keybind.bind("f", lib_video.decoration.fullscreen);
+  lib_mpv.keybind.bind("Ctrl+r", lib_video.decoration.rotate);
 
   lib_mpv.keybind.bind("-", function () {
-    lib_video.navigate(+1);
+    lib_video.activation.navigate(+1);
   });
   lib_mpv.keybind.bind("_", function () {
-    lib_video.navigate(-1);
+    lib_video.activation.navigate(-1);
   });
 
   var reposition_step = 0.025;
   lib_mpv.keybind.bind("Alt+LEFT", function () {
-    lib_video.reposition(+reposition_step, "x");
+    lib_video.position.reposition_x(+reposition_step);
   });
   lib_mpv.keybind.bind("Alt+RIGHT", function () {
-    lib_video.reposition(-reposition_step, "x");
+    lib_video.position.reposition_x(-reposition_step);
   });
   lib_mpv.keybind.bind("Alt+UP", function () {
-    lib_video.reposition(+reposition_step, "y");
+    lib_video.position.reposition_y(+reposition_step);
   });
   lib_mpv.keybind.bind("Alt+DOWN", function () {
-    lib_video.reposition(-reposition_step, "y");
+    lib_video.position.reposition_y(-reposition_step);
   });
 
-  lib_mpv.keybind.bind("Alt+-", function () {
-    lib_video.resize(-0.1);
+  lib_mpv.keybind.bind("+", function () {
+    lib_video.sizing.resize(-0.1);
   });
-  lib_mpv.keybind.bind("Alt++", function () {
-    lib_video.resize(+0.1);
+  lib_mpv.keybind.bind("=", function () {
+    lib_video.sizing.resize(+0.1);
   });
 
-  lib_mpv.keybind.bind("d", lib_video.deinterlace);
-  lib_mpv.keybind.bind("Ctrl+h", lib_video.hwdec);
+  lib_mpv.keybind.bind("d", lib_video.decoration.deinterlace);
+  lib_mpv.keybind.bind("Ctrl+h", lib_video.decoration.hwdec);
 }
 
 function _subtitle() {
