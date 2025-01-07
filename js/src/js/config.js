@@ -115,10 +115,10 @@ function _playback() {
   lib_mpv.keybind.bind("SPACE", lib_playback.playpause.toggle);
 
   lib_mpv.keybind.bind("<", function () {
-    lib_playback.playlist.navigate(false);
+    lib_playback.playlist.shift(-1);
   });
   lib_mpv.keybind.bind(">", function () {
-    lib_playback.playlist.navigate(true);
+    lib_playback.playlist.shift(+1);
   });
   lib_mpv.keybind.bind("k", lib_report.playlist.print_pretty);
   lib_mpv.keybind.bind("Shift+k", lib_report.playlist.print_raw);

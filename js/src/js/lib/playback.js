@@ -40,12 +40,27 @@ var playpause = {
 };
 
 var playlist = {
-  navigate: function (positive_dir) {
-    if (positive_dir) {
-      mpv.exec.run("playlist-next");
-    } else {
+  /**
+   * @param {integer} offset
+   */
+  _shift: function (offset) {
+    if (offset > 0) {
+      for (var i = 0; i < offset; ++i) {
+        mpv.exec.run("playlist-next");
+      }
+      return;
+    }
+
+    for (i = 0; i > offset; --i) {
       mpv.exec.run("playlist-prev");
     }
+  },
+
+  /**
+   * @param {integer} offset
+   */
+  shift: function (offset) {
+    playlist._shift(offset);
     report.playlist.print_pretty();
   },
 };
