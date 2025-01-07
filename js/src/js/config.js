@@ -7,7 +7,7 @@ var lib_misc = require("./lib/misc");
 var lib_video = require("./lib/video");
 var lib_subtitle = require("./lib/subtitle");
 var lib_audio = require("./lib/audio").export;
-var lib_playback = require("./lib/playback").export;
+var lib_playback = require("./lib/playback");
 
 function _video() {
   lib_mpv.keybind.bind("f", lib_video.decoration.fullscreen);
@@ -114,33 +114,63 @@ function _audio() {
 function _playback() {
   lib_mpv.keybind.bind("SPACE", lib_playback.playpause.toggle);
 
-  lib_mpv.keybind.bind("<", lib_playback.navigate_playlist(false));
-  lib_mpv.keybind.bind(">", lib_playback.navigate_playlist(true));
+  lib_mpv.keybind.bind("<", function () {
+    lib_playback.playlist.navigate(false);
+  });
+  lib_mpv.keybind.bind(">", function () {
+    lib_playback.playlist.navigate(true);
+  });
   lib_mpv.keybind.bind("k", lib_report.playlist.print_pretty);
   lib_mpv.keybind.bind("Shift+k", lib_report.playlist.print_raw);
 
   lib_mpv.keybind.bind("j", lib_report.tracking.print_pretty);
   lib_mpv.keybind.bind("Shift+j", lib_report.tracking.print_raw);
 
-  lib_mpv.keybind.bind("l", lib_playback.loop_ab);
-  lib_mpv.keybind.bind("L", lib_playback.loop_files);
+  lib_mpv.keybind.bind("l", lib_playback.loop.loop_ab);
+  lib_mpv.keybind.bind("L", lib_playback.loop.loop_files);
 
-  lib_mpv.keybind.bind(",", lib_playback.navigate_file_frame(-1));
-  lib_mpv.keybind.bind(".", lib_playback.navigate_file_frame(+1));
+  lib_mpv.keybind.bind(",", function () {
+    lib_playback.navigate.frame(-1);
+  });
+  lib_mpv.keybind.bind(".", function () {
+    lib_playback.navigate.frame(+1);
+  });
 
-  lib_mpv.keybind.bind("LEFT", lib_playback.navigate_file_time(-3));
-  lib_mpv.keybind.bind("RIGHT", lib_playback.navigate_file_time(+3));
-  lib_mpv.keybind.bind("Shift+LEFT", lib_playback.navigate_file_time(-1));
-  lib_mpv.keybind.bind("Shift+RIGHT", lib_playback.navigate_file_time(+1));
-  lib_mpv.keybind.bind("Ctrl+LEFT", lib_playback.navigate_file_time(-7));
-  lib_mpv.keybind.bind("Ctrl+RIGHT", lib_playback.navigate_file_time(+7));
+  lib_mpv.keybind.bind("LEFT", function () {
+    lib_playback.navigate.time(-3);
+  });
+  lib_mpv.keybind.bind("RIGHT", function () {
+    lib_playback.navigate.time(+3);
+  });
+  lib_mpv.keybind.bind("Shift+LEFT", function () {
+    lib_playback.navigate.time(-1);
+  });
+  lib_mpv.keybind.bind("Shift+RIGHT", function () {
+    lib_playback.navigate.time(+1);
+  });
+  lib_mpv.keybind.bind("Ctrl+LEFT", function () {
+    lib_playback.navigate.time(-7);
+  });
+  lib_mpv.keybind.bind("Ctrl+RIGHT", function () {
+    lib_playback.navigate.time(+7);
+  });
 
-  lib_mpv.keybind.bind("PGUP", lib_playback.navigate_file_chapter(-1));
-  lib_mpv.keybind.bind("PGDWN", lib_playback.navigate_file_chapter(+1));
+  lib_mpv.keybind.bind("PGUP", function () {
+    lib_playback.navigate.chapter(-1);
+  });
+  lib_mpv.keybind.bind("PGDWN", function () {
+    lib_playback.navigate.chapter(+1);
+  });
 
-  lib_mpv.keybind.bind("[", lib_playback.adjust_speed(-0.1));
-  lib_mpv.keybind.bind("]", lib_playback.adjust_speed(+0.1));
-  lib_mpv.keybind.bind("BS", lib_playback.adjust_speed());
+  lib_mpv.keybind.bind("[", function () {
+    lib_playback.speed.shift(-0.1);
+  });
+  lib_mpv.keybind.bind("]", function () {
+    lib_playback.speed.shift(+0.1);
+  });
+  lib_mpv.keybind.bind("BS", function () {
+    lib_playback.speed.set();
+  });
 }
 
 function _misc() {
