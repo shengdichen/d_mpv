@@ -204,14 +204,10 @@ function _misc() {
   savepos();
 }
 
-function config() {
+module.exports = function () {
   _video();
   _subtitle();
   _audio();
   _playback();
   _misc();
-}
-
-module.exports = {
-  export: config,
 };

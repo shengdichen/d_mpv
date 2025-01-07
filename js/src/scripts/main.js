@@ -1,4 +1,4 @@
 function main() {
-  require("../js/config").export();
+  require("../js/config")()
 }
 main();
