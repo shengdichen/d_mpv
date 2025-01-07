@@ -6,7 +6,7 @@ var lib_misc = require("./lib/misc");
 
 var lib_video = require("./lib/video");
 var lib_subtitle = require("./lib/subtitle");
-var lib_audio = require("./lib/audio").export;
+var lib_audio = require("./lib/audio");
 var lib_playback = require("./lib/playback");
 
 function _video() {
@@ -96,18 +96,26 @@ function _subtitle() {
 }
 
 function _audio() {
-  lib_mpv.keybind.bind("9", lib_audio.volume(-1));
-  lib_mpv.keybind.bind("(", lib_audio.volume(-7));
-  lib_mpv.keybind.bind("0", lib_audio.volume(+1));
-  lib_mpv.keybind.bind(")", lib_audio.volume(+7));
+  lib_mpv.keybind.bind("9", function () {
+    lib_audio.volume.shift(-1);
+  });
+  lib_mpv.keybind.bind("(", function () {
+    lib_audio.volume.shift(-7);
+  });
+  lib_mpv.keybind.bind("0", function () {
+    lib_audio.volume.shift(+1);
+  });
+  lib_mpv.keybind.bind(")", function () {
+    lib_audio.volume.shift(+7);
+  });
 
-  lib_mpv.keybind.bind("8", lib_audio.mute);
+  lib_mpv.keybind.bind("8", lib_audio.volume.mute);
 
   lib_mpv.keybind.bind("3", function () {
-    lib_audio.navigate(+1);
+    lib_audio.activation.navigate(+1);
   });
   lib_mpv.keybind.bind("SHARP", function () {
-    lib_audio.navigate(-1);
+    lib_audio.activation.navigate(-1);
   });
 }
 
