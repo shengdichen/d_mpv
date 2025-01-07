@@ -55,12 +55,17 @@ var navigate = {
    * @param {integer} offset
    */
   frame: function (offset) {
-    if (offset === 0) return;
+    if (!offset) return;
 
     if (offset > 0) {
-      mpv.exec.run("frame-step");
+      for (var i = 0; i < offset; ++i) {
+        mpv.exec.run("frame-step");
+      }
     } else {
-      mpv.exec.run("frame-back-step");
+      offset = -offset;
+      for (i = 0; i < offset; ++i) {
+        mpv.exec.run("frame-back-step");
+      }
     }
     mpv.osd.print(report.playback.progress());
   },
