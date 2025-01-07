@@ -34,6 +34,34 @@ var activation = {
     mpv.property.shift("audio", incr || +1);
     report.tracking.print_pretty_audio();
   },
+
+  /**
+   * consider using volume.mute() instead
+   */
+  toggle: function () {
+    if (activation.is_active()) {
+      activation.disable();
+      return;
+    }
+    activation.enable();
+  },
+
+  enable: function () {
+    if (activation.is_active()) return;
+    mpv.property.set_string("audio", "auto");
+  },
+
+  disable: function () {
+    if (!activation.is_active()) return;
+    mpv.property.set_boolean("audio", false);
+  },
+
+  /**
+   * @returns {boolean}
+   */
+  is_active: function () {
+    return mpv.property.get_autotype("audio") !== false;
+  },
 };
 
 module.exports = {
