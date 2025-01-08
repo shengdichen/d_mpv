@@ -18,17 +18,18 @@ var osc = {
   //    pass second arg |false| to disable osd-output (prepending "no-osd" has no use)
   disable: function () {
     mpv.exec.run_script_fn(osc._fn, ["never", false]);
+    osc._is_visible = false;
   },
   enable: function () {
     mpv.exec.run_script_fn(osc._fn, ["always", false]);
+    osc._is_visible = true;
   },
   toggle: function () {
     if (osc._is_visible) {
       osc.disable();
-    } else {
-      osc.enable();
+      return;
     }
-    osc._is_visible = !osc._is_visible;
+    osc.enable();
   },
 };
 

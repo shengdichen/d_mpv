@@ -47,6 +47,7 @@ var visual = {
    * @returns {string}
    */
   repeat: function (str, count) {
+    if (count < 1) return "";
     return Array(count + 1).join(str);
   },
 
@@ -63,6 +64,7 @@ var visual = {
    * @returns {string}
    */
   tab: function (count) {
+    if (count < 1) return "";
     return visual.repeat(" ", (count || 1) * 4);
   },
 
@@ -146,13 +148,26 @@ var format = {
    * @returns {string}
    */
   format_boolean: function (item) {
-    if (item) {
-      return "T";
-    }
+    if (item) return "T";
     return "F";
   },
 
   /**
+   * prepend_sign :=
+   *    if close to 0: prepend "="
+   *    if positive: prepend "+"
+   *    if negative: do nothing
+   *
+   * n_digits_before_decimal := prepend zero iff integer-part requires
+   * (strictly) fewer digits; do NOT truncate, i.e., do thing otherwise
+   *
+   * n_digits_after_decimal := -1 =>
+   *    as many digits as needed if divisible,
+   *    as many as possible otherwise
+   * n_digits_after_decimal := 0 => <int>.
+   * n_digits_after_decimal := 1 => <int>.?
+   * n_digits_after_decimal := 2 => <int>.??
+   *
    * @param {number} item
    * @param {Object.<string, *>} [opts]
    * @returns {string}
@@ -299,9 +314,45 @@ var math = {
   },
 };
 
+var path = {
+  _root: "/",
+  _separator: "/",
+
+  /**
+   * REF:
+   *    https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.parent
+   * @param {string} p
+   * @returns {string}
+   */
+  parent: function (p) {
+    return p.split(path._separator).slice(0, -1).join(path._separator);
+  },
+
+  /**
+   * REF:
+   *    https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.name
+   * @param {string} p
+   * @returns {string}
+   */
+  name: function (p) {
+    return p.split(path._separator).slice(-1).toString();
+  },
+
+  /**
+   * REF:
+   *    https://docs.python.org/3/library/pathlib.html#pathlib.PurePath.is_absolute
+   * @param {string} p
+   * @returns {boolean}
+   */
+  is_absolute: function (p) {
+    return p.substring(0, 1) === path._root;
+  },
+};
+
 module.exports = {
   typing: typing,
   format: format,
   visual: visual,
   math: math,
+  path: path,
 };

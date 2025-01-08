@@ -115,6 +115,21 @@ var tracking = {
   },
 
   /**
+   * @returns {boolean}
+   */
+  is_music: function () {
+    var tracks = tracking._fetch_tracks();
+    if (!tracks.n_tracks_video) return true;
+
+    for (var i = 0; i < tracks.n_tracks_video; ++i) {
+      if (!tracking._track_video_is_image(tracks.tracks_video[i])) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  /**
    * @param {object} tracks
    * @param {object} track
    * @param {object} n_tracks_type
@@ -185,10 +200,8 @@ var tracking = {
   _format_track_video_info: function (track) {
     function fps() {
       var fps = track["demux-fps"];
-      if (!fps) {
-        return "";
-      }
-      if (fps === 1) {
+      if (!fps) return "";
+      if (tracking._track_video_is_image(track)) {
         return "[static]";
       }
 
@@ -206,6 +219,14 @@ var tracking = {
     }
 
     return track.codec + fps() + " " + dimension();
+  },
+
+  /**
+   * @param {Object.<string, *>} track
+   * @returns {boolean}
+   */
+  _track_video_is_image: function (track) {
+    return track["demux-fps"] === 1;
   },
 
   /**
@@ -537,12 +558,15 @@ var playlist = {
     // NOTE:
     //  use .current to check current track; .playing does NOT update when
     //  switching tracks and will thus report erroneously
-    return (
-      formatter.format_activeness(item.current) +
-      formatter.format_id(item.id, n_items) +
-      " " +
-      item.filename
-    );
+    var active = formatter.format_activeness(item.current);
+    var id = formatter.format_id(item.id, n_items);
+
+    var filename = util.path.name(item.filename);
+    if (filename.length > 79) {
+      filename = "..." + filename.slice(-79);
+    }
+
+    return active + id + " " + filename;
   },
 
   /**

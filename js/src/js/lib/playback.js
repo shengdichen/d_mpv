@@ -1,14 +1,46 @@
 var util = require("../util");
 var report = require("./report");
+var video = require("./video").export;
 var mpv = require("./util");
 var misc = require("./misc");
 
 var MODULE = {};
 
-MODULE.playpause = function () {
-  mpv.property.cycle("pause");
-  misc.osc.toggle();
+var playpause = {
+  /**
+   * @returns {boolean}
+   */
+  is_playing: function () {
+    return !mpv.property.get_boolean("pause");
+  },
+
+  enable: function () {
+    mpv.property.set_boolean("pause", false);
+    misc.osc.disable();
+
+    if (report.tracking.is_music()) {
+      video.enable();
+    }
+  },
+
+  disable: function () {
+    mpv.property.set_boolean("pause", true);
+    misc.osc.enable();
+
+    if (report.tracking.is_music()) {
+      video.disable();
+    }
+  },
+
+  toggle: function () {
+    if (playpause.is_playing()) {
+      playpause.disable();
+      return;
+    }
+    playpause.enable();
+  },
 };
+MODULE.playpause = playpause;
 
 MODULE.navigate_playlist = function (positive_dir) {
   return function () {

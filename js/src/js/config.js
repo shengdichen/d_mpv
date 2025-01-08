@@ -1,3 +1,5 @@
+var util = require("./util");
+
 var lib_mpv = require("./lib/util");
 var lib_report = require("./lib/report");
 var lib_misc = require("./lib/misc");
@@ -67,7 +69,7 @@ function _audio() {
 }
 
 function _playback() {
-  lib_mpv.keybind.bind("SPACE", lib_playback.playpause);
+  lib_mpv.keybind.bind("SPACE", lib_playback.playpause.toggle);
 
   lib_mpv.keybind.bind("<", lib_playback.navigate_playlist(false));
   lib_mpv.keybind.bind(">", lib_playback.navigate_playlist(true));
@@ -109,11 +111,10 @@ function _misc() {
 
     var server = lib_mpv.property.get_string("input-ipc-server");
     if (server) {
-      // show only filename of socket
-      title = title.concat("[" + server.split("/").slice(-1).toString() + "] ");
+      title += "[" + util.path.name(server) + "] ";
     }
 
-    title = title.concat("${path}");
+    title += "${filename}";
     lib_mpv.property.set_string("title", title);
   }
 
