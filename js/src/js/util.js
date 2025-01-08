@@ -153,6 +153,21 @@ var format = {
   },
 
   /**
+   * prepend_sign :=
+   *    if close to 0: prepend "="
+   *    if positive: prepend "+"
+   *    if negative: do nothing
+   *
+   * n_digits_before_decimal := prepend zero iff integer-part requires
+   * (strictly) fewer digits; do NOT truncate, i.e., do thing otherwise
+   *
+   * n_digits_after_decimal := -1 =>
+   *    as many digits as needed if divisible,
+   *    as many as possible otherwise
+   * n_digits_after_decimal := 0 => <int>.
+   * n_digits_after_decimal := 1 => <int>.?
+   * n_digits_after_decimal := 2 => <int>.??
+   *
    * @param {number} item
    * @param {Object.<string, *>} [opts]
    * @returns {string}
