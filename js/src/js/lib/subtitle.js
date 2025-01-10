@@ -37,21 +37,19 @@ var timing = {
   retime: function (offset, target) {
     if (target === "primary") {
       timing._retime_primary(offset);
-      mpv.osd.print("subtitle/offset-primary> " + timing.get_offset_primary());
+      mpv.osd.print("sub/offset-primary> " + timing.get_offset_primary());
       return;
     }
 
     if (target === "secondary") {
       timing._retime_secondary(offset);
-      mpv.osd.print(
-        "subtitle/offset-secondary> " + timing.get_offset_secondary()
-      );
+      mpv.osd.print("sub/offset-secondary> " + timing.get_offset_secondary());
       return;
     }
 
     timing._retime_both(offset);
     mpv.osd.print(
-      "subtitle/offset> (primary, secondary): " +
+      "sub/offset> (primary, secondary): " +
         timing.get_offset_primary() +
         ", " +
         timing.get_offset_secondary()
@@ -85,7 +83,7 @@ var sizing = {
     var size_apres = sizing.get_size_formatted();
 
     mpv.osd.print(
-      "subtitle/scale> " +
+      "sub/scale> " +
         util.format.format_as_evolution(size_avant, incr, size_apres)
     );
   },
@@ -101,7 +99,7 @@ var position = {
     var pos_apres = mpv.property.get_number("sub-pos");
 
     mpv.osd.print(
-      "subtitle/pos-primary> " +
+      "sub/pos-primary> " +
         util.format.format_as_evolution(pos_avant, incr, pos_apres)
     );
   },
@@ -115,7 +113,7 @@ var position = {
     var pos_apres = mpv.property.get_number("secondary-sub-pos");
 
     mpv.osd.print(
-      "subtitle/pos-secondary> " +
+      "sub/pos-secondary> " +
         util.format.format_as_evolution(pos_avant, incr, pos_apres)
     );
   },
@@ -155,7 +153,7 @@ var activation = {
   toggle_primary: function () {
     mpv.property.cycle("sub-visibility");
     mpv.osd.print(
-      "subtitle/visibility-primary> " +
+      "sub/visibility-primary> " +
         util.format.format_boolean(activation.is_active_primary())
     );
   },
@@ -163,7 +161,7 @@ var activation = {
   toggle_secondary: function () {
     mpv.property.cycle("secondary-sub-visibility");
     mpv.osd.print(
-      "subtitle/visibility-secondary> " +
+      "sub/visibility-secondary> " +
         util.format.format_boolean(activation.is_active_secondary())
     );
   },
