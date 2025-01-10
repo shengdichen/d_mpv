@@ -551,7 +551,7 @@ var playlist = {
 
   /**
    * @param {Object.<string, *>} item
-   * @param {interger} n_items
+   * @param {integer} n_items
    * @returns {string}
    */
   _format_item: function (item, n_items) {
@@ -570,7 +570,7 @@ var playlist = {
   },
 
   /**
-   * @param {interger} n_items
+   * @param {integer} n_items
    * @returns {integer}
    */
   _n_lines_cycle: function (n_items) {
