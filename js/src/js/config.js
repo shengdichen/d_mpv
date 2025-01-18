@@ -201,7 +201,6 @@ function _misc() {
 
   function savepos() {
     lib_misc.record.save_filename_only();
-    lib_misc.record.append_targets("secondary-sub-delay");
 
     lib_mpv.keybind.bind("Ctrl+s", lib_misc.record.save);
     lib_mpv.keybind.bind("Ctrl+Shift+s", lib_misc.record.toggle);
