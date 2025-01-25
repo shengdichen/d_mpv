@@ -165,6 +165,12 @@ var activation = {
         util.format.format_boolean(activation.is_active_secondary())
     );
   },
+
+  set_source: function () {
+    mpv.property.cycle("sub-auto", ["fuzzy", "exact", "all"]);
+    mpv.exec.run("rescan-external-files");
+    mpv.osd.print("sub/source> " + mpv.property.get_string("sub-auto"));
+  },
 };
 
 module.exports = {
