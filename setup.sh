@@ -23,7 +23,7 @@ __misc() {
 }
 
 __stow() {
-    stow -R --target="${HOME}" "raw"
+    stow -R --target="${HOME}" "linux"
     (
         cd "./js/" || exit 3
         stow -R --target="${DIR_MPV}/" "src"
