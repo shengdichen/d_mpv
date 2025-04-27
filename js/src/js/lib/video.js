@@ -56,7 +56,7 @@ var position = {
   reposition_x: function (incr) {
     mpv.exec.run(["add", "video-pan-x", incr || +0.01]);
     mpv.osd.print(
-      "video/pos> (" + position.get_x() + ", " + position.get_y() + ")"
+      "vid/pos> (" + position.get_x() + ", " + position.get_y() + ")"
     );
   },
 
@@ -66,7 +66,7 @@ var position = {
   reposition_y: function (incr) {
     mpv.exec.run(["add", "video-pan-y", incr || +0.01]);
     mpv.osd.print(
-      "video/pos> (" + position.get_x() + ", " + position.get_y() + ")"
+      "vid/pos> (" + position.get_x() + ", " + position.get_y() + ")"
     );
   },
 };
@@ -87,7 +87,7 @@ var sizing = {
    */
   resize: function (incr) {
     mpv.exec.run(["add", "video-zoom", incr || +0.1]);
-    mpv.osd.print("video/size> " + sizing.get_size());
+    mpv.osd.print("vid/size> " + sizing.get_size());
   },
 };
 
@@ -95,7 +95,7 @@ var decoration = {
   deinterlace: function () {
     mpv.property.cycle("deinterlace");
     mpv.osd.print(
-      "video/deinterlace> " +
+      "vid/deinterlace> " +
         util.format.format(mpv.property.get_autotype("deinterlace"))
     );
   },
@@ -104,7 +104,7 @@ var decoration = {
     mpv.property.cycle("hwdec", ["auto", "nvdec", "nvdec-copy", "no"]);
 
     var strings = [
-      "video/hwdec>",
+      "vid/hwdec>",
       mpv.property.get_string("hwdec-current"),
       "[" + mpv.property.get_string("hwdec") + "]",
     ];

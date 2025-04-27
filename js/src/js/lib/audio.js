@@ -12,7 +12,7 @@ var volume = {
     mpv.property.set_number("volume", vol_next);
 
     mpv.osd.print(
-      "audio/volume> " +
+      "aud/volume> " +
         util.format.format_as_evolution(vol_prev, offset, vol_next)
     );
   },
@@ -20,7 +20,7 @@ var volume = {
   mute: function () {
     mpv.property.cycle("mute");
     mpv.osd.print(
-      "audio/mute> " +
+      "aud/mute> " +
         util.format.format_boolean(mpv.property.get_boolean("mute"))
     );
   },

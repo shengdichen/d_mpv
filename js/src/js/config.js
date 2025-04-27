@@ -65,6 +65,7 @@ function _subtitle() {
   lib_mpv.keybind.bind("c", function () {
     lib_subtitle.sizing.resize(+0.1);
   });
+  lib_mpv.keybind.bind("Ctrl+c", lib_subtitle.activation.set_source);
 
   lib_mpv.keybind.bind("Shift+v", function () {
     lib_subtitle.position.move_secondary(-1);
@@ -201,7 +202,6 @@ function _misc() {
 
   function savepos() {
     lib_misc.record.save_filename_only();
-    lib_misc.record.append_targets("secondary-sub-delay");
 
     lib_mpv.keybind.bind("Ctrl+s", lib_misc.record.save);
     lib_mpv.keybind.bind("Ctrl+Shift+s", lib_misc.record.toggle);
