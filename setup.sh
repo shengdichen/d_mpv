@@ -10,8 +10,8 @@ XDG_AUD="$(xdg-user-dir MUSIC | head -c -2)"
 
 __misc() {
     mkdir -p "${DIR_MPV}/scripts/"
-    if [ ! -d "./js/node_modules" ]; then
-        (cd "./js/" && npm install)
+    if [ ! -d "./common/js/node_modules" ]; then
+        (cd "./common/js/" && npm install)
     fi
 
     mkdir -p "${DIR_MPD_LIB}"
@@ -25,7 +25,7 @@ __misc() {
 __stow() {
     stow -R --target="${HOME}" "linux"
     (
-        cd "./js/" || exit 3
+        cd "./common/js/" || exit 3
         stow -R --target="${DIR_MPV}/" "src"
     )
 }
